@@ -1,4 +1,4 @@
-package hello;
+package webservice;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -17,25 +17,25 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class Application {
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-	static final String DB_URL = "jdbc:mysql://192.168.0.2:3306/MyParkDB";
+	static final String DB_URL = "jdbc:mysql://192.168.0.2:3306/FrisO";
 
-	static final String USER = "root";
-	static final String PASS = "AllGroup15";
+	static final String USER = "androidApp";
+	static final String PASS = "frisOAPP123";
 	
 	@RequestMapping("/")
 	public String home() {
-		return "Hello Docker World";
+		return "Service Is Running";
 	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
 	
-	@RequestMapping("/partners")
-	public static ArrayList<Pair<Integer,String>> GetPartners() {
+	@RequestMapping("/users")
+	public static ArrayList<User> getUsers() {
 		Connection conn = null;
 		Statement stmt = null;
-		ArrayList<Pair<Integer,String>> arr = new  ArrayList<Pair<Integer,String>>();
+		ArrayList<User> arr = new  ArrayList<User>();
 		try {
 			
 			Class.forName("com.mysql.cj.jdbc.Driver");
@@ -47,9 +47,11 @@ public class Application {
 			String sql = "SELECT * FROM partner ";
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
-				int num= rs.getInt("id");
-				String abc= rs.getString("name");
-				arr.add(new Pair<Integer,String>(num,abc));
+				int userID= rs.getInt("id");
+				String userName= rs.getString("username");
+				String email = rs.getString("email");
+				String password = rs.getString("password");
+				arr.add(new User(userID, userName, email, password));
 			}
 			rs.close();
 		} catch (SQLException se) {
