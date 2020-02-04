@@ -44,7 +44,7 @@ public class Application {
 	
 			stmt = conn.createStatement();
 	
-			String sql = "SELECT * FROM partner ";
+			String sql = "SELECT * FROM Users";
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 				int userID= rs.getInt("id");
