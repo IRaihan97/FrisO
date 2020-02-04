@@ -38,7 +38,7 @@ public class Application {
 		ArrayList<User> arr = new  ArrayList<User>();
 		try {
 			
-			Class.forName("com.mysql.cj.jdbc.Driver");
+			Class.forName("com.mysql.cj.jdbc.Driver");//Testing comment
 	
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 	
