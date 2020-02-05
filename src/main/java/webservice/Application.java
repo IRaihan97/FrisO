@@ -87,7 +87,7 @@ public class Application {
 	}
 	
 	@RequestMapping(value = "/addUser", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
-	public User addUser(@RequestBody User user) throws ClassNotFoundException, SQLException{
+	public ArrayList<User> addUser(@RequestBody ArrayList<User> user) throws ClassNotFoundException, SQLException{
 		
 		
 		String username = null;
@@ -98,9 +98,9 @@ public class Application {
 		Statement stmt = null;
 		
 		if (user != null) {
-	        username = "'" + user.getUsername() + "'";
-	        email = "'" + user.getEmail() + "'";
-	        password = "'" + user.getPassword() + "'";
+	        username = "'" + user.get(0).getUsername() + "'";
+	        email = "'" + user.get(0).getEmail() + "'";
+	        password = "'" + user.get(0).getPassword() + "'";
 	        Class.forName("com.mysql.cj.jdbc.Driver");
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 
