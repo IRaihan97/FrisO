@@ -1,4 +1,4 @@
-package webservice;
+package webservice.Model;
 
 public class User {
 	private int id;

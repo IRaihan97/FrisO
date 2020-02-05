@@ -9,8 +9,15 @@ import java.util.ArrayList;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import webservice.Model.User;
 
 
 @SpringBootApplication
@@ -31,7 +38,7 @@ public class Application {
 		SpringApplication.run(Application.class, args);
 	}
 	
-	@RequestMapping("/users")
+	@RequestMapping(value = "/users")
 	public static ArrayList<User> getUsers() {
 		Connection conn = null;
 		Statement stmt = null;
@@ -76,6 +83,34 @@ public class Application {
 		}
 		
 		return arr;
+	}
+	
+	@RequestMapping(value = "/addUser", method = RequestMethod.POST)
+	public ResponseEntity<User> addUser(@RequestBody User user) throws ClassNotFoundException, SQLException{
+		String username = null;
+		String email = null;
+		String password = null;
+		
+		Connection conn = null;
+		Statement stmt = null;
+		
+		if (user != null) {
+	        username = "'"+ user.getUsername() + "'";
+	        email = "'" + user.getEmail() + "'";
+	        password = "'" + user.getPassword() + "'";
+	        Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+			stmt = conn.createStatement();
+
+			String sql = "INSERT INTO Users (username, email, password) VALUE ("+ username + "," + email + "," + password + ")";
+			stmt.executeUpdate(sql);
+	    }
+		
+		//Testing comment
+
+	    // TODO: call persistence layer to update
+	    return new ResponseEntity<User>(user, HttpStatus.OK);
 	}
 
 }
