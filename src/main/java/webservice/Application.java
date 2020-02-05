@@ -90,29 +90,29 @@ public class Application {
 	public ArrayList<User> addUser(@RequestBody ArrayList<User> user) throws ClassNotFoundException, SQLException{
 		
 		
-		String username = null;
-		String email = null;
-		String password = null;
+// 		String username = null;
+// 		String email = null;
+// 		String password = null;
 		
-		Connection conn = null;
-		Statement stmt = null;
+// 		Connection conn = null;
+// 		Statement stmt = null;
 		
-		if (user != null) {
-	        username = "'" + user.get(0).getUsername() + "'";
-	        email = "'" + user.get(0).getEmail() + "'";
-	        password = "'" + user.get(0).getPassword() + "'";
-	        Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+// 		if (user != null) {
+// 	        username = "'" + user.get(0).getUsername() + "'";
+// 	        email = "'" + user.get(0).getEmail() + "'";
+// 	        password = "'" + user.get(0).getPassword() + "'";
+// 	        Class.forName("com.mysql.cj.jdbc.Driver");
+// 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 
-			stmt = conn.createStatement();
+// 			stmt = conn.createStatement();
 
-			String sql = "INSERT INTO Users (username, email, password) VALUES ("+ username + "," + email + "," + password + ");";
-			stmt.executeUpdate(sql);
-	    }
+// 			String sql = "INSERT INTO Users (username, email, password) VALUES ("+ username + "," + email + "," + password + ");";
+// 			stmt.executeUpdate(sql);
+// 	    }
 		
-		//Testing comment
+// 		//Testing comment
 
-	    // TODO: call persistence layer to update
+// 	    // TODO: call persistence layer to update
 	    return user;
 	}
 
