@@ -100,10 +100,11 @@ public class Application {
 	        username = "'" + user.getUsername() + "'";
 	        email = "'" + user.getEmail() + "'";
 	        password = "'" + user.getPassword() + "'";
-	        Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+	       //lass.forName("com.mysql.cj.jdbc.Driver");
+			//conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			String sql = "INSERT INTO Users (username, email, password) VALUES ("+ username + "," + email + "," + password + ");";
-			stmt.executeUpdate(sql);
+			//stmt.executeUpdate(sql);
+			System.out.println(sql);
 	    }	    
 
 
