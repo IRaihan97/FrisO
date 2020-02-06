@@ -86,6 +86,7 @@ public class Application {
 	@RequestMapping(value = "/addUser", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	public void addUser(@RequestBody User user) throws ClassNotFoundException, SQLException{
 		
+
 		System.out.println("Called post request");
 		String username = null;
 		String email = null;
@@ -101,12 +102,15 @@ public class Application {
 	        password = "'" + user.getPassword() + "'";
 	        Class.forName("com.mysql.cj.jdbc.Driver");
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
-
-			stmt = conn.createStatement();
-
 			String sql = "INSERT INTO Users (username, email, password) VALUES ("+ username + "," + email + "," + password + ");";
 			stmt.executeUpdate(sql);
 	    }	    
+
+
+
+// 	    // TODO: call persistence layer to update
+	    
+
 	}
 
 }
