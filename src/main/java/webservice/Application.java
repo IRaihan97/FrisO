@@ -6,10 +6,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -27,6 +30,9 @@ public class Application {
 	static final String USER = "androidApp";
 	static final String PASS = "frisOAPP123";
 	
+	@Autowired
+	private static JdbcTemplate template;
+	
 	@RequestMapping("/")
 	public String home() {
 		return "Service Is Running";
@@ -37,47 +43,58 @@ public class Application {
 	}
 	
 	@RequestMapping(value = "/users")
-	public static ArrayList<User> getUsers() {
-		Connection conn = null;
-		Statement stmt = null;
-		ArrayList<User> arr = new  ArrayList<User>();
+	public static List<Map<String, Object>> getUsers() {
+//		Connection conn = null;
+//		Statement stmt = null;
+		List<Map<String, Object>> arr = new  ArrayList<Map<String, Object>>();
+//		try {
+//			
+//			Class.forName("com.mysql.cj.jdbc.Driver");//Testing comment
+//	
+//			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+//	
+//			stmt = conn.createStatement();
+//	
+//			String sql = "SELECT * FROM Users";
+//			ResultSet rs = stmt.executeQuery(sql);
+//			while (rs.next()) {
+//				int userID= rs.getInt("id");
+//				String userName= rs.getString("username");
+//				String email = rs.getString("email");
+//				String password = rs.getString("password");
+//				arr.add(new User(userID, userName, email, password));
+//			}
+//			rs.close();
+//		} catch (SQLException se) {
+//			// Handle errors for JDBC
+//			se.printStackTrace();
+//		} catch (Exception e) {
+//			// Handle errors for Class.forName
+//			e.printStackTrace();
+//		} finally {
+//			// finally block used to close resources
+//			try {
+//				if (stmt != null)
+//					conn.close();
+//			} catch (SQLException se) {
+//			} // do nothing
+//			try {
+//				if (conn != null)
+//					conn.close();
+//			} catch (SQLException se) {
+//				se.printStackTrace();
+//		} 
+//		}
+//		
+//		return arr;
+		
+		String sql = "SELECT * FROM Users";
+		
 		try {
-			
-			Class.forName("com.mysql.cj.jdbc.Driver");//Testing comment
-	
-			conn = DriverManager.getConnection(DB_URL, USER, PASS);
-	
-			stmt = conn.createStatement();
-	
-			String sql = "SELECT * FROM Users";
-			ResultSet rs = stmt.executeQuery(sql);
-			while (rs.next()) {
-				int userID= rs.getInt("id");
-				String userName= rs.getString("username");
-				String email = rs.getString("email");
-				String password = rs.getString("password");
-				arr.add(new User(userID, userName, email, password));
-			}
-			rs.close();
-		} catch (SQLException se) {
-			// Handle errors for JDBC
-			se.printStackTrace();
-		} catch (Exception e) {
-			// Handle errors for Class.forName
+			arr = template.queryForList(sql);
+		}
+		catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			// finally block used to close resources
-			try {
-				if (stmt != null)
-					conn.close();
-			} catch (SQLException se) {
-			} // do nothing
-			try {
-				if (conn != null)
-					conn.close();
-			} catch (SQLException se) {
-				se.printStackTrace();
-		} 
 		}
 		
 		return arr;
@@ -87,51 +104,51 @@ public class Application {
 	public void addUser(@RequestBody User user){
 		
 
-		System.out.println("Called post request");
-		String username = null;
-		String email = null;
-		String password = null;
-		
-		Connection conn = null;
-		Statement stmt = null;
-
-		
-		if (user != null) {
-	        username = "'" + user.getUsername() + "'";
-	        email = "'" + user.getEmail() + "'";
-	        password = "'" + user.getPassword() + "'";
-	        String sql = "INSERT INTO Users (username, email, password) VALUES ("+ username + "," + email + "," + password + ");";
-	        try {
-				
-				Class.forName("com.mysql.cj.jdbc.Driver");		
-				conn = DriverManager.getConnection(DB_URL, USER, PASS);
-				stmt = conn.createStatement();
-			} catch (SQLException se) {
-				// Handle errors for JDBC
-				se.printStackTrace();
-			} catch (Exception e) {
-				// Handle errors for Class.forName
-				e.printStackTrace();
-			} finally {
-				// finally block used to close resources
-				try {
-					if (stmt != null)
-						conn.close();
-				} catch (SQLException se) {
-				} // do nothing
-				try {
-					if (conn != null)
-						conn.close();
-				} catch (SQLException se) {
-					se.printStackTrace();
-			} 
-			}
-	    }	    
-
-
-
-// 	    // TODO: call persistence layer to update
-	    
+//		System.out.println("Called post request");
+//		String username = null;
+//		String email = null;
+//		String password = null;
+//		
+//		Connection conn = null;
+//		Statement stmt = null;
+//
+//		
+//		if (user != null) {
+//	        username = "'" + user.getUsername() + "'";
+//	        email = "'" + user.getEmail() + "'";
+//	        password = "'" + user.getPassword() + "'";
+//	        String sql = "INSERT INTO Users (username, email, password) VALUES ("+ username + "," + email + "," + password + ");";
+//	        try {
+//				
+//				Class.forName("com.mysql.cj.jdbc.Driver");		
+//				conn = DriverManager.getConnection(DB_URL, USER, PASS);
+//				stmt = conn.createStatement();
+//			} catch (SQLException se) {
+//				// Handle errors for JDBC
+//				se.printStackTrace();
+//			} catch (Exception e) {
+//				// Handle errors for Class.forName
+//				e.printStackTrace();
+//			} finally {
+//				// finally block used to close resources
+//				try {
+//					if (stmt != null)
+//						conn.close();
+//				} catch (SQLException se) {
+//				} // do nothing
+//				try {
+//					if (conn != null)
+//						conn.close();
+//				} catch (SQLException se) {
+//					se.printStackTrace();
+//			} 
+//			}
+//	    }	    
+//
+//
+//
+//// 	    // TODO: call persistence layer to update
+//	    
 
 	}
 
