@@ -84,7 +84,7 @@ public class Application {
 	}
 	
 	@RequestMapping(value = "/addUser", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
-	public void addUser(@RequestBody User user) throws ClassNotFoundException, SQLException{
+	public void addUser(@RequestBody User user){
 		
 
 		System.out.println("Called post request");
@@ -100,11 +100,32 @@ public class Application {
 	        username = "'" + user.getUsername() + "'";
 	        email = "'" + user.getEmail() + "'";
 	        password = "'" + user.getPassword() + "'";
-	       //lass.forName("com.mysql.cj.jdbc.Driver");
-			//conn = DriverManager.getConnection(DB_URL, USER, PASS);
-			String sql = "INSERT INTO Users (username, email, password) VALUES ("+ username + "," + email + "," + password + ");";
-			//stmt.executeUpdate(sql);
-			System.out.println(sql);
+	        String sql = "INSERT INTO Users (username, email, password) VALUES ("+ username + "," + email + "," + password + ");";
+	        try {
+				
+				Class.forName("com.mysql.cj.jdbc.Driver");		
+				conn = DriverManager.getConnection(DB_URL, USER, PASS);
+				stmt = conn.createStatement();
+			} catch (SQLException se) {
+				// Handle errors for JDBC
+				se.printStackTrace();
+			} catch (Exception e) {
+				// Handle errors for Class.forName
+				e.printStackTrace();
+			} finally {
+				// finally block used to close resources
+				try {
+					if (stmt != null)
+						conn.close();
+				} catch (SQLException se) {
+				} // do nothing
+				try {
+					if (conn != null)
+						conn.close();
+				} catch (SQLException se) {
+					se.printStackTrace();
+			} 
+			}
 	    }	    
 
 
