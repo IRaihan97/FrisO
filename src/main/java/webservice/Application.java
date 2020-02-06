@@ -7,12 +7,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -87,20 +84,21 @@ public class Application {
 	}
 	
 	@RequestMapping(value = "/addUser", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
-	public ArrayList<User> addUser(@RequestBody ArrayList<User> user) throws ClassNotFoundException, SQLException{
+	public void addUser(@RequestBody User user) throws ClassNotFoundException, SQLException{
 		
-		
+		System.out.println("Called post request");
 		String username = null;
 		String email = null;
 		String password = null;
 		
 		Connection conn = null;
 		Statement stmt = null;
+
 		
 		if (user != null) {
-	        username = "'" + user.get(0).getUsername() + "'";
-	        email = "'" + user.get(0).getEmail() + "'";
-	        password = "'" + user.get(0).getPassword() + "'";
+	        username = "'" + user.getUsername() + "'";
+	        email = "'" + user.getEmail() + "'";
+	        password = "'" + user.getPassword() + "'";
 	        Class.forName("com.mysql.cj.jdbc.Driver");
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 
@@ -108,12 +106,7 @@ public class Application {
 
 			String sql = "INSERT INTO Users (username, email, password) VALUES ("+ username + "," + email + "," + password + ");";
 			stmt.executeUpdate(sql);
-	    }
-		
-		//Testing comment
-
-	    // TODO: call persistence layer to update
-	    return user;
+	    }	    
 	}
 
 }
