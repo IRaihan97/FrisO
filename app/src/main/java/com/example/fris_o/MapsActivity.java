@@ -54,32 +54,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             locationListener = new LocationListener() {
                 @Override
                 public void onLocationChanged(Location location) {
+
+
+                    //TODO: add player marker to onCreate and onLocationChanged
                     double latitude = location.getLatitude();
                     double longitude = location.getLongitude();
+
+
+                    LatLng latLng = new LatLng(latitude, longitude);
+
+                    mMap.setMaxZoomPreference(20);
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12.0f));
+
+                    /*
                     //get the location name from latitude and longitude
                     Geocoder geocoder = new Geocoder(getApplicationContext());
+
                     try {
-                        List<Address> addresses =
-                                geocoder.getFromLocation(latitude, longitude, 1);
-                        String result = addresses.get(0).getLocality()+":";
-                        result += addresses.get(0).getCountryName();
-                        LatLng latLng = new LatLng(latitude, longitude);
-                        if (marker != null){
-                            marker.remove();
-                            marker = mMap.addMarker(new MarkerOptions().position(latLng).title(result));
-                            mMap.setMaxZoomPreference(20);
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12.0f));
-                        }
-                        else{
-                            marker = mMap.addMarker(new MarkerOptions().position(latLng).title(result));
-                            mMap.setMaxZoomPreference(20);
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 21.0f));
-                        }
+
+
+                        not in use yet, can be used to show address name
+                         List<Address> addresses =
+                        geocoder.getFromLocation(latitude, longitude, 1);
+
+
+
+
 
 
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                    */
+
                 }
 
                 @Override
