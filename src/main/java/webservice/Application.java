@@ -25,7 +25,7 @@ import webservice.Model.User;
 @RestController
 public class Application {
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-	static final String DB_URL = "jdbc:mysql://172.31.82.149:3306/FrisO";
+	static final String DB_URL = "jdbc:mysql://192.168.0.2:3306/FrisO";
 
 	static final String USER = "root";
 	static final String PASS = "aPassword123";
