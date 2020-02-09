@@ -12,7 +12,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.jdbc.core.JdbcTemplate;
+
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,10 +25,10 @@ import webservice.Model.User;
 @RestController
 public class Application {
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-	static final String DB_URL = "jdbc:mysql://192.168.0.2:3306/FrisO";
+	static final String DB_URL = "jdbc:mysql://localhost:3306/FrisO";
 
-	static final String USER = "androidApp";
-	static final String PASS = "frisOAPP123";
+	static final String USER = "test";
+	static final String PASS = "test";
 	
 	@RequestMapping("/")
 	public String home() {
@@ -97,7 +97,7 @@ public class Application {
 	}
 	
 	@RequestMapping(value = "/addUser", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
-	public void addUser(@RequestBody User user){
+	public String addUser(@RequestBody User user){
 		
 
 		System.out.println("Called post request");
@@ -119,7 +119,7 @@ public class Application {
 				Class.forName("com.mysql.cj.jdbc.Driver");		
 				conn = DriverManager.getConnection(DB_URL, USER, PASS);
 				stmt = conn.createStatement();
-				stmt.executeQuery(sql);
+				stmt.executeUpdate(sql);
 				conn.close();
 			} catch (SQLException se) {
 				// Handle errors for JDBC
@@ -141,7 +141,10 @@ public class Application {
 					se.printStackTrace();
 			} 
 			}
-	    }	    
+	        
+	       
+	    }
+		return "User" + user.getUsername() + " Added To Database";
 
 
 
