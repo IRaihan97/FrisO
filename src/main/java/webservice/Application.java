@@ -27,8 +27,8 @@ public class Application {
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
 	static final String DB_URL = "jdbc:mysql://localhost:3306/FrisO";
 
-	static final String USER = "test";
-	static final String PASS = "test";
+	static final String USER = "root";
+	static final String PASS = "aPassword123";
 	
 	@RequestMapping("/")
 	public String home() {
@@ -145,11 +145,6 @@ public class Application {
 	       
 	    }
 		return "User" + user.getUsername() + " Added To Database";
-
-
-
-//// 	    // TODO: call persistence layer to update
-//	    
 
 	}
 
