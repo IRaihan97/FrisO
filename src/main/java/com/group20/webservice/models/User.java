@@ -18,7 +18,7 @@ import java.util.Date;
 public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long userID;
 
     @NotBlank
     private String username;
@@ -29,12 +29,12 @@ public class User implements Serializable {
     @NotBlank
     private String password;
 
-	public Long getId() {
-		return id;
+	public Long getUserID() {
+		return userID;
 	}
 
 	public void setId(Long id) {
-		this.id = id;
+		this.userID = id;
 	}
 
 	public String getUsername() {
