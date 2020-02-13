@@ -23,24 +23,24 @@ public class UserController {
 	}
 	
 	@GetMapping("/users")
-	public List<User> getAllNotes() {
+	public List<User> getAllUsers() {
 	    return userRepo.findAll();
 	}
 	
 	@PostMapping("/users")
-	public User createNote(@Valid @RequestBody User user) {
+	public User createUser(@Valid @RequestBody User user) {
 	    return userRepo.save(user);
 	}
 	
 	@GetMapping("/users/{id}")
-	public User getNoteById(@PathVariable(value = "id") Long userId) {
+	public User getUserById(@PathVariable(value = "id") Long userId) {
 	    return userRepo.findById(userId)
 	            .orElseThrow(() -> new ResourceNotFound("User", "id", userId));
 	}
 	
 	//Update Username
 	@PutMapping("/users/upName/{id}")
-	public User updateNote(@PathVariable(value = "id") Long userId,
+	public User updateUser(@PathVariable(value = "id") Long userId,
 	                                        @Valid @RequestBody User userDetails) {
 
 	    User user = userRepo.findById(userId)
@@ -68,4 +68,13 @@ public class UserController {
 	    return updatedNote;
 	}
 	
+	@DeleteMapping("/users/{id}")
+	public ResponseEntity<?> deleteNote(@PathVariable(value = "id") Long userID) {
+	    User user = userRepo.findById(userID)
+	            .orElseThrow(() -> new ResourceNotFound("User", "id", userID));
+
+	    userRepo.delete(user);
+
+	    return ResponseEntity.ok().build();
+	}
 }
