@@ -190,4 +190,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onStop();
         locationManager.removeUpdates(locationListener);
     }
+
 }
