@@ -28,6 +28,12 @@ public class User implements Serializable {
 
     @NotBlank
     private String password;
+    
+    @NotBlank
+    private String locationx;
+    
+    @NotBlank
+    private String locationy;
 
 	public Long getUserID() {
 		return userID;
@@ -59,6 +65,22 @@ public class User implements Serializable {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	
+	public String getLocationx() {
+		return locationx;
+	}
+
+	public void setLocationx(String locationx) {
+		this.locationx = locationx;
+	}
+
+	public String getLocationy() {
+		return locationy;
+	}
+
+	public void setLocationy(String locationy) {
+		this.locationy = locationy;
 	}
 
     
