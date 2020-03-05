@@ -135,12 +135,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         if (marker != null) {
                             marker.remove();
                             marker = mMap.addMarker(new MarkerOptions().position(latLng).title(result));
-                            mMap.setMaxZoomPreference(1);
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 1.0f));
+                            mMap.setMinZoomPreference(18f);
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17f));
                         } else {
                             marker = mMap.addMarker(new MarkerOptions().position(latLng).title(result));
-                            mMap.setMaxZoomPreference(1);
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 1.0f));
+                            mMap.setMinZoomPreference(18f);
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17f));
                         }
 
 
