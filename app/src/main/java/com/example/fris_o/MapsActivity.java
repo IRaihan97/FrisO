@@ -55,6 +55,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } else {
 
             locationListener = new LocationListener() {
+
                 @Override
                 public void onLocationChanged(Location location) {
 
@@ -66,8 +67,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     LatLng latLng = new LatLng(latitude, longitude);
 
-                    mMap.setMaxZoomPreference(20);
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12.0f));
+                    mMap.setMinZoomPreference(18f);
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17f));
 
                     /*
                     //get the location name from latitude and longitude
@@ -134,12 +135,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         if (marker != null) {
                             marker.remove();
                             marker = mMap.addMarker(new MarkerOptions().position(latLng).title(result));
-                            mMap.setMaxZoomPreference(20);
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12.0f));
+                            mMap.setMaxZoomPreference(1);
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 1.0f));
                         } else {
                             marker = mMap.addMarker(new MarkerOptions().position(latLng).title(result));
-                            mMap.setMaxZoomPreference(20);
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12.0f));
+                            mMap.setMaxZoomPreference(1);
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 1.0f));
                         }
 
 
@@ -183,6 +184,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         UiSettings muiSettings = mMap.getUiSettings();
         muiSettings.setZoomControlsEnabled(true);
         muiSettings.setZoomGesturesEnabled(true);
+        muiSettings.setScrollGesturesEnabled(false);
         // Add a marker in Sydney and move the camera
 //        LatLng sydney = new LatLng(-34, 151);
 //        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
