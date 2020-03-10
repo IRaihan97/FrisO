@@ -6,11 +6,13 @@ import javax.persistence.Id;
 import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.sun.istack.NotNull;
+
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "game")
+@Table(name = "games")
 @EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties(value = {"createdAt", "updatedAt"}, 
         allowGetters = true)
@@ -22,28 +24,28 @@ public class Games {
     @NotBlank
     private String name;
     
-    @NotBlank
+    @NotNull
     private double destlat;
     
-    @NotBlank
+    @NotNull
     private double destlon;
     
-    @NotBlank
-    private String locationlat;
+    @NotNull
+    private double locationlat;
     
-    @NotBlank
-    private String locationlon;
+    @NotNull
+    private double locationlon;
     
-    @NotBlank
+    @NotNull
     private int scoret1;
     
-    @NotBlank
+    @NotNull
     private int scoret2;    
     
-    @NotBlank
+    @NotNull
     private int timer;
     
-    @NotBlank
+    @NotNull
     private int round;
     
     @NotBlank
@@ -98,19 +100,19 @@ public class Games {
 		this.scoret2 = scoret2;
 	}
 
-	public String getLocationlat() {
+	public double getLocationlat() {
 		return locationlat;
 	}
 
-	public void setLocationlat(String locationlat) {
+	public void setLocationlat(double locationlat) {
 		this.locationlat = locationlat;
 	}
 
-	public String getLocationlon() {
+	public double getLocationlon() {
 		return locationlon;
 	}
 
-	public void setLocationlon(String locationlon) {
+	public void setLocationlon(double locationlon) {
 		this.locationlon = locationlon;
 	}
 

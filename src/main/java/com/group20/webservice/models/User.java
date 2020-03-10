@@ -35,7 +35,6 @@ public class User implements Serializable {
     @NotBlank 
     private String status;
     
-    @NotBlank
     private int gameID;
 
 	public Long getUserID() {

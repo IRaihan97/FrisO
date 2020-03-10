@@ -19,9 +19,10 @@ import com.group20.webservice.exception.ResourceNotFound;
 import com.group20.webservice.models.Games;
 import com.group20.webservice.repositories.GamesRepo;
 
+import javax.validation.constraints.NotNull;
+
 @RestController
 @RequestMapping("/api")
-
 public class GamesController {
 	@Autowired
 	GamesRepo gamesRepo;
