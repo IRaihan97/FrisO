@@ -120,7 +120,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void drawPlayer(double latitude, double longitude) {
         CircleOptions circleOptions = new CircleOptions()
                 .center(new LatLng(latitude, longitude))
-                .radius(1);
+                .radius(1)
+                .strokeWidth(10)
+                .fillColor(Color.argb(255, 153, 76, 0))
+                .strokeColor(Color.argb(255, 255, 128, 0));
                 Circle circle = mMap.addCircle(circleOptions);
     }
 
