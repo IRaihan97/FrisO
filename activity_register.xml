@@ -133,24 +133,15 @@
         app:layout_constraintTop_toBottomOf="@+id/Password"
         app:layout_constraintVertical_bias="0.06999999" />
 
-    <EditText
-        android:id="@+id/Register"
-        android:layout_width="0dp"
+    <Button
+        android:id="@+id/Register_button"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:ems="10"
-        android:hint="Register"
-        android:inputType="textPersonName"
-        android:text="REGISTER"
-        android:textColor="#3F51B5"
+        android:layout_marginBottom="120dp"
+        android:text="Register"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Confirm_Password"
-        app:layout_constraintVertical_bias="0.060000002" />
+        app:layout_constraintHorizontal_bias="0.535"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
