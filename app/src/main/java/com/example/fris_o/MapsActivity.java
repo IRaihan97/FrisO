@@ -3,6 +3,7 @@ package com.example.fris_o;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -20,6 +21,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -63,7 +66,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     //TODO: add player marker to onCreate and onLocationChanged
                     double latitude = location.getLatitude();
                     double longitude = location.getLongitude();
-
+                    drawPlayer(latitude, longitude);
 
                     LatLng latLng = new LatLng(latitude, longitude);
 
@@ -93,6 +96,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 }
 
+
                 @Override
                 public void onStatusChanged(String provider, int status, Bundle extras) {
 
@@ -111,6 +115,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10000, 0, locationListener);
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 0, locationListener);
         }
+    }
+
+    private void drawPlayer(double latitude, double longitude) {
+        CircleOptions circleOptions = new CircleOptions()
+                .center(new LatLng(latitude, longitude))
+                .radius(1);
+                Circle circle = mMap.addCircle(circleOptions);
     }
 
     @Override
