@@ -66,29 +66,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     //TODO: add player marker to onCreate and onLocationChanged
                     double latitude = location.getLatitude();
                     double longitude = location.getLongitude();
+
+                    mMap.clear();
                     drawPlayer(latitude, longitude);
 
                     LatLng latLng = new LatLng(latitude, longitude);
 
                     mMap.setMinZoomPreference(18f);
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17f));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 20f));
 
                     /*
                     //get the location name from latitude and longitude
                     Geocoder geocoder = new Geocoder(getApplicationContext());
-
                     try {
-
-
                         not in use yet, can be used to show address name
                          List<Address> addresses =
                         geocoder.getFromLocation(latitude, longitude, 1);
-
-
-
-
-
-
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -112,8 +105,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 }
             };
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10000, 0, locationListener);
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 0, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 0, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0, locationListener);
         }
     }
 
@@ -124,7 +117,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .strokeWidth(10)
                 .fillColor(Color.argb(255, 153, 76, 0))
                 .strokeColor(Color.argb(255, 255, 128, 0));
-                Circle circle = mMap.addCircle(circleOptions);
+        Circle circle = mMap.addCircle(circleOptions);
     }
 
     @Override
