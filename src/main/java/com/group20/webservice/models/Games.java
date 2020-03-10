@@ -21,36 +21,25 @@ public class Games {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long gameID;
 
-    @NotBlank
     private String name;
     
-    @NotNull
     private double destlat;
     
-    @NotNull
     private double destlon;
-    
-    @NotNull
+
     private double locationlat;
-    
-    @NotNull
+
     private double locationlon;
-    
-    @NotNull
+  
     private int scoret1;
-    
-    @NotNull
+     
     private int scoret2;    
     
-    @NotNull
     private int timer;
-    
-    @NotNull
+
     private int round;
-    
-    @NotBlank
+
     private String password;
-    
 
     public Long getGameID() {
 		return gameID;

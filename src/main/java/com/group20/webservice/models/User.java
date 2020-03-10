@@ -17,22 +17,16 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userID;
 
-    @NotBlank
     private String username;
 
-    @NotBlank
     private String email;
-
-    @NotBlank
+    
     private String password;
-    
-    @NotBlank
+
     private String locationx;
-    
-    @NotBlank
+ 
     private String locationy;
-    
-    @NotBlank 
+
     private String status;
     
     private int gameID;
