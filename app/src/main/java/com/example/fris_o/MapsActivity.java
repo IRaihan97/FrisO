@@ -3,6 +3,7 @@ package com.example.fris_o;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -20,6 +21,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -64,34 +67,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     double latitude = location.getLatitude();
                     double longitude = location.getLongitude();
 
+                    mMap.clear();
+                    drawPlayer(latitude, longitude);
 
                     LatLng latLng = new LatLng(latitude, longitude);
 
                     mMap.setMinZoomPreference(18f);
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17f));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 20f));
 
                     /*
                     //get the location name from latitude and longitude
                     Geocoder geocoder = new Geocoder(getApplicationContext());
-
                     try {
-
-
                         not in use yet, can be used to show address name
                          List<Address> addresses =
                         geocoder.getFromLocation(latitude, longitude, 1);
-
-
-
-
-
-
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                     */
 
                 }
+
 
                 @Override
                 public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -108,9 +105,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 }
             };
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10000, 0, locationListener);
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 0, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 0, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0, locationListener);
         }
+    }
+
+    private void drawPlayer(double latitude, double longitude) {
+        CircleOptions circleOptions = new CircleOptions()
+                .center(new LatLng(latitude, longitude))
+                .radius(1)
+                .strokeWidth(10)
+                .fillColor(Color.argb(255, 153, 76, 0))
+                .strokeColor(Color.argb(255, 255, 128, 0));
+        Circle circle = mMap.addCircle(circleOptions);
     }
 
     @Override
