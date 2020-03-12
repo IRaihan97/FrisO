@@ -3,6 +3,7 @@ package com.example.fris_o;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
@@ -10,6 +11,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -24,11 +26,13 @@ import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -37,6 +41,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int REQUEST_LOCATION_PERMISSION = 1;
     Marker marker;
     LocationListener locationListener;
+    Random rand = new Random();
 
 
     @Override
@@ -68,12 +73,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     double longitude = location.getLongitude();
 
                     mMap.clear();
+
                     drawPlayer(latitude, longitude);
+                    //drawGameCircle(latitude, longitude, 10);
 
                     LatLng latLng = new LatLng(latitude, longitude);
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 
-                    mMap.setMinZoomPreference(18f);
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 20f));
 
                     /*
                     //get the location name from latitude and longitude
@@ -110,13 +116,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    private void drawGameCircle(double latitude, double longitude, int difficulty){
+        CircleOptions circleOptions = new CircleOptions()
+                .center(new LatLng(latitude, longitude))
+                .radius(difficulty)
+                .strokeWidth(10)
+                .fillColor(Color.argb(10, 225, 0, 0))
+                .strokeColor(Color.argb(100, 225, 0, 0));
+        Circle circle = mMap.addCircle(circleOptions);
+    }
+
     private void drawPlayer(double latitude, double longitude) {
         CircleOptions circleOptions = new CircleOptions()
                 .center(new LatLng(latitude, longitude))
                 .radius(1)
                 .strokeWidth(10)
-                .fillColor(Color.argb(255, 153, 76, 0))
-                .strokeColor(Color.argb(255, 255, 128, 0));
+                .fillColor(Color.argb(255, 205, 90, 0))
+                .strokeColor(Color.argb(255, 225, 128, 0));
+        Circle circle = mMap.addCircle(circleOptions);
+    }
+
+    private void drawOtherPlayers(double latitude, double longitude) {
+        int rred = rand.nextInt(150);
+        int rgreen = rand.nextInt(150);
+        int rblue = rand.nextInt(150);
+
+        CircleOptions circleOptions = new CircleOptions()
+                .center(new LatLng(latitude, longitude))
+                .radius(1)
+                .strokeWidth(10)
+                .fillColor(Color.argb(255, rred, rgreen, rblue))
+                .strokeColor(Color.argb(255, (rred+50), (rgreen+50), (rblue+50)));
         Circle circle = mMap.addCircle(circleOptions);
     }
 
@@ -188,14 +218,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        try {
+            boolean success = googleMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(this, R.raw.raw));
+
+            if (!success) {
+                Log.e("MapsActivity", " Style parsing failed");
+            }
+        } catch (Resources.NotFoundException e) {
+                Log.e("MapsActivity", " Can't find style. Error:", e);
+            }
+
+
+        mMap.setMinZoomPreference(20f);
         UiSettings muiSettings = mMap.getUiSettings();
         muiSettings.setZoomControlsEnabled(true);
         muiSettings.setZoomGesturesEnabled(true);
         muiSettings.setScrollGesturesEnabled(false);
-        // Add a marker in Sydney and move the camera
-//        LatLng sydney = new LatLng(-34, 151);
-//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
     @Override
