@@ -32,6 +32,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -40,6 +41,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int REQUEST_LOCATION_PERMISSION = 1;
     Marker marker;
     LocationListener locationListener;
+    Random rand = new Random();
 
 
     @Override
@@ -74,9 +76,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     drawPlayer(latitude, longitude);
 
                     LatLng latLng = new LatLng(latitude, longitude);
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 
-                    mMap.setMinZoomPreference(18f);
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 20f));
 
                     /*
                     //get the location name from latitude and longitude
@@ -113,13 +114,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+
     private void drawPlayer(double latitude, double longitude) {
         CircleOptions circleOptions = new CircleOptions()
                 .center(new LatLng(latitude, longitude))
                 .radius(1)
                 .strokeWidth(10)
-                .fillColor(Color.argb(255, 153, 76, 0))
-                .strokeColor(Color.argb(255, 255, 128, 0));
+                .fillColor(Color.argb(255, 205, 90, 0))
+                .strokeColor(Color.argb(255, 225, 128, 0));
+        Circle circle = mMap.addCircle(circleOptions);
+    }
+
+    private void drawOtherPlayers(double latitude, double longitude) {
+        int rred = rand.nextInt(150);
+        int rgreen = rand.nextInt(150);
+        int rblue = rand.nextInt(150);
+
+        CircleOptions circleOptions = new CircleOptions()
+                .center(new LatLng(latitude, longitude))
+                .radius(1)
+                .strokeWidth(10)
+                .fillColor(Color.argb(255, rred, rgreen, rblue))
+                .strokeColor(Color.argb(255, (rred+50), (rgreen+50), (rblue+50)));
         Circle circle = mMap.addCircle(circleOptions);
     }
 
@@ -204,7 +220,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
 
 
-
+        mMap.setMinZoomPreference(20f);
         UiSettings muiSettings = mMap.getUiSettings();
         muiSettings.setZoomControlsEnabled(true);
         muiSettings.setZoomGesturesEnabled(true);
