@@ -73,7 +73,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     double longitude = location.getLongitude();
 
                     mMap.clear();
+
                     drawPlayer(latitude, longitude);
+                    //drawGameCircle(latitude, longitude, 10);
 
                     LatLng latLng = new LatLng(latitude, longitude);
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
@@ -114,6 +116,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    private void drawGameCircle(double latitude, double longitude, int difficulty){
+        CircleOptions circleOptions = new CircleOptions()
+                .center(new LatLng(latitude, longitude))
+                .radius(difficulty)
+                .strokeWidth(10)
+                .fillColor(Color.argb(10, 225, 0, 0))
+                .strokeColor(Color.argb(100, 225, 0, 0));
+        Circle circle = mMap.addCircle(circleOptions);
+    }
 
     private void drawPlayer(double latitude, double longitude) {
         CircleOptions circleOptions = new CircleOptions()
