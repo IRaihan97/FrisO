@@ -31,6 +31,26 @@ public class User implements Serializable {
     
     private int gameID;
 
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public int getGameID() {
+		return gameID;
+	}
+
+	public void setGameID(int gameID) {
+		this.gameID = gameID;
+	}
+
+	public void setUserID(Long userID) {
+		this.userID = userID;
+	}
+
 	public Long getUserID() {
 		return userID;
 	}
