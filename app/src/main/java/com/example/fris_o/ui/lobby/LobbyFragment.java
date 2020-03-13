@@ -39,7 +39,6 @@ public class LobbyFragment extends Fragment {
             LobbyVar lobbyVar = new LobbyVar(textView, buttonView, imageView);
             lobbyList.add(lobbyVar);
         }
-        //textView.setText(lobbyTotalAmount);
         lobbyList.get(0).SetLobbyName("xDDDDD");
         lobbyList.get(0).GetTextView().setText(lobbyList.get(0).GetLobbyName());
         return root;
