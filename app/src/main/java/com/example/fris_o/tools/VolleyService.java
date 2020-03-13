@@ -16,7 +16,7 @@ public class VolleyService {
     IResult mResultCallback = null;
     Context mContext;
 
-    VolleyService(IResult resultCallback, Context context){
+    public VolleyService(IResult resultCallback, Context context){
         mResultCallback = resultCallback;
         mContext = context;
     }
@@ -27,7 +27,7 @@ public class VolleyService {
         try {
             RequestQueue queue = Volley.newRequestQueue(mContext);
 
-            JsonObjectRequest jsonObj = new JsonObjectRequest(url,sendObj, new Response.Listener<JSONObject>() {
+            JsonObjectRequest jsonObj = new JsonObjectRequest(Request.Method.POST, url,sendObj, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
                     if(mResultCallback != null)
@@ -48,7 +48,7 @@ public class VolleyService {
         }
     }
 
-    public void getDataVolley(final String requestType, String url, String id){
+    public void getDataVolley(final String requestType, String url){
 
         try {
             RequestQueue queue = Volley.newRequestQueue(mContext);
@@ -73,6 +73,34 @@ public class VolleyService {
 
         }
     }
+
+    public void putDataVolley(final String requestType, String url, JSONObject sendObj){
+
+        try {
+            RequestQueue queue = Volley.newRequestQueue(mContext);
+
+            JsonObjectRequest jsonObj = new JsonObjectRequest(Request.Method.PUT, url,sendObj, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    if(mResultCallback != null)
+                        mResultCallback.notifySuccess(requestType,response);
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    if(mResultCallback != null)
+                        mResultCallback.notifyError(requestType,error);
+                }
+            });
+
+            queue.add(jsonObj);
+
+        }catch(Exception e){
+
+        }
+    }
+
+
 
 
 }
