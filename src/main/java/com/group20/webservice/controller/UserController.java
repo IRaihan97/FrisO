@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.group20.webservice.exception.ResourceNotFound;
-import com.group20.webservice.models.User;
+import com.group20.webservice.models.Users;
 import com.group20.webservice.repositories.GamesRepo;
 import com.group20.webservice.repositories.UserRepo;
 
@@ -25,14 +25,14 @@ public class UserController {
 	}
 	
 	@GetMapping("/users")
-	public List<User> getAllUsers() {
+	public List<Users> getAllUsers() {
 	    return userRepo.findAll();
 	}
 	
 
 	@PostMapping("/users")
-	public String createUser(@Valid @RequestBody User user) {
-	    List<User> users = userRepo.findAll();
+	public String createUser(@Valid @RequestBody Users user) {
+	    List<Users> users = userRepo.findAll();
 	    String username = user.getUsername();
 	    String email = user.getEmail();
 	    String response = "";
@@ -51,10 +51,10 @@ public class UserController {
 		
 	}
 	
-	private boolean checkUserExistence(String username, String email, List<User> users) {
+	private boolean checkUserExistence(String username, String email, List<Users> users) {
 		boolean exists = false;
 		for(int i = 0; i < users.size(); i++) {
-	    	User check = users.get(i);
+	    	Users check = users.get(i);
 	    	String checkUsr = check.getUsername();
 	    	String checkMail = check.getEmail();
 	    	if(checkUsr.contentEquals(username) || checkMail.contentEquals(email)) {
@@ -70,49 +70,56 @@ public class UserController {
 	}
 	
 	@PostMapping("/users/log")
-	public User logUser(@Valid @RequestBody User user) {
-	    return userRepo.findByUsernameMailAndPassword(user.getUsername(), user.getEmail(), user.getPassword());
+	public String logUser(@Valid @RequestBody Users user) {
+		Users userIn = userRepo.findByUsernameMailAndPassword(user.getUsername(), user.getEmail(), user.getPassword());
+	    if(userIn == null) {
+	    	return "Invalid";
+	    }
+	    else {
+	    	return "Valid";
+	    }
+	    
 	}
 	
 	@GetMapping("/users/{id}")
-	public User getUserById(@PathVariable(value = "id") Long userId) {
+	public Users getUserById(@PathVariable(value = "id") Long userId) {
 	    return userRepo.findById(userId)
 	            .orElseThrow(() -> new ResourceNotFound("User", "id", userId));
 	}
 	
 	//Update Username
 	@PutMapping("/users/upName/{id}")
-	public User updateUser(@PathVariable(value = "id") Long userId,
-	                                        @Valid @RequestBody User userDetails) {
+	public Users updateUser(@PathVariable(value = "id") Long userId,
+	                                        @Valid @RequestBody Users userDetails) {
 
-	    User user = userRepo.findById(userId)
+	    Users user = userRepo.findById(userId)
 	            .orElseThrow(() -> new ResourceNotFound("User", "id", userId));
 
 	    user.setUsername(userDetails.getUsername());
 	   
 
-	    User updatedNote = userRepo.save(user);
+	    Users updatedNote = userRepo.save(user);
 	    return updatedNote;
 	}
 	
 	//
 	@PutMapping("/users/upMail/{id}")
-	public User updateEmail(@PathVariable(value = "id") Long userId,
-	                                        @Valid @RequestBody User userDetails) {
+	public Users updateEmail(@PathVariable(value = "id") Long userId,
+	                                        @Valid @RequestBody Users userDetails) {
 
-	    User user = userRepo.findById(userId)
+	    Users user = userRepo.findById(userId)
 	            .orElseThrow(() -> new ResourceNotFound("User", "id", userId));
 
 	    user.setEmail(userDetails.getEmail());
 	   
 
-	    User updatedNote = userRepo.save(user);
+	    Users updatedNote = userRepo.save(user);
 	    return updatedNote;
 	}
 	
 	@DeleteMapping("/users/{id}")
 	public ResponseEntity<?> deleteNote(@PathVariable(value = "id") Long userID) {
-	    User user = userRepo.findById(userID)
+	    Users user = userRepo.findById(userID)
 	            .orElseThrow(() -> new ResourceNotFound("User", "id", userID));
 
 	    userRepo.delete(user);
