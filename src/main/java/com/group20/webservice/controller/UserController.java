@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.group20.webservice.exception.ResourceNotFound;
+import com.group20.webservice.models.Response;
 import com.group20.webservice.models.Users;
 import com.group20.webservice.repositories.GamesRepo;
 import com.group20.webservice.repositories.UserRepo;
@@ -31,7 +32,7 @@ public class UserController {
 	
 
 	@PostMapping("/users")
-	public String createUser(@Valid @RequestBody Users user) {
+	public Response createUser(@Valid @RequestBody Users user) {
 	    List<Users> users = userRepo.findAll();
 	    String username = user.getUsername();
 	    String email = user.getEmail();
@@ -47,7 +48,7 @@ public class UserController {
 	    	response = "User Already Exists";
 	    }
 	    
-	    return response;
+	    return new Response(response);
 		
 	}
 	
