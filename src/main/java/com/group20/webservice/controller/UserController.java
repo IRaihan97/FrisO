@@ -69,7 +69,10 @@ public class UserController {
 		return exists;
 	}
 	
-	
+	@PostMapping("/users/log")
+	public User logUser(@Valid @RequestBody User user) {
+	    return userRepo.findByUsernameMailAndPassword(user.getUsername(), user.getEmail(), user.getPassword());
+	}
 	
 	@GetMapping("/users/{id}")
 	public User getUserById(@PathVariable(value = "id") Long userId) {
