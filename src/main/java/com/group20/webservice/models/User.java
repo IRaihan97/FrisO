@@ -29,7 +29,6 @@ public class User implements Serializable {
 
     private String status;
     
-    @Column(name = "game_id")
     private int gameID;
 
 	public String getStatus() {
