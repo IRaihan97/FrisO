@@ -71,15 +71,16 @@ public class UserController {
 	}
 	
 	@PostMapping("/users/log")
-	public String logUser(@Valid @RequestBody Users user) {
+	public Response logUser(@Valid @RequestBody Users user) {
 		Users userIn = userRepo.findByUsernameMailAndPassword(user.getUsername(), user.getEmail(), user.getPassword());
-	    if(userIn == null) {
-	    	return "Invalid";
+	    String response = "";
+		if(userIn == null) {
+	    	response = "Invalid";
 	    }
 	    else {
-	    	return "Valid";
+	    	response = "Valid";
 	    }
-	    
+	   return new Response(response); 
 	}
 	
 	@GetMapping("/users/{id}")
