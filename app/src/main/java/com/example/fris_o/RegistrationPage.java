@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,6 +22,7 @@ import org.json.JSONObject;
 public class RegistrationPage extends AppCompatActivity {
     VolleyService mVolleyService;
     IResult result;
+    Context ctx;
 
     Button register;
     EditText username;
@@ -38,8 +40,7 @@ public class RegistrationPage extends AppCompatActivity {
         email = (EditText) findViewById(R.id.Email);
         password = (EditText) findViewById(R.id.Password);
         confirm = (EditText) findViewById(R.id.Confirm);
-
-        mVolleyService = new VolleyService(result, this);
+        ctx = this;
 
         register.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,22 +51,29 @@ public class RegistrationPage extends AppCompatActivity {
                 String conf = confirm.getText().toString();
 
                 if(!conf.equals(pass)){
-                    Toast.makeText(getApplicationContext(),"Password Does not Match with Confirm",Toast.LENGTH_SHORT).show();
+                    showToast("MATCH");
                 }
                 else {
                     SharedPreferences preferences = getSharedPreferences("message_prefs", 0);
-                    registerUser(usr, mail, pass);
+                    registerResponse();
+                    mVolleyService = new VolleyService(result, ctx);
                     JSONObject obj = new JSONObject();
                     try {
-                        obj.put("username", preferences.getString("Username", null));
-                        obj.put("email", preferences.getString("Email", null));
-                        obj.put("password", preferences.getString("Password", null));
+                        obj.put("username", usr);
+                        obj.put("email", mail);
+                        obj.put("password", pass);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
 
 
+
+
                     mVolleyService.postDataVolley("POST", "http://172.31.82.149:8080/api/users", obj);
+
+//                    SharedPreferences preferences1 = getSharedPreferences("message_prefs", 0);
+//                    String pref = preferences1.getString("Username", null);
+//                    Log.d("PRED", "onClick: " + pref);
 
                 }
 
@@ -81,22 +89,43 @@ public class RegistrationPage extends AppCompatActivity {
         startActivity(listen);
     }
 
-    private void registerUser(final String username, final String email, final String password){
-        result = new IResult() {
-            @Override
-            public void notifySuccess(String requestType, JSONObject response) {
-                try{
 
-                        SharedPreferences preferences = getSharedPreferences("message_prefs", 0);
-                        SharedPreferences.Editor editor = preferences.edit();
-                        editor.putString("Username", username);
-                        editor.putString("Email", email);
-                        editor.putString("Password", password);
-                        editor.apply();
-                }
-                catch (Exception e){
+    //Callback IResult inteface is used to perform actions after getting a response from the VolleyService request
+    private void registerResponse(){
+        result = new IResult() {
+            //The following methods will be executed after recieving the response
+
+            @Override
+            public void ObjSuccess(String requestType, JSONObject response) {
+                String res = "";
+                try {
+                    res = response.getString("msg");
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                Log.d("Response", "ObjSuccess: " + res);
+                if(res.equals("Registered")){
+                    showToast("You have been Registered");
+                    Log.d("RESPONSE", "strSuccess: " + response);
+                }
+                else{
+                    showToast("User Already Exists");
+                    Log.d("RESPONSE", "strSuccess: " + response);
+                }
+//                try{
+//
+//                        SharedPreferences preferences = getSharedPreferences("message_prefs", 0);
+//                        SharedPreferences.Editor editor = preferences.edit();
+//                        editor.putString("Username", username);
+//                        editor.putString("Email", email);
+//                        editor.putString("Password", password);
+//                        editor.apply();
+//
+//
+//                }
+//                catch (Exception e){
+//                    e.printStackTrace();
+//                }
 
             }
 
@@ -107,6 +136,8 @@ public class RegistrationPage extends AppCompatActivity {
         };
     }
 
-
+    private void showToast(String message){
+        Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
+    }
 }
 

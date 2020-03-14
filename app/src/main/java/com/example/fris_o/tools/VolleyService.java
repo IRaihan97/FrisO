@@ -31,7 +31,7 @@ public class VolleyService {
                 @Override
                 public void onResponse(JSONObject response) {
                     if(mResultCallback != null)
-                        mResultCallback.notifySuccess(requestType,response);
+                        mResultCallback.ObjSuccess(requestType,response);
                 }
             }, new Response.ErrorListener() {
                 @Override
@@ -57,7 +57,7 @@ public class VolleyService {
                 @Override
                 public void onResponse(JSONObject response) {
                     if(mResultCallback != null)
-                        mResultCallback.notifySuccess(requestType, response);
+                        mResultCallback.ObjSuccess(requestType, response);
                 }
             }, new Response.ErrorListener() {
                 @Override
@@ -83,7 +83,7 @@ public class VolleyService {
                 @Override
                 public void onResponse(JSONObject response) {
                     if(mResultCallback != null)
-                        mResultCallback.notifySuccess(requestType,response);
+                        mResultCallback.ObjSuccess(requestType,response);
                 }
             }, new Response.ErrorListener() {
                 @Override
