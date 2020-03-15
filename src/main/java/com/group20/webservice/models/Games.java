@@ -26,10 +26,14 @@ public class Games {
     private double destlat;
     
     private double destlon;
+    
+    private double destlatlon;
 
     private double locationlat;
 
     private double locationlon;
+    
+    private double locationlatlon;
   
     private int scoret1;
      
@@ -127,6 +131,22 @@ public class Games {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public double getLocationlatlon() {
+		return locationlatlon;
+	}
+
+	public void setLocationlatlon(double locationlatlon) {
+		this.locationlatlon = locationlatlon;
+	}
+
+	public double getDestlatlon() {
+		return destlatlon;
+	}
+
+	public void setDestlatlon(double destlatlon) {
+		this.destlatlon = destlatlon;
 	}
 
 	

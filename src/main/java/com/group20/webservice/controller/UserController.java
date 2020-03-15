@@ -48,6 +48,8 @@ public class UserController {
 	    	response = "User Already Exists";
 	    }
 	    
+	    System.out.println(response);
+	    
 	    return new Response(response);
 		
 	}

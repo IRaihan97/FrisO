@@ -23,9 +23,11 @@ public class Users implements Serializable {
     
     private String password;
 
-    private String locationx;
+    private double locationlat;
  
-    private String locationy;
+    private double locationlon;
+    
+    private double locationlatlon;
 
     private String status;
     
@@ -83,20 +85,28 @@ public class Users implements Serializable {
 		this.password = password;
 	}
 	
-	public String getLocationx() {
-		return locationx;
+	public double getLocationx() {
+		return locationlat;
 	}
 
-	public void setLocationx(String locationx) {
-		this.locationx = locationx;
+	public void setLocationx(double locationx) {
+		this.locationlat = locationx;
 	}
 
-	public String getLocationy() {
-		return locationy;
+	public double getLocationy() {
+		return locationlon;
 	}
 
-	public void setLocationy(String locationy) {
-		this.locationy = locationy;
+	public void setLocationy(double locationy) {
+		this.locationlon = locationy;
+	}
+
+	public double getLocationlatlon() {
+		return locationlatlon;
+	}
+
+	public void setLocationlatlon(double locationlatlon) {
+		this.locationlatlon = locationlatlon;
 	}
 
     
