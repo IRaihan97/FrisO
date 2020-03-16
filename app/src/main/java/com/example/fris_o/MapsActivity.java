@@ -1,6 +1,7 @@
 package com.example.fris_o;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -18,6 +19,9 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import com.android.volley.VolleyError;
+import com.example.fris_o.tools.IResult;
+import com.example.fris_o.tools.VolleyService;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -29,6 +33,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.List;
@@ -43,6 +49,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     LocationListener locationListener;
     Random rand = new Random();
 
+    VolleyService mVolleyService;
+    IResult result;
+    Context ctx;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +62,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         assert mapFragment != null;
+        ctx = this;
         mapFragment.getMapAsync(this);
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this,
@@ -247,5 +258,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void GoToMenu(View view){
         Intent i = new Intent(this, Menu_and_settings.class);
         startActivity(i);
+    }
+
+    private void enterSession(){
+
+    }
+
+    private void sendUserLocation(double latitude, double longitude){
+        
+    }
+
+    private void deleteGame(){
+
     }
 }

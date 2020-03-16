@@ -59,4 +59,8 @@ public class Menu_and_settings extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
+
+    private void getGames(){
+
+    }
 }

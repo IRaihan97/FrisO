@@ -16,6 +16,7 @@ import com.android.volley.VolleyError;
 import com.example.fris_o.tools.IResult;
 import com.example.fris_o.tools.VolleyService;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -54,22 +55,13 @@ public class RegistrationPage extends AppCompatActivity {
                     showToast("MATCH");
                 }
                 else {
-                    SharedPreferences preferences = getSharedPreferences("message_prefs", 0);
-                    registerResponse();
-                    mVolleyService = new VolleyService(result, ctx);
-                    JSONObject obj = new JSONObject();
-                    try {
-                        obj.put("username", usr);
-                        obj.put("email", mail);
-                        obj.put("password", pass);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                    //SharedPreferences preferences = getSharedPreferences("message_prefs", 0);
+
+
+                    registerUser(usr, mail, pass);
 
 
 
-
-                    mVolleyService.postDataVolley("POST", "http://172.31.82.149:8080/api/users", obj);
 
 //                    SharedPreferences preferences1 = getSharedPreferences("message_prefs", 0);
 //                    String pref = preferences1.getString("Username", null);
@@ -89,9 +81,24 @@ public class RegistrationPage extends AppCompatActivity {
         startActivity(listen);
     }
 
+    //Register User
+    private void registerUser(String username, String email, String password){
+        registerResponse(username, email, password);
+        mVolleyService = new VolleyService(result, ctx);
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("username", username);
+            obj.put("email", email);
+            obj.put("password", password);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        mVolleyService.postDataVolley("POST", "http://172.31.82.149:8080/api/users", obj);
+    }
 
     //Callback IResult inteface is used to perform actions after getting a response from the VolleyService request
-    private void registerResponse(){
+    private void registerResponse(final String username, final String email, final String password){
         result = new IResult() {
             //The following methods will be executed after recieving the response
 
@@ -106,27 +113,19 @@ public class RegistrationPage extends AppCompatActivity {
                 Log.d("Response", "ObjSuccess: " + res);
                 if(res.equals("Registered")){
                     showToast("You have been Registered");
-                    Log.d("RESPONSE", "strSuccess: " + response);
+                    saveDetails(username, email, password);
                 }
                 else{
                     showToast("User Already Exists");
                     Log.d("RESPONSE", "strSuccess: " + response);
                 }
-//                try{
-//
-//                        SharedPreferences preferences = getSharedPreferences("message_prefs", 0);
-//                        SharedPreferences.Editor editor = preferences.edit();
-//                        editor.putString("Username", username);
-//                        editor.putString("Email", email);
-//                        editor.putString("Password", password);
-//                        editor.apply();
-//
-//
-//                }
-//                catch (Exception e){
-//                    e.printStackTrace();
-//                }
 
+
+            }
+
+            @Override
+            public void ArrSuccess(String requestType, JSONArray response) {
+                
             }
 
             @Override
@@ -134,6 +133,20 @@ public class RegistrationPage extends AppCompatActivity {
 
             }
         };
+    }
+
+    private void saveDetails(String username, String email, String password){
+        try{
+            SharedPreferences preferences = getSharedPreferences("message_prefs", 0);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString("Username", username);
+            editor.putString("Email", email);
+            editor.putString("Password", password);
+            editor.apply();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void showToast(String message){
