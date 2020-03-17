@@ -23,8 +23,8 @@ public class DBHandler extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String create_games_tbl = "CREATE TABLE " + Util.TBL_NAME1 + "(" +
-                Util.KEY1_ID + " INTEGER, " +
+        String create_games_tbl = "CREATE TABLE IF NOT EXISTS " + Util.TBL_NAME1 + "(" +
+                Util.KEY1_ID + " BIGINT, " +
                 Util.KEY1_NAME + " DOUBLE, " +
                 Util.KEY1_DESTLAT + " DOUBLE, " +
                 Util.KEY1_DESTLON + " DOUBLE ," +
@@ -52,6 +52,27 @@ public class DBHandler extends SQLiteOpenHelper {
 
     public void addGame(JSONObject object){
         SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues value = new ContentValues();
+        try {
+            value.put(Util.KEY1_ID, object.getLong("gameID"));
+            value.put(Util.KEY1_NAME, object.getString("name"));
+            value.put(Util.KEY1_DESTLAT, object.getDouble("destlat"));
+            value.put(Util.KEY1_DESTLON, object.getDouble("destlon"));
+            value.put(Util.KEY1_DESTLATLON, object.getDouble("destlatlon"));
+            value.put(Util.KEY1_LOCLAT, object.getDouble("locationlat"));
+            value.put(Util.KEY1_LOCLON, object.getDouble("locationlon"));
+            value.put(Util.KEY1_LOCLATLON, object.getDouble("locationlatlon"));
+            value.put(Util.KEY1_SCORET1, object.getInt("scoret1"));
+            value.put(Util.KEY1_SCORET2, object.getInt("scoret2"));
+            value.put(Util.KEY1_TIMER, object.getInt("timer"));
+            value.put(Util.KEY1_ROUND, object.getInt("round"));
+            value.put(Util.KEY1_PASSWORD, object.getString("password"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        db.insert(Util.TBL_NAME1, null, value);
+
     }
 
     public void addAllGames(JSONArray array){
@@ -60,12 +81,7 @@ public class DBHandler extends SQLiteOpenHelper {
         for (int i = 0; i < array.length(); i++){
             ContentValues value = new ContentValues();
             try {
-                Log.d("ARRAY", "addAllGames: " + array.getJSONObject(0).getString("name"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            try {
-                value.put(Util.KEY1_NAME, array.getJSONObject(i).getLong("gameID"));
+                value.put(Util.KEY1_ID, array.getJSONObject(i).getLong("gameID"));
                 value.put(Util.KEY1_NAME, array.getJSONObject(i).getString("name"));
                 value.put(Util.KEY1_DESTLAT, array.getJSONObject(i).getDouble("destlat"));
                 value.put(Util.KEY1_DESTLON, array.getJSONObject(i).getDouble("destlon"));
@@ -81,6 +97,8 @@ public class DBHandler extends SQLiteOpenHelper {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+
+            Log.d("ALLGAME", "addAllGames: " + value.getAsString("name"));
             db.insert(Util.TBL_NAME1, null, value);
         }
     }
@@ -109,7 +127,6 @@ public class DBHandler extends SQLiteOpenHelper {
         if(cursor != null){
             cursor.moveToFirst();
         }
-
         Games game = new Games();
         game.setGameID(Long.parseLong(cursor.getString(0)));
         game.setName(cursor.getString(1));
@@ -144,8 +161,8 @@ public class DBHandler extends SQLiteOpenHelper {
                 game.setLocationlat(Double.parseDouble(cursor.getString(5)));
                 game.setLocationlon(Double.parseDouble(cursor.getString(6)));
                 game.setLocationlatlon(Double.parseDouble(cursor.getString(7)));
-                game.setScoret1(Integer.parseInt(cursor.getString(8)));
-                game.setScoret2(Integer.parseInt(cursor.getString(9)));
+                game.setScoret1(cursor.getInt(8));
+                game.setScoret2(cursor.getInt(9));
                 game.setTimer(Integer.parseInt(cursor.getString(10)));
                 game.setRound(Integer.parseInt(cursor.getString(11)));
                 game.setPassword(cursor.getString(12));
@@ -155,4 +172,13 @@ public class DBHandler extends SQLiteOpenHelper {
         }
         return gamesList;
     }
+
+    //Deletes all records from table
+    public void resetDB(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DELETE FROM " + Util.TBL_NAME1);
+        db.close();
+    }
+
+
 }

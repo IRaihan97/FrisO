@@ -3,6 +3,7 @@ package com.example.fris_o.Testing;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -19,12 +20,17 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Tests extends AppCompatActivity {
     VolleyService mVolleyService;
     IResult result;
     Context ctx = this;
     private Button btn;
     private Button post;
+    private Button delete;
+    DBHandler db = new DBHandler(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,13 +42,19 @@ public class Tests extends AppCompatActivity {
 
         btn = findViewById(R.id.test);
         post = findViewById(R.id.postdata);
+        delete = findViewById(R.id.reset);
+
+        db.resetDB();
+        saveAllGames(ctx);
+        mVolleyService = new VolleyService(result, ctx);
+        mVolleyService.getDataArrayVolley("GET", "http://172.31.82.149:8080/api/games");
 
         post.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 JSONObject obj = new JSONObject();
                 try {
-                    obj.put("name", "gamename");
+                    obj.put("name", "testinganother276");
                     obj.put("locationlon", 2.4);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -52,20 +64,23 @@ public class Tests extends AppCompatActivity {
                 mVolleyService = new VolleyService(result, ctx);
                 mVolleyService.postDataVolley("POST", "http://172.31.82.149:8080/api/games", obj);
 
+
             }
         });
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveAllGames(ctx);
-                mVolleyService = new VolleyService(result, ctx);
-                mVolleyService.getDataArrayVolley("GET", "http://172.31.82.149:8080/api/games");
-
-
+                List<Games> gamesList = db.getAllGames();
+                for(int i = 0; i < gamesList.size(); i++){
+                    Log.d("LIST", "onClick: " + gamesList.get(i).getName());
+                }
             }
         });
+
+
     }
+
 
     private void saveAllGames(final Context ctx){
         result = new IResult() {
@@ -76,10 +91,7 @@ public class Tests extends AppCompatActivity {
 
             @Override
             public void ArrSuccess(String requestType, JSONArray response) {
-                DBHandler db = new DBHandler(ctx);
                 db.addAllGames(response);
-                Games game = db.getGame(1l);
-                Log.d("SAVED GAME", "game: " + game.getName());
             }
 
             @Override
@@ -94,6 +106,10 @@ public class Tests extends AppCompatActivity {
             @Override
             public void ObjSuccess(String requestType, JSONObject response) {
                 Log.d("RESPONSE", "ObjSuccess: " + response.toString());
+                db.resetDB();
+                saveAllGames(ctx);
+                mVolleyService = new VolleyService(result, ctx);
+                mVolleyService.getDataArrayVolley("GET", "http://172.31.82.149:8080/api/games");
             }
 
             @Override
