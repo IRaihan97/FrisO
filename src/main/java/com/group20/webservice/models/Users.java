@@ -31,7 +31,7 @@ public class Users implements Serializable {
 
     private String status;
     
-    private int gameID;
+    private Long gameID;
 
 	public String getStatus() {
 		return status;
@@ -41,11 +41,11 @@ public class Users implements Serializable {
 		this.status = status;
 	}
 
-	public int getGameID() {
+	public Long getGameID() {
 		return gameID;
 	}
 
-	public void setGameID(int gameID) {
+	public void setGameID(Long gameID) {
 		this.gameID = gameID;
 	}
 

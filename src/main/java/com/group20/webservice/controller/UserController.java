@@ -91,6 +91,11 @@ public class UserController {
 	            .orElseThrow(() -> new ResourceNotFound("User", "id", userId));
 	}
 	
+	@GetMapping("/userGame/{id}")
+	public List<Users> getUserByGameID(@PathVariable(value = "id") Long gameID) {
+	    return userRepo.findByGameID(gameID);
+	}
+	
 	//Update Username
 	@PutMapping("/users/upName/{id}")
 	public Users updateUser(@PathVariable(value = "id") Long userId,
@@ -102,8 +107,8 @@ public class UserController {
 	    user.setUsername(userDetails.getUsername());
 	   
 
-	    Users updatedNote = userRepo.save(user);
-	    return updatedNote;
+	    Users updatedUser = userRepo.save(user);
+	    return updatedUser;
 	}
 	
 	//
@@ -117,8 +122,22 @@ public class UserController {
 	    user.setEmail(userDetails.getEmail());
 	   
 
-	    Users updatedNote = userRepo.save(user);
-	    return updatedNote;
+	    Users updatedUser = userRepo.save(user);
+	    return updatedUser;
+	}
+	
+	@PutMapping("/users/upGame/{id}")
+	public Users updateGameID(@PathVariable(value = "id") Long userId,
+	                                        @Valid @RequestBody Users userDetails) {
+
+	    Users user = userRepo.findById(userId)
+	            .orElseThrow(() -> new ResourceNotFound("User", "id", userId));
+
+	    user.setGameID(userDetails.getGameID());
+	   
+
+	    Users updatedUser = userRepo.save(user);
+	    return updatedUser;
 	}
 	
 	@DeleteMapping("/users/{id}")
