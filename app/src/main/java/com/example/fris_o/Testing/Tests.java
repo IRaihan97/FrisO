@@ -3,7 +3,6 @@ package com.example.fris_o.Testing;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -11,7 +10,7 @@ import android.widget.Button;
 
 import com.android.volley.VolleyError;
 import com.example.fris_o.R;
-import com.example.fris_o.data.DBHandler;
+import com.example.fris_o.data.DBHandlerGame;
 import com.example.fris_o.models.Games;
 import com.example.fris_o.tools.IResult;
 import com.example.fris_o.tools.VolleyService;
@@ -20,7 +19,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Tests extends AppCompatActivity {
@@ -30,7 +28,7 @@ public class Tests extends AppCompatActivity {
     private Button btn;
     private Button post;
     private Button delete;
-    DBHandler db = new DBHandler(this);
+    DBHandlerGame db = new DBHandlerGame(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +42,7 @@ public class Tests extends AppCompatActivity {
         post = findViewById(R.id.postdata);
         delete = findViewById(R.id.reset);
 
-        db.resetDB();
+        db.resetTBL();
         saveAllGames(ctx);
         mVolleyService = new VolleyService(result, ctx);
         mVolleyService.getDataArrayVolley("GET", "http://172.31.82.149:8080/api/games");
@@ -106,7 +104,7 @@ public class Tests extends AppCompatActivity {
             @Override
             public void ObjSuccess(String requestType, JSONObject response) {
                 Log.d("RESPONSE", "ObjSuccess: " + response.toString());
-                db.resetDB();
+                db.resetTBL();
                 saveAllGames(ctx);
                 mVolleyService = new VolleyService(result, ctx);
                 mVolleyService.getDataArrayVolley("GET", "http://172.31.82.149:8080/api/games");

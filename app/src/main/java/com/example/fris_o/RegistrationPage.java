@@ -81,7 +81,7 @@ public class RegistrationPage extends AppCompatActivity {
         startActivity(listen);
     }
 
-    //Register User
+    //Register Users
     private void registerUser(String username, String email, String password){
         registerResponse(username, email, password);
         mVolleyService = new VolleyService(result, ctx);
@@ -116,7 +116,7 @@ public class RegistrationPage extends AppCompatActivity {
                     saveDetails(username, email, password);
                 }
                 else{
-                    showToast("User Already Exists");
+                    showToast("Users Already Exists");
                     Log.d("RESPONSE", "strSuccess: " + response);
                 }
 

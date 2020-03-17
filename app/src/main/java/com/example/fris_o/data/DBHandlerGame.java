@@ -16,27 +16,27 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DBHandler extends SQLiteOpenHelper {
-    public DBHandler(Context ctx){
+public class DBHandlerGame extends SQLiteOpenHelper {
+    public DBHandlerGame(Context ctx){
         super(ctx, Util.DB_NAME, null, Util.DB_VER);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String create_games_tbl = "CREATE TABLE IF NOT EXISTS " + Util.TBL_NAME1 + "(" +
-                Util.KEY1_ID + " BIGINT, " +
-                Util.KEY1_NAME + " DOUBLE, " +
-                Util.KEY1_DESTLAT + " DOUBLE, " +
-                Util.KEY1_DESTLON + " DOUBLE ," +
-                Util.KEY1_DESTLATLON + " DOUBLE ," +
-                Util.KEY1_LOCLAT + " DOUBLE ," +
-                Util.KEY1_LOCLATLON + " DOUBLE ," +
-                Util.KEY1_LOCLON + " DOUBLE ," +
-                Util.KEY1_PASSWORD + " TEXT," +
-                Util.KEY1_ROUND + " INTEGER," +
-                Util.KEY1_SCORET1 + " INTEGER," +
-                Util.KEY1_SCORET2 + " INTEGER," +
-                Util.KEY1_TIMER + " INTEGER" +
+        String create_games_tbl = "CREATE TABLE IF NOT EXISTS " + Util.TBL_GAMES + "(" +
+                Util.GAMEKEY_ID + " BIGINT, " +
+                Util.GAMEKEY_NAME + " DOUBLE, " +
+                Util.GAMEKEY_DESTLAT + " DOUBLE, " +
+                Util.GAMEKEY_DESTLON + " DOUBLE ," +
+                Util.GAMEKEY_DESTLATLON + " DOUBLE ," +
+                Util.GAMEKEY_LOCLAT + " DOUBLE ," +
+                Util.GAMEKEY_LOCLATLON + " DOUBLE ," +
+                Util.GAMEKEY_LOCLON + " DOUBLE ," +
+                Util.GAMEKEY_PASSWORD + " TEXT," +
+                Util.GAMEKEY_ROUND + " INTEGER," +
+                Util.GAMEKEY_SCORET1 + " INTEGER," +
+                Util.GAMEKEY_SCORET2 + " INTEGER," +
+                Util.GAMEKEY_TIMER + " INTEGER" +
                 ");";
 
         db.execSQL(create_games_tbl);
@@ -54,24 +54,24 @@ public class DBHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues value = new ContentValues();
         try {
-            value.put(Util.KEY1_ID, object.getLong("gameID"));
-            value.put(Util.KEY1_NAME, object.getString("name"));
-            value.put(Util.KEY1_DESTLAT, object.getDouble("destlat"));
-            value.put(Util.KEY1_DESTLON, object.getDouble("destlon"));
-            value.put(Util.KEY1_DESTLATLON, object.getDouble("destlatlon"));
-            value.put(Util.KEY1_LOCLAT, object.getDouble("locationlat"));
-            value.put(Util.KEY1_LOCLON, object.getDouble("locationlon"));
-            value.put(Util.KEY1_LOCLATLON, object.getDouble("locationlatlon"));
-            value.put(Util.KEY1_SCORET1, object.getInt("scoret1"));
-            value.put(Util.KEY1_SCORET2, object.getInt("scoret2"));
-            value.put(Util.KEY1_TIMER, object.getInt("timer"));
-            value.put(Util.KEY1_ROUND, object.getInt("round"));
-            value.put(Util.KEY1_PASSWORD, object.getString("password"));
+            value.put(Util.GAMEKEY_ID, object.getLong("gameID"));
+            value.put(Util.GAMEKEY_NAME, object.getString("name"));
+            value.put(Util.GAMEKEY_DESTLAT, object.getDouble("destlat"));
+            value.put(Util.GAMEKEY_DESTLON, object.getDouble("destlon"));
+            value.put(Util.GAMEKEY_DESTLATLON, object.getDouble("destlatlon"));
+            value.put(Util.GAMEKEY_LOCLAT, object.getDouble("locationlat"));
+            value.put(Util.GAMEKEY_LOCLON, object.getDouble("locationlon"));
+            value.put(Util.GAMEKEY_LOCLATLON, object.getDouble("locationlatlon"));
+            value.put(Util.GAMEKEY_SCORET1, object.getInt("scoret1"));
+            value.put(Util.GAMEKEY_SCORET2, object.getInt("scoret2"));
+            value.put(Util.GAMEKEY_TIMER, object.getInt("timer"));
+            value.put(Util.GAMEKEY_ROUND, object.getInt("round"));
+            value.put(Util.GAMEKEY_PASSWORD, object.getString("password"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        db.insert(Util.TBL_NAME1, null, value);
+        db.insert(Util.TBL_GAMES, null, value);
 
     }
 
@@ -81,25 +81,25 @@ public class DBHandler extends SQLiteOpenHelper {
         for (int i = 0; i < array.length(); i++){
             ContentValues value = new ContentValues();
             try {
-                value.put(Util.KEY1_ID, array.getJSONObject(i).getLong("gameID"));
-                value.put(Util.KEY1_NAME, array.getJSONObject(i).getString("name"));
-                value.put(Util.KEY1_DESTLAT, array.getJSONObject(i).getDouble("destlat"));
-                value.put(Util.KEY1_DESTLON, array.getJSONObject(i).getDouble("destlon"));
-                value.put(Util.KEY1_DESTLATLON, array.getJSONObject(i).getDouble("destlatlon"));
-                value.put(Util.KEY1_LOCLAT, array.getJSONObject(i).getDouble("locationlat"));
-                value.put(Util.KEY1_LOCLON, array.getJSONObject(i).getDouble("locationlon"));
-                value.put(Util.KEY1_LOCLATLON, array.getJSONObject(i).getDouble("locationlatlon"));
-                value.put(Util.KEY1_SCORET1, array.getJSONObject(i).getInt("scoret1"));
-                value.put(Util.KEY1_SCORET2, array.getJSONObject(i).getInt("scoret2"));
-                value.put(Util.KEY1_TIMER, array.getJSONObject(i).getInt("timer"));
-                value.put(Util.KEY1_ROUND, array.getJSONObject(i).getInt("round"));
-                value.put(Util.KEY1_PASSWORD, array.getJSONObject(i).getString("password"));
+                value.put(Util.GAMEKEY_ID, array.getJSONObject(i).getLong("gameID"));
+                value.put(Util.GAMEKEY_NAME, array.getJSONObject(i).getString("name"));
+                value.put(Util.GAMEKEY_DESTLAT, array.getJSONObject(i).getDouble("destlat"));
+                value.put(Util.GAMEKEY_DESTLON, array.getJSONObject(i).getDouble("destlon"));
+                value.put(Util.GAMEKEY_DESTLATLON, array.getJSONObject(i).getDouble("destlatlon"));
+                value.put(Util.GAMEKEY_LOCLAT, array.getJSONObject(i).getDouble("locationlat"));
+                value.put(Util.GAMEKEY_LOCLON, array.getJSONObject(i).getDouble("locationlon"));
+                value.put(Util.GAMEKEY_LOCLATLON, array.getJSONObject(i).getDouble("locationlatlon"));
+                value.put(Util.GAMEKEY_SCORET1, array.getJSONObject(i).getInt("scoret1"));
+                value.put(Util.GAMEKEY_SCORET2, array.getJSONObject(i).getInt("scoret2"));
+                value.put(Util.GAMEKEY_TIMER, array.getJSONObject(i).getInt("timer"));
+                value.put(Util.GAMEKEY_ROUND, array.getJSONObject(i).getInt("round"));
+                value.put(Util.GAMEKEY_PASSWORD, array.getJSONObject(i).getString("password"));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
             Log.d("ALLGAME", "addAllGames: " + value.getAsString("name"));
-            db.insert(Util.TBL_NAME1, null, value);
+            db.insert(Util.TBL_GAMES, null, value);
         }
     }
 
@@ -107,22 +107,22 @@ public class DBHandler extends SQLiteOpenHelper {
     {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.query(Util.TBL_NAME1, new String[]
+        Cursor cursor = db.query(Util.TBL_GAMES, new String[]
                 {
-                        Util.KEY1_ID,
-                        Util.KEY1_NAME,
-                        Util.KEY1_DESTLAT,
-                        Util.KEY1_DESTLON,
-                        Util.KEY1_DESTLATLON,
-                        Util.KEY1_LOCLAT,
-                        Util.KEY1_LOCLON,
-                        Util.KEY1_LOCLATLON,
-                        Util.KEY1_SCORET1,
-                        Util.KEY1_SCORET2,
-                        Util.KEY1_TIMER,
-                        Util.KEY1_ROUND,
-                        Util.KEY1_PASSWORD
-                }, Util.KEY1_ID + "=?", new String[]{String.valueOf(id)},
+                        Util.GAMEKEY_ID,
+                        Util.GAMEKEY_NAME,
+                        Util.GAMEKEY_DESTLAT,
+                        Util.GAMEKEY_DESTLON,
+                        Util.GAMEKEY_DESTLATLON,
+                        Util.GAMEKEY_LOCLAT,
+                        Util.GAMEKEY_LOCLON,
+                        Util.GAMEKEY_LOCLATLON,
+                        Util.GAMEKEY_SCORET1,
+                        Util.GAMEKEY_SCORET2,
+                        Util.GAMEKEY_TIMER,
+                        Util.GAMEKEY_ROUND,
+                        Util.GAMEKEY_PASSWORD
+                }, Util.GAMEKEY_ID + "=?", new String[]{String.valueOf(id)},
                 null, null, null);
         if(cursor != null){
             cursor.moveToFirst();
@@ -147,7 +147,7 @@ public class DBHandler extends SQLiteOpenHelper {
     public List<Games> getAllGames(){
         List<Games> gamesList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        String selectAll = "SELECT * FROM " + Util.TBL_NAME1;
+        String selectAll = "SELECT * FROM " + Util.TBL_GAMES;
         Cursor cursor = db.rawQuery(selectAll, null);
 
         if(cursor.moveToFirst()){
@@ -174,9 +174,9 @@ public class DBHandler extends SQLiteOpenHelper {
     }
 
     //Deletes all records from table
-    public void resetDB(){
+    public void resetTBL(){
         SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("DELETE FROM " + Util.TBL_NAME1);
+        db.execSQL("DELETE FROM " + Util.TBL_GAMES);
         db.close();
     }
 
