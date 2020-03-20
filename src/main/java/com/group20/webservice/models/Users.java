@@ -85,19 +85,19 @@ public class Users implements Serializable {
 		this.password = password;
 	}
 	
-	public double getLocationx() {
+	public double getLocationlat() {
 		return locationlat;
 	}
 
-	public void setLocationx(double locationx) {
+	public void setLocationlat(double locationx) {
 		this.locationlat = locationx;
 	}
 
-	public double getLocationy() {
+	public double getLocationlon() {
 		return locationlon;
 	}
 
-	public void setLocationy(double locationy) {
+	public void setLocationlon(double locationy) {
 		this.locationlon = locationy;
 	}
 
