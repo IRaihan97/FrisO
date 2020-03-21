@@ -52,22 +52,24 @@ public class RegistrationPage extends AppCompatActivity {
                 String pass = password.getText().toString();
                 String conf = confirm.getText().toString();
 
+                Log.d("pass", "onClick: " + pass);
+
                 if(!conf.equals(pass)){
-                    showToast("MATCH");
+                    showToastShort("Password and Confirm Don't Match");
                 }
                 else {
-                    //SharedPreferences preferences = getSharedPreferences("message_prefs", 0);
-
-
-                    registerUser(usr, mail, pass);
-
-
-
-
-                    SharedPreferences preferences1 = getSharedPreferences("message_prefs", 0);
-                    String pref = preferences1.getString("Username", null);
-                    Log.d("PRED", "onClick: " + pref);
-
+                    JSONObject obj = new JSONObject();
+                    try {
+                        obj.put("username", usr);
+                        obj.put("email", mail);
+                        obj.put("password", pass);
+                        obj.put("gameID", 0);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    registerResponse();
+                    mVolleyService = new VolleyService(result, ctx);
+                    mVolleyService.postDataVolley("POST", "http://172.31.82.149:8080/api/users", obj);
                 }
 
             }
@@ -82,24 +84,8 @@ public class RegistrationPage extends AppCompatActivity {
         startActivity(listen);
     }
 
-    //Register Users
-    private void registerUser(String username, String email, String password){
-        registerResponse(username, email, password);
-        mVolleyService = new VolleyService(result, ctx);
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("username", username);
-            obj.put("email", email);
-            obj.put("password", password);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        mVolleyService.postDataVolley("POST", "http://172.31.82.149:8080/api/users", obj);
-    }
-
     //Callback IResult inteface is used to perform actions after getting a response from the VolleyService request
-    private void registerResponse(final String username, final String email, final String password){
+    private void registerResponse(){
         result = new IResult() {
             //The following methods will be executed after recieving the response
 
@@ -113,11 +99,13 @@ public class RegistrationPage extends AppCompatActivity {
                 }
                 Log.d("Response", "ObjSuccess: " + res);
                 if(res.equals("Registered")){
-                    showToast("You have been Registered");
-                    saveDetails(username, email, password);
+                    showToastLong("You have been Registered, Please Log In");
+                    Intent intent = new Intent(ctx, Login.class);
+                    startActivity(intent);
+                    finish();
                 }
                 else{
-                    showToast("Users Already Exists");
+                    showToastShort("Users Already Exists");
                     Log.d("RESPONSE", "strSuccess: " + response);
                 }
 
@@ -131,27 +119,17 @@ public class RegistrationPage extends AppCompatActivity {
 
             @Override
             public void notifyError(String requestType, VolleyError error) {
-
+                Log.d("Error", "notifyError: " + error.toString());
             }
         };
     }
 
-    private void saveDetails(String username, String email, String password){
-        try{
-            SharedPreferences preferences = getSharedPreferences("message_prefs", 0);
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.putString("Username", username);
-            editor.putString("Email", email);
-            editor.putString("Password", password);
-            editor.apply();
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
+    private void showToastShort(String message){
+        Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
     }
 
-    private void showToast(String message){
-        Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
+    private void showToastLong(String message){
+        Toast.makeText(getApplicationContext(),message,Toast.LENGTH_LONG).show();
     }
 }
 

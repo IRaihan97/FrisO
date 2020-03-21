@@ -74,6 +74,15 @@ public class Login extends AppCompatActivity {
             }
         });
 
+        register.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ctx, RegistrationPage.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
 
 
     }
@@ -83,7 +92,7 @@ public class Login extends AppCompatActivity {
             @Override
             public void ObjSuccess(String requestType, JSONObject response) {
                 try {
-                    if(response != null){
+                    if(!response.getString("status").equals("Invalid")){
                         SharedPreferences preferences = getSharedPreferences("User_status", 0);
                         SharedPreferences.Editor editor = preferences.edit();
                         editor.putString("username", response.getString("username"));
@@ -95,13 +104,13 @@ public class Login extends AppCompatActivity {
                         editor.putString("status", response.getString("status"));
                         editor.putLong("gameID", response.getLong("gameID"));
                         editor.apply();
-
+                        showToast("Welcome Back " + response.getString("username"));
                         Intent intent = new Intent(ctx, MapsActivity.class);
                         startActivity(intent);
                         finish();
                     }
                     else{
-                        showToast("Invalid User, Please Try Again");
+                        showToast("Invalid user. Please Try Again");
                     }
                 } catch (JSONException e) {e.printStackTrace();
 
