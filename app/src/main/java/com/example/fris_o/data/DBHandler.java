@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.example.fris_o.models.Games;
+import com.example.fris_o.models.Users;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,16 +17,16 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DBHandlerGame extends SQLiteOpenHelper {
-    public DBHandlerGame(Context ctx){
+public class DBHandler extends SQLiteOpenHelper {
+    public DBHandler(Context ctx){
         super(ctx, Util.DB_NAME, null, Util.DB_VER);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         String create_games_tbl = "CREATE TABLE IF NOT EXISTS " + Util.TBL_GAMES + "(" +
-                Util.GAMEKEY_ID + " BIGINT, " +
-                Util.GAMEKEY_NAME + " DOUBLE, " +
+                Util.GAMEKEY_ID + " BIGINT UNIQUE, " +
+                Util.GAMEKEY_NAME + " DOUBLE UNIQUE, " +
                 Util.GAMEKEY_DESTLAT + " DOUBLE, " +
                 Util.GAMEKEY_DESTLON + " DOUBLE ," +
                 Util.GAMEKEY_DESTLATLON + " DOUBLE ," +
@@ -39,7 +40,19 @@ public class DBHandlerGame extends SQLiteOpenHelper {
                 Util.GAMEKEY_TIMER + " INTEGER" +
                 ");";
 
+        String create_users_tbl = "CREATE TABLE IF NOT EXISTS " + Util.TBL_USERS + "(" +
+                Util.USERKEY_ID + " BIGINT UNIQUE, " +
+                Util.USERKEY_NAME + " TEXT UNIQUE, " +
+                Util.USERKEY_EMAIL + " TEXT UNIQUE, " +
+                Util.USERKEY_LOCLAT + " DOUBLE ," +
+                Util.USERKEY_LOCLON + " DOUBLE ," +
+                Util.USERKEY_LOCLATLON + " DOUBLE ," +
+                Util.USERKEY_STATUS + " TEXT," +
+                Util.USERKEY_GAMEID + " INTEGER" +
+                ");";
+
         db.execSQL(create_games_tbl);
+        db.execSQL(create_users_tbl);
     }
 
     @Override
@@ -50,6 +63,7 @@ public class DBHandlerGame extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    //Adds a single game on the db passed as json format
     public void addGame(JSONObject object){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues value = new ContentValues();
@@ -75,6 +89,7 @@ public class DBHandlerGame extends SQLiteOpenHelper {
 
     }
 
+    //Adds all games from a json array to the database
     public void addAllGames(JSONArray array){
         SQLiteDatabase db  = this.getWritableDatabase();
 
@@ -124,23 +139,23 @@ public class DBHandlerGame extends SQLiteOpenHelper {
                         Util.GAMEKEY_PASSWORD
                 }, Util.GAMEKEY_ID + "=?", new String[]{String.valueOf(id)},
                 null, null, null);
-        if(cursor != null){
-            cursor.moveToFirst();
-        }
         Games game = new Games();
-        game.setGameID(Long.parseLong(cursor.getString(0)));
-        game.setName(cursor.getString(1));
-        game.setDestlat(Double.parseDouble(cursor.getString(2)));
-        game.setDestlon(Double.parseDouble(cursor.getString(3)));
-        game.setDestlatlon(Double.parseDouble(cursor.getString(4)));
-        game.setLocationlat(Double.parseDouble(cursor.getString(5)));
-        game.setLocationlon(Double.parseDouble(cursor.getString(6)));
-        game.setLocationlatlon(Double.parseDouble(cursor.getString(7)));
-        game.setScoret1(Integer.parseInt(cursor.getString(8)));
-        game.setScoret2(Integer.parseInt(cursor.getString(9)));
-        game.setTimer(Integer.parseInt(cursor.getString(10)));
-        game.setRound(Integer.parseInt(cursor.getString(11)));
-        game.setPassword(cursor.getString(12));
+        if(cursor.moveToFirst()){
+            game.setGameID(Long.parseLong(cursor.getString(0)));
+            game.setName(cursor.getString(1));
+            game.setDestlat(Double.parseDouble(cursor.getString(2)));
+            game.setDestlon(Double.parseDouble(cursor.getString(3)));
+            game.setDestlatlon(Double.parseDouble(cursor.getString(4)));
+            game.setLocationlat(Double.parseDouble(cursor.getString(5)));
+            game.setLocationlon(Double.parseDouble(cursor.getString(6)));
+            game.setLocationlatlon(Double.parseDouble(cursor.getString(7)));
+            game.setScoret1(Integer.parseInt(cursor.getString(8)));
+            game.setScoret2(Integer.parseInt(cursor.getString(9)));
+            game.setTimer(Integer.parseInt(cursor.getString(10)));
+            game.setRound(Integer.parseInt(cursor.getString(11)));
+            game.setPassword(cursor.getString(12));
+        }
+
         return game;
     }
 
@@ -174,9 +189,116 @@ public class DBHandlerGame extends SQLiteOpenHelper {
     }
 
     //Deletes all records from table
-    public void resetTBL(){
+    public void resetGames(){
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("DELETE FROM " + Util.TBL_GAMES);
+        db.close();
+    }
+
+    public void addUser(JSONObject object){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues value = new ContentValues();
+        try {
+            value.put(Util.USERKEY_ID, object.getLong("userID"));
+            value.put(Util.USERKEY_NAME, object.getString("username"));
+            value.put(Util.USERKEY_EMAIL, object.getString("email"));
+            value.put(Util.USERKEY_PASSWORD, object.getString("password"));
+            value.put(Util.USERKEY_LOCLAT, object.getDouble("locationlat"));
+            value.put(Util.USERKEY_LOCLON, object.getDouble("locationlon"));
+            value.put(Util.USERKEY_LOCLATLON, object.getDouble("locationlatlon"));
+            value.put(Util.USERKEY_STATUS, object.getString("status"));
+            value.put(Util.USERKEY_GAMEID, object.getLong("gameID"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        db.insert(Util.TBL_USERS, null, value);
+
+    }
+
+    public void addAllUsers(JSONArray array){
+        SQLiteDatabase db  = this.getWritableDatabase();
+
+        for (int i = 0; i < array.length(); i++){
+            ContentValues value = new ContentValues();
+            try {
+                value.put(Util.USERKEY_ID, array.getJSONObject(i).getLong("userID"));
+                value.put(Util.USERKEY_NAME, array.getJSONObject(i).getString("username"));
+                value.put(Util.USERKEY_EMAIL, array.getJSONObject(i).getString("email"));
+                value.put(Util.USERKEY_LOCLAT, array.getJSONObject(i).getDouble("locationlat"));
+                value.put(Util.USERKEY_LOCLON, array.getJSONObject(i).getDouble("locationlon"));
+                value.put(Util.USERKEY_LOCLATLON, array.getJSONObject(i).getDouble("locationlatlon"));
+                value.put(Util.USERKEY_STATUS, array.getJSONObject(i).getString("status"));
+                value.put(Util.USERKEY_GAMEID, array.getJSONObject(i).getLong("gameID"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            Log.d("ALLGAME", "addAllGames: " + value.getAsString("name"));
+            db.insert(Util.TBL_USERS, null, value);
+        }
+    }
+
+    public Users getUser(long id)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(Util.TBL_USERS, new String[]
+                        {
+                                Util.USERKEY_ID,
+                                Util.USERKEY_NAME,
+                                Util.USERKEY_EMAIL,
+                                Util.USERKEY_LOCLAT,
+                                Util.USERKEY_LOCLON,
+                                Util.USERKEY_LOCLATLON,
+                                Util.USERKEY_STATUS,
+                                Util.USERKEY_GAMEID
+                        }, Util.USERKEY_GAMEID + "=?", new String[]{String.valueOf(id)},
+                null, null, null);
+        if(cursor != null){
+            cursor.moveToFirst();
+        }
+        Users user = new Users();
+        user.setUserID(Long.parseLong(cursor.getString(0)));
+        user.setUsername(cursor.getString(1));
+        user.setEmail(cursor.getString(2));
+        user.setLocationlat(Double.parseDouble(cursor.getString(3)));
+        user.setLocationlon(Double.parseDouble(cursor.getString(4)));
+        user.setLocationlatlon(Double.parseDouble(cursor.getString(5)));
+        user.setPassword(cursor.getString(6));
+        user.setGameID(Long.parseLong(cursor.getString(7)));
+
+        return user;
+    }
+
+    public List<Users> getAllUsers(){
+        List<Users> usersList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String selectAll = "SELECT * FROM " + Util.TBL_USERS;
+        Cursor cursor = db.rawQuery(selectAll, null);
+
+        if(cursor.moveToFirst()){
+            do{
+                Users user = new Users();
+                user.setUserID(Long.parseLong(cursor.getString(0)));
+                user.setUsername(cursor.getString(1));
+                user.setEmail(cursor.getString(2));
+                user.setPassword(cursor.getString(3));
+                user.setLocationlat(Double.parseDouble(cursor.getString(4)));
+                user.setLocationlon(Double.parseDouble(cursor.getString(5)));
+                user.setLocationlatlon(Double.parseDouble(cursor.getString(6)));
+                user.setPassword(cursor.getString(7));
+                user.setGameID(Long.parseLong(cursor.getString(8)));
+                usersList.add(user);
+            }while(cursor.moveToNext());
+        }
+        return usersList;
+    }
+
+    //Deletes all records from table
+    public void resetUsers(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DELETE FROM " + Util.TBL_USERS);
         db.close();
     }
 

@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import com.example.fris_o.ui.Menu_and_settings;
+
 public class Register extends AppCompatActivity {
 
     @Override
@@ -14,7 +16,7 @@ public class Register extends AppCompatActivity {
         setContentView(R.layout.activity_register);
     }
     public void listener(View view){
-        Intent listen = new Intent(this,Menu_and_settings.class);
+        Intent listen = new Intent(this, Menu_and_settings.class);
         startActivity(listen);
     }
 }

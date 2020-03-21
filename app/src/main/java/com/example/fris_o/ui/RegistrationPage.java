@@ -1,4 +1,4 @@
-package com.example.fris_o;
+package com.example.fris_o.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
+import com.example.fris_o.R;
 import com.example.fris_o.tools.IResult;
 import com.example.fris_o.tools.VolleyService;
 
@@ -63,9 +64,9 @@ public class RegistrationPage extends AppCompatActivity {
 
 
 
-//                    SharedPreferences preferences1 = getSharedPreferences("message_prefs", 0);
-//                    String pref = preferences1.getString("Username", null);
-//                    Log.d("PRED", "onClick: " + pref);
+                    SharedPreferences preferences1 = getSharedPreferences("message_prefs", 0);
+                    String pref = preferences1.getString("Username", null);
+                    Log.d("PRED", "onClick: " + pref);
 
                 }
 
@@ -77,7 +78,7 @@ public class RegistrationPage extends AppCompatActivity {
     }
 
     public void listener(View view){
-        Intent listen = new Intent(this,Menu_and_settings.class);
+        Intent listen = new Intent(this, Menu_and_settings.class);
         startActivity(listen);
     }
 

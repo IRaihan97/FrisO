@@ -10,8 +10,9 @@ import android.widget.Button;
 
 import com.android.volley.VolleyError;
 import com.example.fris_o.R;
-import com.example.fris_o.data.DBHandlerGame;
+import com.example.fris_o.data.DBHandler;
 import com.example.fris_o.models.Games;
+import com.example.fris_o.models.Users;
 import com.example.fris_o.tools.IResult;
 import com.example.fris_o.tools.VolleyService;
 
@@ -28,7 +29,9 @@ public class Tests extends AppCompatActivity {
     private Button btn;
     private Button post;
     private Button delete;
-    DBHandlerGame db = new DBHandlerGame(this);
+
+    DBHandler db = new DBHandler(this);
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,18 +45,26 @@ public class Tests extends AppCompatActivity {
         post = findViewById(R.id.postdata);
         delete = findViewById(R.id.reset);
 
-        db.resetTBL();
-        saveAllGames(ctx);
+        saveAllGames();
         mVolleyService = new VolleyService(result, ctx);
         mVolleyService.getDataArrayVolley("GET", "http://172.31.82.149:8080/api/games");
+
+        String gameID = "0";
+
+        saveAllUsers();
+        mVolleyService = new VolleyService(result, ctx);
+        mVolleyService.getDataArrayVolley("GET", "http://172.31.82.149:8080/api/userGame/"+ gameID);
+
+
+
 
         post.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 JSONObject obj = new JSONObject();
                 try {
-                    obj.put("name", "testinganother276");
-                    obj.put("locationlon", 2.4);
+                    obj.put("name", "anotherTestingGame");
+                    obj.put("locationlon", 3.4);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -73,6 +84,14 @@ public class Tests extends AppCompatActivity {
                 for(int i = 0; i < gamesList.size(); i++){
                     Log.d("LIST", "onClick: " + gamesList.get(i).getName());
                 }
+                Log.d("GAME", "onCreate: " + String.valueOf(db.getGame(1).getGameID()));
+
+                List<Users> userList = db.getAllUsers();
+                for(int i = 0; i < userList.size(); i++){
+                    Log.d("LIST", "onCreate: " + userList.get(i).getUsername());
+                }
+
+
             }
         });
 
@@ -80,7 +99,7 @@ public class Tests extends AppCompatActivity {
     }
 
 
-    private void saveAllGames(final Context ctx){
+    private void saveAllGames(){
         result = new IResult() {
             @Override
             public void ObjSuccess(String requestType, JSONObject response) {
@@ -89,7 +108,29 @@ public class Tests extends AppCompatActivity {
 
             @Override
             public void ArrSuccess(String requestType, JSONArray response) {
+                db.resetGames();
                 db.addAllGames(response);
+
+            }
+
+            @Override
+            public void notifyError(String requestType, VolleyError error) {
+
+            }
+        };
+    }
+
+    private void saveAllUsers(){
+        result = new IResult() {
+            @Override
+            public void ObjSuccess(String requestType, JSONObject response) {
+
+            }
+
+            @Override
+            public void ArrSuccess(String requestType, JSONArray response) {
+                db.resetUsers();
+                db.addAllUsers(response);
             }
 
             @Override
@@ -104,8 +145,8 @@ public class Tests extends AppCompatActivity {
             @Override
             public void ObjSuccess(String requestType, JSONObject response) {
                 Log.d("RESPONSE", "ObjSuccess: " + response.toString());
-                db.resetTBL();
-                saveAllGames(ctx);
+                db.resetGames();
+                saveAllGames();
                 mVolleyService = new VolleyService(result, ctx);
                 mVolleyService.getDataArrayVolley("GET", "http://172.31.82.149:8080/api/games");
             }
