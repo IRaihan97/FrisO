@@ -73,18 +73,9 @@ public class UserController {
 	}
 	
 	@PostMapping("/users/log")
-	public Response logUser(@Valid @RequestBody Users user) {
+	public Users logUser(@Valid @RequestBody Users user) {
 		Users userIn = userRepo.findByMailAndPassword(user.getEmail(), user.getPassword());
-	    String response = "";
-		if(userIn == null) {
-	    	response = "Invalid";
-		}
-	    else {
-	    	response = "Valid";
-	    }
-		
-		System.out.println(response);
-		return new Response(response); 
+		return userIn; 
 	}
 	
 	@GetMapping("/users/{id}")
