@@ -75,6 +75,12 @@ public class UserController {
 	@PostMapping("/users/log")
 	public Users logUser(@Valid @RequestBody Users user) {
 		Users userIn = userRepo.findByMailAndPassword(user.getEmail(), user.getPassword());
+		if(userIn == null) {
+			userIn = new Users();
+			userIn.setStatus("Invalid");
+		}
+			
+		
 		return userIn; 
 	}
 	
