@@ -79,6 +79,11 @@ public class RegistrationPage extends AppCompatActivity {
 
     }
 
+    public void back (View view){
+        Intent back = new Intent(this, Login.class);
+        startActivity(back);
+    }
+
     public void listener(View view){
         Intent listen = new Intent(this, Menu_and_settings.class);
         startActivity(listen);
