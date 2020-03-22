@@ -3,6 +3,7 @@ package com.example.fris_o;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -19,6 +20,9 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import com.android.volley.VolleyError;
+import com.example.fris_o.data.DBHandler;
+import com.example.fris_o.models.Games;
 import com.example.fris_o.tools.IResult;
 import com.example.fris_o.tools.VolleyService;
 import com.example.fris_o.ui.Menu_and_settings;
@@ -33,6 +37,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.List;
@@ -49,7 +57,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     VolleyService mVolleyService;
     IResult result;
-    Context ctx;
+    Context ctx = this;
+    DBHandler db = new DBHandler(this);
 
 
     @Override
@@ -60,7 +69,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         assert mapFragment != null;
-        ctx = this;
         mapFragment.getMapAsync(this);
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this,
@@ -258,8 +266,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         startActivity(i);
     }
 
-    private void enterSession(){
+    //Saves all users from server with gameID equal to the passed value
+    private void getUsersByGameID(long gameID){
+        saveAllUsers();
+        mVolleyService = new VolleyService(result, ctx);
+        mVolleyService.getDataArrayVolley("GET", "http://172.31.82.149:8080/api/userGame/"+ String.valueOf(gameID));
+    }
 
+    //Updates user's gameid to the session it wants to enter
+    private void setUserGame(long gameID, long userID){
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("gameID", gameID);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        joinResponse(gameID);
+        mVolleyService = new VolleyService(result, ctx);
+        mVolleyService.putDataVolley("PUT", "http://172.31.82.149:8080/api/users/upGame/"+ String.valueOf(userID), obj);
     }
 
     private void sendUserLocation(double latitude, double longitude){
@@ -268,5 +293,111 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void deleteGame(){
 
+    }
+
+    //Response for "getUsersByGame" - executed when server sends a response saves users from response
+    private void saveAllUsers(){
+        result = new IResult() {
+            @Override
+            public void ObjSuccess(String requestType, JSONObject response) {
+
+            }
+
+            @Override
+            public void ArrSuccess(String requestType, JSONArray response) {
+                db.resetUsers();//resets users table
+                db.addAllUsers(response);//adds all users from server response
+            }
+
+            @Override
+            public void notifyError(String requestType, VolleyError error) {
+
+            }
+        };
+    }
+
+    private void joinResponse(final long gameID){
+        result = new IResult() {
+            @Override
+            public void ObjSuccess(String requestType, JSONObject response) {
+                try {
+                    if(response.getString("msg").equals("Valid")){
+                        Games game = db.getGame(gameID);
+
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void ArrSuccess(String requestType, JSONArray response) {
+
+            }
+
+            @Override
+            public void notifyError(String requestType, VolleyError error) {
+
+            }
+        };
+    }
+
+    private void setSession(){
+        result = new IResult() {
+            @Override
+            public void ObjSuccess(String requestType, JSONObject response) {
+
+            }
+
+            @Override
+            public void ArrSuccess(String requestType, JSONArray response) {
+
+            }
+
+            @Override
+            public void notifyError(String requestType, VolleyError error) {
+
+            }
+        };
+    }
+
+    //Saves a game in the SharedPrefence
+    private void saveGame(Games game){
+        SharedPreferences preferences = getSharedPreferences("Game_status", 0);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putLong("gameID", game.getGameID());
+        editor.putString("gameName", game.getName());
+        editor.putFloat("destlat", (float) game.getDestlat());
+        editor.putFloat("destlon", (float) game.getDestlon());
+        editor.putFloat("destlatlon", (float) game.getDestlatlon());
+        editor.putFloat("locationlat", (float) game.getLocationlat());
+        editor.putFloat("locationlon", (float) game.getLocationlon());
+        editor.putFloat("locationlatlon", (float) game.getLocationlatlon());
+        editor.putInt("scoret1", game.getScoret1());
+        editor.putInt("scoret2", game.getScoret2());
+        editor.putInt("timer", game.getTimer());
+        editor.putInt("round", game.getRound());
+        editor.putString("password", game.getPassword());
+    }
+
+    //Gets a game from sharedPrefenece
+    private Games getCurrentGame(){
+        SharedPreferences preferences = getSharedPreferences("Games_status", 0);
+        Games game = new Games();
+        game.setGameID(preferences.getLong("gameID", 0));
+        game.setName(preferences.getString("gameName", null));
+        game.setDestlat(preferences.getFloat("destlat", 0));
+        game.setDestlon(preferences.getFloat("destlon", 0));
+        game.setDestlatlon(preferences.getFloat("destlatlon", 0));
+        game.setLocationlat(preferences.getFloat("locationlat", 0));
+        game.setLocationlon(preferences.getFloat("locationlon", 0));
+        game.setLocationlatlon(preferences.getFloat("locationlatlon", 0));
+        game.setScoret1(preferences.getInt("scoret1", 0));
+        game.setScoret2(preferences.getInt("scoret2", 0));
+        game.setTimer(preferences.getInt("timer", 0));
+        game.setRound(preferences.getInt("round", 0));
+        game.setPassword(preferences.getString("password", null));
+        return game;
     }
 }
