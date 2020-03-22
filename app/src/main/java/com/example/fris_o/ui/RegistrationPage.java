@@ -82,6 +82,7 @@ public class RegistrationPage extends AppCompatActivity {
     public void back (View view){
         Intent back = new Intent(this, Login.class);
         startActivity(back);
+        finish();
     }
 
     public void listener(View view){
