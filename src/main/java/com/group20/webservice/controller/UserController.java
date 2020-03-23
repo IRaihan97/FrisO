@@ -5,19 +5,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.group20.webservice.exception.ResourceNotFound;
+import com.group20.webservice.models.Games;
 import com.group20.webservice.models.Response;
 import com.group20.webservice.models.Users;
 import com.group20.webservice.repositories.GamesRepo;
+import com.group20.webservice.controller.GamesController;
 import com.group20.webservice.repositories.UserRepo;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
 public class UserController {
 	@Autowired
 	UserRepo userRepo;
+	@Autowired
 	GamesRepo gamesRepo;
 	
 	@RequestMapping("/hello")
@@ -30,6 +34,9 @@ public class UserController {
 	    return userRepo.findAll();
 	}
 	
+	
+	    
+	
 
 	@PostMapping("/users")
 	public Response createUser(@Valid @RequestBody Users user) {
@@ -37,9 +44,7 @@ public class UserController {
 	    String username = user.getUsername();
 	    String email = user.getEmail();
 	    String response = "";
-	    boolean exists = checkUserExistence(username, email, users);
-	    
-	    
+	    boolean exists = checkUserExistence(username, email, users);	    
 	    if(!exists) {
 	    	response = "Registered";
 	    	userRepo.save(user);
@@ -92,7 +97,7 @@ public class UserController {
 	
 	@GetMapping("/userGame/{id}")
 	public List<Users> getUserByGameID(@PathVariable(value = "id") Long gameID) {
-	    return userRepo.findByGameID(gameID);
+	    return userRepo.findAllByGameID(gameID);
 	}
 	
 	//Update Username
@@ -108,6 +113,20 @@ public class UserController {
 
 	    Users updatedUser = userRepo.save(user);
 	    return updatedUser;
+	}
+	
+	@PutMapping("/users/location/{id}")
+	public Users updateGameLoc(@PathVariable(value = "id") Long userId,
+	                                        @Valid @RequestBody Users userDetails) {
+
+	    Users user = userRepo.findById(userId)
+	            .orElseThrow(() -> new ResourceNotFound("User", "id", userId));
+
+	    user.setLocationlon(userDetails.getLocationlon());
+	    user.setLocationlat(userDetails.getLocationlat());
+	   
+	    Users updatedGame = userRepo.save(user);
+	    return updatedGame;
 	}
 	
 	//
@@ -126,17 +145,26 @@ public class UserController {
 	}
 	
 	@PutMapping("/users/upGame/{id}")
-	public Users updateGameID(@PathVariable(value = "id") Long userId,
-	                                        @Valid @RequestBody Users userDetails) {
+	public Response updateGameID(	@PathVariable(value = "id") Long userId,
+								@Valid @RequestBody Users userDetails) 
+	{
 
 	    Users user = userRepo.findById(userId)
 	            .orElseThrow(() -> new ResourceNotFound("User", "id", userId));
 
 	    user.setGameID(userDetails.getGameID());
-	   
-
-	    Users updatedUser = userRepo.save(user);
-	    return updatedUser;
+	    long gamesId = userRepo.save(user).getGameID();
+	    Games game = gamesRepo.findById(gamesId)
+	            .orElseThrow(() -> new ResourceNotFound("Game", "id", gamesId));
+	    String response = "";
+	    if(!game.equals(null)) {
+	    	response = "Valid";
+	    }
+	    else {
+	    	response = "Invalid";
+	    }
+	    
+	    return new Response(response);
 	}
 	
 	@DeleteMapping("/users/{id}")

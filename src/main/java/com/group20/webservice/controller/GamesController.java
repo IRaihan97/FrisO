@@ -31,7 +31,7 @@ public class GamesController {
 	@GetMapping("/games")
 	public List<Games> getAllGames() {
 	    return gamesRepo.findAll();
-	    //DIO INFAME 
+	    
 	}
 	
 	@PostMapping("/games")
