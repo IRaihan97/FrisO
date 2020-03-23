@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
@@ -55,6 +56,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Marker marker;
     LocationListener locationListener;
     Random rand = new Random();
+    static boolean first = false;
 
     VolleyService mVolleyService;
     IResult result;
@@ -91,11 +93,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mMap.clear();
 
                     drawPlayer(latitude, longitude);
+
                     //drawGameCircle(latitude, longitude, 10);
 
                     LatLng latLng = new LatLng(latitude, longitude);
+                    if (first == false){
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-
+                    first = true;}
 
                     /*
                     //get the location name from latitude and longitude
