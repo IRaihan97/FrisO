@@ -1,5 +1,6 @@
 package com.group20.webservice.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -17,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.group20.webservice.exception.ResourceNotFound;
 import com.group20.webservice.models.Games;
+import com.group20.webservice.models.Users;
 import com.group20.webservice.repositories.GamesRepo;
+import com.group20.webservice.repositories.UserRepo;
 
 import javax.validation.constraints.NotNull;
 
@@ -27,11 +30,38 @@ public class GamesController {
 	@Autowired
 	GamesRepo gamesRepo;
 	
+	@Autowired
+	UserRepo usersRepo;
+	
 	
 	@GetMapping("/games")
 	public List<Games> getAllGames() {
 	    return gamesRepo.findAll();
 	    
+	}
+	
+	@PostMapping("/nearGames")
+	public List<Games> getNearGames(@Valid @RequestBody Users user){
+		List<Games> games = gamesRepo.findAll();
+		List<Games> result = new ArrayList<>();
+		for(int i= 0; i < games.size(); i++) {
+			Games game = games.get(i);
+			double glat = game.getLocationlat();
+			double glon = game.getLocationlon();
+			double userlon = user.getLocationlon();
+			double userlat = user.getLocationlat();
+			
+			double lowerlon = userlon - 0.0172764;
+			double upperlon = userlon + 0.0172764;
+			
+			double lowerlat = userlat - 0.0172764;
+			double upperlat = userlat + 0.0172764;
+			
+			if(glat >= lowerlat && glat <= upperlat && glon >= lowerlon && glon <= upperlon ) {
+				result.add(game);
+			}
+		}
+		return result;
 	}
 	
 	@PostMapping("/games")

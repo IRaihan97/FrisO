@@ -18,4 +18,6 @@ public interface UserRepo extends JpaRepository<Users, Long> {
 	@Query("SELECT u FROM Users u WHERE u.gameID = ?1")
 	public List<Users> findAllByGameID(Long gameID);
 	
+	
+	
 }

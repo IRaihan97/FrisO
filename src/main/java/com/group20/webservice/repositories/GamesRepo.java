@@ -11,4 +11,6 @@ import com.group20.webservice.models.Users;
 public interface GamesRepo extends JpaRepository<Games, Long> {
 	@Query("SELECT g FROM Games g WHERE g.gameID = ?1")
 	public Games findByGameID(Long gameID);
+	
+	
 }
