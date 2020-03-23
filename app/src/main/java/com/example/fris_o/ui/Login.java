@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -38,7 +37,6 @@ public class Login extends AppCompatActivity {
 
         email = (EditText) findViewById(R.id.txtEmail);
         password = (EditText) findViewById(R.id.password);
-
         login = (Button) findViewById(R.id.btnLogin);
         register = (Button) findViewById(R.id.btnRegister);
 
@@ -77,7 +75,7 @@ public class Login extends AppCompatActivity {
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ctx, RegistrationPage.class);
+                 Intent intent = new Intent(ctx, RegistrationPage.class);
                 startActivity(intent);
                 finish();
             }
@@ -133,3 +131,5 @@ public class Login extends AppCompatActivity {
         Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
     }
 }
+
+
