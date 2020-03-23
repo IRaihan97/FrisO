@@ -1,6 +1,7 @@
 package com.example.fris_o;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -84,11 +85,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 @Override
                 public void onLocationChanged(Location location) {
 
-
-                    //TODO: add player marker to onCreate and onLocationChanged
                     double latitude = location.getLatitude();
                     double longitude = location.getLongitude();
-
+                    sendUserLocation(latitude, longitude);
                     mMap.clear();
 
                     drawPlayer(latitude, longitude);
@@ -167,61 +166,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Circle circle = mMap.addCircle(circleOptions);
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
 
-            locationListener = new LocationListener() {
-                @Override
-                public void onLocationChanged(Location location) {
-                    double latitude = location.getLatitude();
-                    double longitude = location.getLongitude();
-                    //get the location name from latitude and longitude
-                    Geocoder geocoder = new Geocoder(getApplicationContext());
-                    try {
-                        List<Address> addresses =
-                                geocoder.getFromLocation(latitude, longitude, 1);
-                        String result = addresses.get(0).getLocality() + ":";
-                        result += addresses.get(0).getCountryName();
-                        LatLng latLng = new LatLng(latitude, longitude);
-                        if (marker != null) {
-                            marker.remove();
-                            marker = mMap.addMarker(new MarkerOptions().position(latLng).title(result));
-                            mMap.setMinZoomPreference(18f);
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17f));
-                        } else {
-                            marker = mMap.addMarker(new MarkerOptions().position(latLng).title(result));
-                            mMap.setMinZoomPreference(18f);
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17f));
-                        }
-
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                @Override
-                public void onStatusChanged(String provider, int status, Bundle extras) {
-
-                }
-
-                @Override
-                public void onProviderEnabled(String provider) {
-
-                }
-
-                @Override
-                public void onProviderDisabled(String provider) {
-
-                }
-            };
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-        }
-    }
 
     /**
      * Manipulates the map once available.
@@ -252,7 +197,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         UiSettings muiSettings = mMap.getUiSettings();
         muiSettings.setZoomControlsEnabled(true);
         muiSettings.setZoomGesturesEnabled(true);
-        muiSettings.setScrollGesturesEnabled(false);
+        muiSettings.setScrollGesturesEnabled(true);
     }
 
     @Override
@@ -288,7 +233,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void sendUserLocation(double latitude, double longitude){
-        
+        JSONObject obj = new JSONObject();
+        try{
+            obj.put("locationlat", latitude);
+            obj.put("locationlon", longitude);
+        }   catch (JSONException e) {
+            e.printStackTrace();
+        }
+        setSession();
+        SharedPreferences preferences = getSharedPreferences("User_status", 0);
+        Long id= preferences.getLong("userID", 0l);
+        mVolleyService = new VolleyService(result, ctx);
+        mVolleyService.putDataVolley("input", "http://172.31.82.149:8080/api/users/location/" + String.valueOf(id), obj);
     }
 
     private void deleteGame(){
@@ -365,7 +321,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //Saves a game in the SharedPrefence
     private void saveGame(Games game){
         SharedPreferences preferences = getSharedPreferences("Game_status", 0);
-        SharedPreferences.Editor editor = preferences.edit();
+        @SuppressLint("CommitPrefEdits") SharedPreferences.Editor editor = preferences.edit();
         editor.putLong("gameID", game.getGameID());
         editor.putString("gameName", game.getName());
         editor.putFloat("destlat", (float) game.getDestlat());
