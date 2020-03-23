@@ -93,6 +93,7 @@ public class Login extends AppCompatActivity {
                     if(!response.getString("status").equals("Invalid")){
                         SharedPreferences preferences = getSharedPreferences("User_status", 0);
                         SharedPreferences.Editor editor = preferences.edit();
+                        editor.putLong("userID", response.getLong("userID"));
                         editor.putString("username", response.getString("username"));
                         editor.putString("email", response.getString("email"));
                         editor.putString("email", response.getString("email"));
