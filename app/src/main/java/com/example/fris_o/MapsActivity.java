@@ -8,8 +8,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -17,7 +15,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
@@ -32,19 +29,17 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.util.List;
 import java.util.Random;
 
 
@@ -53,7 +48,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     LocationManager locationManager;
     private static final int REQUEST_LOCATION_PERMISSION = 1;
-    Marker marker;
     LocationListener locationListener;
     Random rand = new Random();
     static boolean first = false;
@@ -89,15 +83,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     double latitude = location.getLatitude();
                     double longitude = location.getLongitude();
+                    LatLng latLng = new LatLng(latitude, longitude);
+
+                    CameraPosition cameraPosition = new CameraPosition.Builder().
+                            target(latLng).
+                            tilt(45).
+                            zoom(20).
+                            bearing(0).
+                            build();
+                    mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
                     sendUserLocation(latitude, longitude);
                     mMap.clear();
 
                     drawPlayer(latitude, longitude);
-
+                    //drawGameCircle();
                     //drawGameCircle(latitude, longitude, 10);
 
-                    LatLng latLng = new LatLng(latitude, longitude);
-                    if (first == false){
+
+                    if (!first){
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                     first = true;}
 
@@ -197,11 +201,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
 
 
-        mMap.setMinZoomPreference(20f);
         UiSettings muiSettings = mMap.getUiSettings();
         muiSettings.setZoomControlsEnabled(true);
         muiSettings.setZoomGesturesEnabled(true);
         muiSettings.setScrollGesturesEnabled(true);
+        muiSettings.setMyLocationButtonEnabled (true);
     }
 
     @Override
