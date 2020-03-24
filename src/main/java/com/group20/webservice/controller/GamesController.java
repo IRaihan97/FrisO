@@ -41,15 +41,15 @@ public class GamesController {
 	}
 	
 	@PostMapping("/nearGames")
-	public List<Games> getNearGames(@Valid @RequestBody Users user){
+	public List<Games> getNearGames(@Valid @RequestBody List<Users> user){
 		List<Games> games = gamesRepo.findAll();
 		List<Games> result = new ArrayList<>();
 		for(int i= 0; i < games.size(); i++) {
 			Games game = games.get(i);
 			double glat = game.getLocationlat();
 			double glon = game.getLocationlon();
-			double userlon = user.getLocationlon();
-			double userlat = user.getLocationlat();
+			double userlon = user.get(0).getLocationlon();
+			double userlat = user.get(0).getLocationlat();
 			
 			double lowerlon = userlon - 0.0172764;
 			double upperlon = userlon + 0.0172764;
