@@ -34,6 +34,10 @@ public class Games {
     private double locationlon;
     
     private double locationlatlon;
+    
+    private double speed;
+    
+    private int difficulty;
   
     private int scoret1;
      
@@ -107,6 +111,24 @@ public class Games {
 
 	public void setLocationlon(double locationlon) {
 		this.locationlon = locationlon;
+	}
+	
+	
+
+	public double getSpeed() {
+		return speed;
+	}
+
+	public void setSpeed(double speed) {
+		this.speed = speed;
+	}
+
+	public int getDifficulty() {
+		return difficulty;
+	}
+
+	public void setDifficulty(int difficulty) {
+		this.difficulty = difficulty;
 	}
 
 	public int getTimer() {
