@@ -52,6 +52,33 @@ public class VolleyService {
         }
     }
 
+    public void postDataVolleyArrayResp(final String requestType, String url, JSONArray sendObj){
+
+        try {
+            RequestQueue queue = Volley.newRequestQueue(mContext);
+
+            JsonArrayRequest jsonObj = new JsonArrayRequest(Request.Method.POST, url,sendObj, new Response.Listener<JSONArray>() {
+                @Override
+                public void onResponse(JSONArray response) {
+                    if(mResultCallback != null)
+                        mResultCallback.ArrSuccess(requestType,response);
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    if(mResultCallback != null)
+                        mResultCallback.notifyError(requestType,error);
+                }
+            });
+
+
+            queue.add(jsonObj);
+
+        }catch(Exception e){
+
+        }
+    }
+
     public void getDataVolley(final String requestType, String url){
 
         try {

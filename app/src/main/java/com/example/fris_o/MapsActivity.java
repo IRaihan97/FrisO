@@ -40,6 +40,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
 import java.util.Random;
 
 
@@ -62,6 +63,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        SharedPreferences preferences = getSharedPreferences("User_status", 0);
+        double locationlon = (double) preferences.getFloat("locationlon", 0);
+        Log.d("location", "onCreate: " + locationlon);
+        double locationlat = (double) preferences.getFloat("locationlat", 0);
+        Log.d("location", "onCreate: " + locationlat);
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -84,6 +91,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     double latitude = location.getLatitude();
                     double longitude = location.getLongitude();
                     LatLng latLng = new LatLng(latitude, longitude);
+                    saveAllGames(latitude, longitude);
 
                     CameraPosition cameraPosition = new CameraPosition.Builder().
                             target(latLng).
@@ -255,6 +263,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mVolleyService.putDataVolley("input", "http://172.31.82.149:8080/api/users/location/" + String.valueOf(id), obj);
     }
 
+    private void saveAllGames(double locationlat, double locationlon){
+        JSONArray array = new JSONArray();
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("locationlat", locationlat);
+            obj.put("locationlon", locationlon);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        array.put(obj);
+        getGamesResp();
+        mVolleyService = new VolleyService(result, ctx);
+        mVolleyService.postDataVolleyArrayResp("Post", "http://172.31.82.149:8080/api/nearGames", array);
+
+    }
+
     private void deleteGame(){
 
     }
@@ -271,6 +295,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void ArrSuccess(String requestType, JSONArray response) {
                 db.resetUsers();//resets users table
                 db.addAllUsers(response);//adds all users from server response
+            }
+
+            @Override
+            public void notifyError(String requestType, VolleyError error) {
+
+            }
+        };
+    }
+
+    private void getGamesResp(){
+        result = new IResult() {
+            @Override
+            public void ObjSuccess(String requestType, JSONObject response) {
+
+            }
+
+            @Override
+            public void ArrSuccess(String requestType, JSONArray response) {
+                db.resetGames();//resets games table
+                db.addAllGames(response);//adds all users from server response
             }
 
             @Override
@@ -325,6 +369,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         };
     }
+
+
 
     //Saves a game in the SharedPrefence
     private void saveGame(Games game){

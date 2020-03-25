@@ -17,6 +17,8 @@ public class Util {
     public static final String GAMEKEY_LOCLATLON = "locationlatlon";
     public static final String GAMEKEY_SCORET1 = "scoret1";
     public static final String GAMEKEY_SCORET2 = "scoret2";
+    public static final String GAMEKEY_SPEED = "speed";
+    public static final String GAMEKEY_DIFFICULTY = "difficulty";
     public static final String GAMEKEY_TIMER = "timer";
     public static final String GAMEKEY_ROUND = "round";
     public static final String GAMEKEY_PASSWORD = "password";

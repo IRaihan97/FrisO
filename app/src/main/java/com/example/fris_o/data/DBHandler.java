@@ -33,11 +33,13 @@ public class DBHandler extends SQLiteOpenHelper {
                 Util.GAMEKEY_LOCLAT + " DOUBLE ," +
                 Util.GAMEKEY_LOCLATLON + " DOUBLE ," +
                 Util.GAMEKEY_LOCLON + " DOUBLE ," +
-                Util.GAMEKEY_PASSWORD + " TEXT," +
-                Util.GAMEKEY_ROUND + " INTEGER," +
                 Util.GAMEKEY_SCORET1 + " INTEGER," +
                 Util.GAMEKEY_SCORET2 + " INTEGER," +
-                Util.GAMEKEY_TIMER + " INTEGER" +
+                Util.GAMEKEY_SPEED+ " DOUBLE ," +
+                Util.GAMEKEY_DIFFICULTY + " INTEGER ," +
+                Util.GAMEKEY_TIMER + " INTEGER," +
+                Util.GAMEKEY_ROUND + " INTEGER," +
+                Util.GAMEKEY_PASSWORD + " TEXT" +
                 ");";
 
         String create_users_tbl = "CREATE TABLE IF NOT EXISTS " + Util.TBL_USERS + "(" +
@@ -78,6 +80,8 @@ public class DBHandler extends SQLiteOpenHelper {
             value.put(Util.GAMEKEY_LOCLATLON, object.getDouble("locationlatlon"));
             value.put(Util.GAMEKEY_SCORET1, object.getInt("scoret1"));
             value.put(Util.GAMEKEY_SCORET2, object.getInt("scoret2"));
+            value.put(Util.GAMEKEY_SPEED, object.getDouble("speed"));
+            value.put(Util.GAMEKEY_DIFFICULTY, object.getInt("difficulty"));
             value.put(Util.GAMEKEY_TIMER, object.getInt("timer"));
             value.put(Util.GAMEKEY_ROUND, object.getInt("round"));
             value.put(Util.GAMEKEY_PASSWORD, object.getString("password"));
@@ -106,6 +110,8 @@ public class DBHandler extends SQLiteOpenHelper {
                 value.put(Util.GAMEKEY_LOCLATLON, array.getJSONObject(i).getDouble("locationlatlon"));
                 value.put(Util.GAMEKEY_SCORET1, array.getJSONObject(i).getInt("scoret1"));
                 value.put(Util.GAMEKEY_SCORET2, array.getJSONObject(i).getInt("scoret2"));
+                value.put(Util.GAMEKEY_SPEED, array.getJSONObject(i).getDouble("speed"));
+                value.put(Util.GAMEKEY_DIFFICULTY, array.getJSONObject(i).getInt("difficulty"));
                 value.put(Util.GAMEKEY_TIMER, array.getJSONObject(i).getInt("timer"));
                 value.put(Util.GAMEKEY_ROUND, array.getJSONObject(i).getInt("round"));
                 value.put(Util.GAMEKEY_PASSWORD, array.getJSONObject(i).getString("password"));
@@ -134,6 +140,8 @@ public class DBHandler extends SQLiteOpenHelper {
                         Util.GAMEKEY_LOCLATLON,
                         Util.GAMEKEY_SCORET1,
                         Util.GAMEKEY_SCORET2,
+                        Util.GAMEKEY_SPEED,
+                        Util.GAMEKEY_DIFFICULTY,
                         Util.GAMEKEY_TIMER,
                         Util.GAMEKEY_ROUND,
                         Util.GAMEKEY_PASSWORD
@@ -151,9 +159,11 @@ public class DBHandler extends SQLiteOpenHelper {
             game.setLocationlatlon(Double.parseDouble(cursor.getString(7)));
             game.setScoret1(Integer.parseInt(cursor.getString(8)));
             game.setScoret2(Integer.parseInt(cursor.getString(9)));
-            game.setTimer(Integer.parseInt(cursor.getString(10)));
-            game.setRound(Integer.parseInt(cursor.getString(11)));
-            game.setPassword(cursor.getString(12));
+            game.setSpeed(Double.parseDouble(cursor.getString(10)));
+            game.setDifficulty(Integer.parseInt(cursor.getString(11)));
+            game.setTimer(Integer.parseInt(cursor.getString(12)));
+            game.setRound(Integer.parseInt(cursor.getString(13)));
+            game.setPassword(cursor.getString(14));
         }
 
         return game;
@@ -176,11 +186,13 @@ public class DBHandler extends SQLiteOpenHelper {
                 game.setLocationlat(Double.parseDouble(cursor.getString(5)));
                 game.setLocationlon(Double.parseDouble(cursor.getString(6)));
                 game.setLocationlatlon(Double.parseDouble(cursor.getString(7)));
-                game.setScoret1(cursor.getInt(8));
-                game.setScoret2(cursor.getInt(9));
-                game.setTimer(Integer.parseInt(cursor.getString(10)));
-                game.setRound(Integer.parseInt(cursor.getString(11)));
-                game.setPassword(cursor.getString(12));
+                game.setScoret1(Integer.parseInt(cursor.getString(8)));
+                game.setScoret2(Integer.parseInt(cursor.getString(9)));
+                game.setSpeed(Double.parseDouble(cursor.getString(10)));
+                game.setDifficulty(Integer.parseInt(cursor.getString(11)));
+                game.setTimer(Integer.parseInt(cursor.getString(12)));
+                game.setRound(Integer.parseInt(cursor.getString(13)));
+                game.setPassword(cursor.getString(14));
 
                 gamesList.add(game);
             }while(cursor.moveToNext());
