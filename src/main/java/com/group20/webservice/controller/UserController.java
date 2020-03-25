@@ -144,6 +144,21 @@ public class UserController {
 	    return updatedUser;
 	}
 	
+	@PutMapping("/users/upStatus/{id}")
+	public Users updateStatus(@PathVariable(value = "id") Long userId,
+	                                        @Valid @RequestBody Users userDetails) {
+
+	    Users user = userRepo.findById(userId)
+	            .orElseThrow(() -> new ResourceNotFound("User", "id", userId));
+
+	    user.setStatus(userDetails.getStatus());
+	   
+
+	    Users updatedUser = userRepo.save(user);
+	    return updatedUser;
+	}
+	
+	
 	@PutMapping("/users/upGame/{id}")
 	public Response updateGameID(	@PathVariable(value = "id") Long userId,
 								@Valid @RequestBody Users userDetails) 
@@ -152,17 +167,28 @@ public class UserController {
 	    Users user = userRepo.findById(userId)
 	            .orElseThrow(() -> new ResourceNotFound("User", "id", userId));
 
-	    user.setGameID(userDetails.getGameID());
-	    long gamesId = userRepo.save(user).getGameID();
-	    Games game = gamesRepo.findById(gamesId)
-	            .orElseThrow(() -> new ResourceNotFound("Game", "id", gamesId));
+	    
 	    String response = "";
-	    if(!game.equals(null)) {
-	    	response = "Valid";
+	    if(userDetails.getGameID() == 0) {
+	    	user.setGameID(userDetails.getGameID());
+	    	userRepo.save(user);
+	    	response = "Exited Game";
 	    }
 	    else {
-	    	response = "Invalid";
+	    	Games game = gamesRepo.findById(userDetails.getGameID())
+		            .orElseThrow(() -> new ResourceNotFound("Game", "id", userDetails.getGameID()));
+	    	if(!game.equals(null)) {
+		    	user.setGameID(userDetails.getGameID());
+		    	userRepo.save(user);
+		    	response = "Joined Game";
+		    }
+		    
+		    else {
+		    	response = "Invalid Game";
+		    }
 	    }
+	    
+	    
 	    
 	    return new Response(response);
 	}
