@@ -29,7 +29,6 @@ public class Util {
     public static final String USERKEY_ID = "userID";
     public static final String USERKEY_NAME = "username";
     public static final String USERKEY_EMAIL = "email";
-    public static final String USERKEY_PASSWORD = "password";
     public static final String USERKEY_LOCLAT = "locationlat";
     public static final String USERKEY_LOCLON = "locationlon";
     public static final String USERKEY_LOCLATLON = "locationlatlon";
