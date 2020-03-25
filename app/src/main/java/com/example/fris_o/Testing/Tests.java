@@ -69,9 +69,9 @@ public class Tests extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                postResponse();
+                saveAllUsers();
                 mVolleyService = new VolleyService(result, ctx);
-                mVolleyService.postDataVolley("POST", "http://172.31.82.149:8080/api/games", obj);
+                mVolleyService.getDataArrayVolley("GET", "http://172.31.82.149:8080/api/userGame" + String.valueOf(1));
 
 
             }
@@ -131,6 +131,11 @@ public class Tests extends AppCompatActivity {
             public void ArrSuccess(String requestType, JSONArray response) {
                 db.resetUsers();
                 db.addAllUsers(response);
+                try {
+                    Log.d("user", "ArrSuccess: " + response.getJSONObject(0).getString("username"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override

@@ -214,7 +214,6 @@ public class DBHandler extends SQLiteOpenHelper {
             value.put(Util.USERKEY_ID, object.getLong("userID"));
             value.put(Util.USERKEY_NAME, object.getString("username"));
             value.put(Util.USERKEY_EMAIL, object.getString("email"));
-            value.put(Util.USERKEY_PASSWORD, object.getString("password"));
             value.put(Util.USERKEY_LOCLAT, object.getDouble("locationlat"));
             value.put(Util.USERKEY_LOCLON, object.getDouble("locationlon"));
             value.put(Util.USERKEY_LOCLATLON, object.getDouble("locationlatlon"));
@@ -246,7 +245,7 @@ public class DBHandler extends SQLiteOpenHelper {
                 e.printStackTrace();
             }
 
-            Log.d("ALLGAME", "addAllGames: " + value.getAsString("name"));
+            Log.d("ALLUser", "addAllUser: " + value.getAsString("username"));
             db.insert(Util.TBL_USERS, null, value);
         }
     }
@@ -265,7 +264,7 @@ public class DBHandler extends SQLiteOpenHelper {
                                 Util.USERKEY_LOCLATLON,
                                 Util.USERKEY_STATUS,
                                 Util.USERKEY_GAMEID
-                        }, Util.USERKEY_GAMEID + "=?", new String[]{String.valueOf(id)},
+                        }, Util.USERKEY_ID + "=?", new String[]{String.valueOf(id)},
                 null, null, null);
         if(cursor != null){
             cursor.moveToFirst();
@@ -277,7 +276,7 @@ public class DBHandler extends SQLiteOpenHelper {
         user.setLocationlat(Double.parseDouble(cursor.getString(3)));
         user.setLocationlon(Double.parseDouble(cursor.getString(4)));
         user.setLocationlatlon(Double.parseDouble(cursor.getString(5)));
-        user.setPassword(cursor.getString(6));
+        user.setStatus(cursor.getString(6));
         user.setGameID(Long.parseLong(cursor.getString(7)));
 
         return user;
@@ -295,12 +294,11 @@ public class DBHandler extends SQLiteOpenHelper {
                 user.setUserID(Long.parseLong(cursor.getString(0)));
                 user.setUsername(cursor.getString(1));
                 user.setEmail(cursor.getString(2));
-                user.setPassword(cursor.getString(3));
-                user.setLocationlat(Double.parseDouble(cursor.getString(4)));
-                user.setLocationlon(Double.parseDouble(cursor.getString(5)));
-                user.setLocationlatlon(Double.parseDouble(cursor.getString(6)));
-                user.setPassword(cursor.getString(7));
-                user.setGameID(Long.parseLong(cursor.getString(8)));
+                user.setLocationlat(Double.parseDouble(cursor.getString(3)));
+                user.setLocationlon(Double.parseDouble(cursor.getString(4)));
+                user.setLocationlatlon(Double.parseDouble(cursor.getString(5)));
+                user.setStatus(cursor.getString(6));
+                user.setGameID(Long.parseLong(cursor.getString(7)));
                 usersList.add(user);
             }while(cursor.moveToNext());
         }

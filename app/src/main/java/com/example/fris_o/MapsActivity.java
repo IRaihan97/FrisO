@@ -21,6 +21,7 @@ import androidx.fragment.app.FragmentActivity;
 import com.android.volley.VolleyError;
 import com.example.fris_o.data.DBHandler;
 import com.example.fris_o.models.Games;
+import com.example.fris_o.models.Users;
 import com.example.fris_o.tools.IResult;
 import com.example.fris_o.tools.VolleyService;
 import com.example.fris_o.ui.Menu_and_settings;
@@ -59,15 +60,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     DBHandler db = new DBHandler(this);
 
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        SharedPreferences preferences = getSharedPreferences("User_status", 0);
-        double locationlon = (double) preferences.getFloat("locationlon", 0);
-        Log.d("location", "onCreate: " + locationlon);
-        double locationlat = (double) preferences.getFloat("locationlat", 0);
-        Log.d("location", "onCreate: " + locationlat);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -91,6 +89,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     double latitude = location.getLatitude();
                     double longitude = location.getLongitude();
                     LatLng latLng = new LatLng(latitude, longitude);
+                    //Gats all games based on the user's lccation and adds them to a local database
                     saveAllGames(latitude, longitude);
 
                     CameraPosition cameraPosition = new CameraPosition.Builder().
@@ -279,78 +278,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    private void deleteGame(){
-
-    }
-
-    //Response for "getUsersByGame" - executed when server sends a response saves users from response
-    private void saveAllUsers(){
-        result = new IResult() {
-            @Override
-            public void ObjSuccess(String requestType, JSONObject response) {
-
-            }
-
-            @Override
-            public void ArrSuccess(String requestType, JSONArray response) {
-                db.resetUsers();//resets users table
-                db.addAllUsers(response);//adds all users from server response
-            }
-
-            @Override
-            public void notifyError(String requestType, VolleyError error) {
-
-            }
-        };
-    }
-
-    private void getGamesResp(){
-        result = new IResult() {
-            @Override
-            public void ObjSuccess(String requestType, JSONObject response) {
-
-            }
-
-            @Override
-            public void ArrSuccess(String requestType, JSONArray response) {
-                db.resetGames();//resets games table
-                db.addAllGames(response);//adds all users from server response
-            }
-
-            @Override
-            public void notifyError(String requestType, VolleyError error) {
-
-            }
-        };
-    }
-
-    private void joinResponse(final long gameID){
-        result = new IResult() {
-            @Override
-            public void ObjSuccess(String requestType, JSONObject response) {
-                try {
-                    if(response.getString("msg").equals("Valid")){
-                        Games game = db.getGame(gameID);
-
-
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void ArrSuccess(String requestType, JSONArray response) {
-
-            }
-
-            @Override
-            public void notifyError(String requestType, VolleyError error) {
-
-            }
-        };
-    }
-
     private void setSession(){
         result = new IResult() {
             @Override
@@ -409,5 +336,78 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         game.setRound(preferences.getInt("round", 0));
         game.setPassword(preferences.getString("password", null));
         return game;
+    }
+
+    //Response for "getUsersByGame" - executed when server sends a response saves users from response
+    private void saveAllUsers(){
+        result = new IResult() {
+            @Override
+            public void ObjSuccess(String requestType, JSONObject response) {
+
+            }
+
+            @Override
+            public void ArrSuccess(String requestType, JSONArray response) {
+                db.resetUsers();//resets users table
+                db.addAllUsers(response);//adds all users from server response
+                try {
+                    Log.d("User", "ArrSuccess: " + response.getJSONObject(0).getString("username"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void notifyError(String requestType, VolleyError error) {
+
+            }
+        };
+    }
+
+    private void getGamesResp(){
+        result = new IResult() {
+            @Override
+            public void ObjSuccess(String requestType, JSONObject response) {
+
+            }
+
+            @Override
+            public void ArrSuccess(String requestType, JSONArray response) {
+                db.resetGames();//resets games table
+                db.addAllGames(response);//adds all users from server response
+            }
+
+            @Override
+            public void notifyError(String requestType, VolleyError error) {
+
+            }
+        };
+    }
+
+    private void joinResponse(final long gameID){
+        result = new IResult() {
+            @Override
+            public void ObjSuccess(String requestType, JSONObject response) {
+                try {
+                    if(response.getString("msg").equals("Valid")){
+                        Games game = db.getGame(gameID);
+
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void ArrSuccess(String requestType, JSONArray response) {
+
+            }
+
+            @Override
+            public void notifyError(String requestType, VolleyError error) {
+
+            }
+        };
     }
 }
