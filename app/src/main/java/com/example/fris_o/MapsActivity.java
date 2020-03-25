@@ -226,6 +226,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         startActivity(i);
     }
 
+
+    //------------------methods to query the online db---------------------//
     //Saves all users from server with gameID equal to the passed value
     private void getUsersByGameID(long gameID){
         saveAllUsers();
@@ -233,21 +235,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mVolleyService.getDataArrayVolley("GET", "http://172.31.82.149:8080/api/userGame/"+ String.valueOf(gameID));
     }
 
-    //Updates user's gameid to the session it wants to enter
-    private void setUserGame(long gameID, long userID){
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("gameID", gameID);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        joinResponse(gameID);
-        mVolleyService = new VolleyService(result, ctx);
-        mVolleyService.putDataVolley("PUT", "http://172.31.82.149:8080/api/users/upGame/"+ String.valueOf(userID), obj);
-    }
-
+    //Updates user's location
     private void sendUserLocation(double latitude, double longitude){
+        SharedPreferences preferences = getSharedPreferences("User_status", 0);
+        long userID = preferences.getLong("userID", 0);
         JSONObject obj = new JSONObject();
         try{
             obj.put("locationlat", latitude);
@@ -256,12 +247,41 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             e.printStackTrace();
         }
         setSession();
-        SharedPreferences preferences = getSharedPreferences("User_status", 0);
-        Long id= preferences.getLong("userID", 0l);
         mVolleyService = new VolleyService(result, ctx);
-        mVolleyService.putDataVolley("input", "http://172.31.82.149:8080/api/users/location/" + String.valueOf(id), obj);
+        mVolleyService.putDataVolley("input", "http://172.31.82.149:8080/api/users/location/" + String.valueOf(userID), obj);
     }
 
+    //Updates user's status to the passed string
+    private void sendUserStatus(String status){
+        SharedPreferences preferences = getSharedPreferences("User_status", 0);
+        long userID = preferences.getLong("userID", 0);
+        JSONObject obj = new JSONObject();
+        try{
+            obj.put("status", status);
+        }   catch (JSONException e) {
+            e.printStackTrace();
+        }
+        setSession();
+        mVolleyService = new VolleyService(result, ctx);
+        mVolleyService.putDataVolley("input", "http://172.31.82.149:8080/api/users/upStatus/" + String.valueOf(userID), obj);
+    }
+
+    //Updates user's gameid to the session it wants to enter
+    private void sendUserGameID(long gameID){
+        SharedPreferences preferences = getSharedPreferences("User_status", 0);
+        long userID = preferences.getLong("userID", 0);
+        JSONObject obj = new JSONObject();
+        try{
+            obj.put("gameID", gameID);
+        }   catch (JSONException e) {
+            e.printStackTrace();
+        }
+        setSession();
+        mVolleyService = new VolleyService(result, ctx);
+        mVolleyService.putDataVolley("input", "http://172.31.82.149:8080/api/users/upGame/" + String.valueOf(userID), obj);
+    }
+
+    //Adds all nearby games to local db
     private void saveAllGames(double locationlat, double locationlon){
         JSONArray array = new JSONArray();
         JSONObject obj = new JSONObject();
@@ -277,6 +297,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mVolleyService.postDataVolleyArrayResp("Post", "http://172.31.82.149:8080/api/nearGames", array);
 
     }
+    //------------------methods to query the online db---------------------//
 
     private void setSession(){
         result = new IResult() {
@@ -296,8 +317,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         };
     }
-
-
 
     //Saves a game in the SharedPrefence
     private void saveGame(Games game){
@@ -383,31 +402,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         };
     }
-
-    private void joinResponse(final long gameID){
-        result = new IResult() {
-            @Override
-            public void ObjSuccess(String requestType, JSONObject response) {
-                try {
-                    if(response.getString("msg").equals("Valid")){
-                        Games game = db.getGame(gameID);
-
-
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void ArrSuccess(String requestType, JSONArray response) {
-
-            }
-
-            @Override
-            public void notifyError(String requestType, VolleyError error) {
-
-            }
-        };
-    }
+    
 }
