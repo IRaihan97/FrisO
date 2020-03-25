@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -25,6 +26,7 @@ import com.example.fris_o.data.DBHandler;
 import com.example.fris_o.models.Games;
 import com.example.fris_o.tools.IResult;
 import com.example.fris_o.tools.VolleyService;
+import com.example.fris_o.ui.Menu_and_settings;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -219,7 +221,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         locationManager.removeUpdates(locationListener);
     }
 
-   public void GoToMenu(View view){
+   public void GoToPopup(View view){
        myDialog = new Dialog(this);
        TextView txtclose;
        myDialog.setContentView(R.layout.popup_menu);
@@ -234,10 +236,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
        myDialog.show();}
 
-    /*public void GoToPopup(View view){
-        Intent i = new Intent(this, GamePopupMenu.class);
+    public void GoToMenu(View view){
+        Intent i = new Intent(this, Menu_and_settings.class);
         startActivity(i);
-    }*/
+    }
 
     //Saves all users from server with gameID equal to the passed value
     private void getUsersByGameID(long gameID){
