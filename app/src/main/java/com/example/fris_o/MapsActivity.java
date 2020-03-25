@@ -2,18 +2,20 @@ package com.example.fris_o;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -23,14 +25,12 @@ import com.example.fris_o.data.DBHandler;
 import com.example.fris_o.models.Games;
 import com.example.fris_o.tools.IResult;
 import com.example.fris_o.tools.VolleyService;
-import com.example.fris_o.ui.Menu_and_settings;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
@@ -40,7 +40,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.List;
 import java.util.Random;
 
 
@@ -58,7 +57,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Context ctx = this;
     DBHandler db = new DBHandler(this);
 
-
+    Dialog myDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,8 +95,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     CameraPosition cameraPosition = new CameraPosition.Builder().
                             target(latLng).
                             tilt(45).
-                            zoom(20).
-                            bearing(0).
+                            zoom((float) 19.8).
                             build();
                     mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
@@ -155,7 +153,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .strokeWidth(10)
                 .fillColor(Color.argb(10, 225, 0, 0))
                 .strokeColor(Color.argb(100, 225, 0, 0));
-        Circle circle = mMap.addCircle(circleOptions);
+        mMap.addCircle(circleOptions);
     }
 
     private void drawPlayer(double latitude, double longitude) {
@@ -165,7 +163,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .strokeWidth(10)
                 .fillColor(Color.argb(255, 205, 90, 0))
                 .strokeColor(Color.argb(255, 225, 128, 0));
-        Circle circle = mMap.addCircle(circleOptions);
+        mMap.addCircle(circleOptions);
     }
 
     private void drawOtherPlayers(double latitude, double longitude) {
@@ -179,7 +177,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .strokeWidth(10)
                 .fillColor(Color.argb(255, rred, rgreen, rblue))
                 .strokeColor(Color.argb(255, (rred+50), (rgreen+50), (rblue+50)));
-        Circle circle = mMap.addCircle(circleOptions);
+        mMap.addCircle(circleOptions);
     }
 
 
@@ -213,7 +211,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         muiSettings.setZoomControlsEnabled(true);
         muiSettings.setZoomGesturesEnabled(true);
         muiSettings.setScrollGesturesEnabled(true);
-        muiSettings.setMyLocationButtonEnabled (true);
     }
 
     @Override
@@ -222,10 +219,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         locationManager.removeUpdates(locationListener);
     }
 
-    public void GoToMenu(View view){
-        Intent i = new Intent(this, Menu_and_settings.class);
+   public void GoToMenu(View view){
+       myDialog = new Dialog(this);
+       TextView txtclose;
+       myDialog.setContentView(R.layout.popup_menu);
+       txtclose =(TextView) myDialog.findViewById(R.id.txtclose);
+       txtclose.setText("X");
+       txtclose.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               myDialog.dismiss();
+           }
+       });
+       myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+       myDialog.show();}
+
+    /*public void GoToPopup(View view){
+        Intent i = new Intent(this, GamePopupMenu.class);
         startActivity(i);
-    }
+    }*/
 
     //Saves all users from server with gameID equal to the passed value
     private void getUsersByGameID(long gameID){

@@ -2,5 +2,14 @@
 <resources>
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
+    <color name="lorange">#e3ad5d</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="bluelight">#49acd5</color>
+    <color name="dbluelight">#3782a1</color>
+    <color name="green">#45bc62</color>
+    <color name="dgreen">#309c4a</color>
+    <color name="orange">#c28e42</color>
+    <color name="white">#fff</color>
+    <color name="red">#d6660b</color>
+    <color name="dred">#bf5b0a</color>
 </resources>
