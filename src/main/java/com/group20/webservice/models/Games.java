@@ -46,6 +46,8 @@ public class Games {
     private int timer;
 
     private int round;
+    
+    private int playercounter;
 
     private String password;
 
@@ -80,6 +82,14 @@ public class Games {
 	public void setDestlon(double destlon) {
 		this.destlon = destlon;
 	}
+	
+	public double getDestlatlon() {
+		return destlatlon;
+	}
+
+	public void setDestlatlon(double destlatlon) {
+		this.destlatlon = destlatlon;
+	}
 
 	public int getScoret1() {
 		return scoret1;
@@ -113,7 +123,13 @@ public class Games {
 		this.locationlon = locationlon;
 	}
 	
-	
+	public double getLocationlatlon() {
+		return locationlatlon;
+	}
+
+	public void setLocationlatlon(double locationlatlon) {
+		this.locationlatlon = locationlatlon;
+	}
 
 	public double getSpeed() {
 		return speed;
@@ -146,6 +162,16 @@ public class Games {
 	public void setRound(int round) {
 		this.round = round;
 	}
+	
+	
+
+	public int getPlayercounter() {
+		return playercounter;
+	}
+
+	public void setPlayercounter(int playercounter) {
+		this.playercounter = playercounter;
+	}
 
 	public String getPassword() {
 		return password;
@@ -153,22 +179,6 @@ public class Games {
 
 	public void setPassword(String password) {
 		this.password = password;
-	}
-
-	public double getLocationlatlon() {
-		return locationlatlon;
-	}
-
-	public void setLocationlatlon(double locationlatlon) {
-		this.locationlatlon = locationlatlon;
-	}
-
-	public double getDestlatlon() {
-		return destlatlon;
-	}
-
-	public void setDestlatlon(double destlatlon) {
-		this.destlatlon = destlatlon;
 	}
 
 	

@@ -89,31 +89,52 @@ public class GamesController {
 	    Games updatedGame = gamesRepo.save(game);
 	    return updatedGame;
 	}
+
 	
 	@PutMapping("/games/upScoret1/{id}")
-	public Games updateGameScoreT1(@PathVariable(value = "id") Long gamesId,
-	                                        @Valid @RequestBody Games gameDetails) {
+	public Games updateGameScoreT1(@PathVariable(value = "id") Long gamesId) {
 
 	    Games game = gamesRepo.findById(gamesId)
 	            .orElseThrow(() -> new ResourceNotFound("Games", "id", gamesId));
-
-	    game.setScoret1(gameDetails.getScoret1());
-	   
-
+	    int currentScore = game.getScoret1();
+	    currentScore += 1;
+	    game.setScoret1(currentScore);
 	    Games updatedGame = gamesRepo.save(game);
 	    return updatedGame;
 	}
 	
 	@PutMapping("/games/upScoret2/{id}")
-	public Games updateGameScoreT2(@PathVariable(value = "id") Long gamesId,
-	                                        @Valid @RequestBody Games gameDetails) {
+	public Games updateGameScoreT2(@PathVariable(value = "id") Long gamesId) {
 
 	    Games game = gamesRepo.findById(gamesId)
 	            .orElseThrow(() -> new ResourceNotFound("Games", "id", gamesId));
+	    int currentScore = game.getScoret2();
+	    currentScore += 1;
+	    game.setScoret2(currentScore);
+	    Games updatedGame = gamesRepo.save(game);
+	    return updatedGame;
+	}
 
-	    game.setScoret2(gameDetails.getScoret2());
-	   
+	@PutMapping("/games/addCounter/{id}")
+	public Games increasePlayerCounter(@PathVariable(value = "id") Long gamesId) {
 
+	    Games game = gamesRepo.findById(gamesId)
+	            .orElseThrow(() -> new ResourceNotFound("Games", "id", gamesId));
+	    int currentPlayers = game.getPlayercounter();
+	    currentPlayers += 1;
+	    game.setScoret1(currentPlayers);
+	    Games updatedGame = gamesRepo.save(game);
+	    return updatedGame;
+	}
+	
+	@PutMapping("/games/rmCounter/{id}")
+	public Games decreasePlayerCounter(@PathVariable(value = "id") Long gamesId) {
+
+	    Games game = gamesRepo.findById(gamesId)
+	            .orElseThrow(() -> new ResourceNotFound("Games", "id", gamesId));
+	    int currentPlayers = game.getPlayercounter();
+	    currentPlayers -= 1;
+	    game.setScoret1(currentPlayers);
 	    Games updatedGame = gamesRepo.save(game);
 	    return updatedGame;
 	}
@@ -132,7 +153,8 @@ public class GamesController {
 	    return updatedGame;
 	}
 	
-	@PutMapping("/games/destination/{id}")
+	
+	@PutMapping("/games/upDestination/{id}")
 	public Games updateGameDest(@PathVariable(value = "id") Long gamesId,
 	                                        @Valid @RequestBody Games gameDetails) {
 
@@ -146,7 +168,7 @@ public class GamesController {
 	    return updatedGame;
 	}
 	
-	@PutMapping("/games/location/{id}")
+	@PutMapping("/games/upLocation/{id}")
 	public Games updateGameLoc(@PathVariable(value = "id") Long gamesId,
 	                                        @Valid @RequestBody Games gameDetails) {
 
@@ -160,16 +182,14 @@ public class GamesController {
 	    return updatedGame;
 	}
 	
-	@PutMapping("/games/round/{id}")
-	public Games updateGameRound(@PathVariable(value = "id") Long gamesId,
-	                                        @Valid @RequestBody Games gameDetails) {
+	@PutMapping("/games/upRound/{id}")
+	public Games updateGameRound(@PathVariable(value = "id") Long gamesId) {
 
 	    Games game = gamesRepo.findById(gamesId)
 	            .orElseThrow(() -> new ResourceNotFound("Games", "id", gamesId));
-
-	    game.setRound(gameDetails.getRound());
-	   
-
+	    int currentRound = game.getRound();
+	    currentRound += 1;
+	    game.setRound(currentRound);
 	    Games updatedGame = gamesRepo.save(game);
 	    return updatedGame;
 	}

@@ -33,10 +33,6 @@ public class UserController {
 	public List<Users> getAllUsers() {
 	    return userRepo.findAll();
 	}
-	
-	
-	    
-	
 
 	@PostMapping("/users")
 	public Response createUser(@Valid @RequestBody Users user) {
@@ -102,7 +98,7 @@ public class UserController {
 	
 	//Update Username
 	@PutMapping("/users/upName/{id}")
-	public Users updateUser(@PathVariable(value = "id") Long userId,
+	public Users updateUsername(@PathVariable(value = "id") Long userId,
 	                                        @Valid @RequestBody Users userDetails) {
 
 	    Users user = userRepo.findById(userId)
@@ -115,8 +111,8 @@ public class UserController {
 	    return updatedUser;
 	}
 	
-	@PutMapping("/users/location/{id}")
-	public Users updateGameLoc(@PathVariable(value = "id") Long userId,
+	@PutMapping("/users/upLocation/{id}")
+	public Users updateUserLocation(@PathVariable(value = "id") Long userId,
 	                                        @Valid @RequestBody Users userDetails) {
 
 	    Users user = userRepo.findById(userId)
@@ -158,6 +154,19 @@ public class UserController {
 	    return updatedUser;
 	}
 	
+	@PutMapping("/users/upTeam/{id}")
+	public Users updateTeam(@PathVariable(value = "id") Long userId,
+            @Valid @RequestBody Users userDetails) {
+
+		Users user = userRepo.findById(userId)
+		.orElseThrow(() -> new ResourceNotFound("User", "id", userId));
+		
+		user.setTeam(userDetails.getTeam());
+		
+		
+		Users updatedUser = userRepo.save(user);
+		return updatedUser;
+	}
 	
 	@PutMapping("/users/upGame/{id}")
 	public Response updateGameID(	@PathVariable(value = "id") Long userId,
@@ -192,6 +201,8 @@ public class UserController {
 	    
 	    return new Response(response);
 	}
+	
+	
 	
 	@DeleteMapping("/users/{id}")
 	public ResponseEntity<?> deleteNote(@PathVariable(value = "id") Long userID) {

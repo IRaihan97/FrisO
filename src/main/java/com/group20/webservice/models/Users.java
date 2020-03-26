@@ -31,23 +31,9 @@ public class Users implements Serializable {
 
     private String status;
     
+    private int team;
+    
     private Long gameID;
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	public Long getGameID() {
-		return gameID;
-	}
-
-	public void setGameID(Long gameID) {
-		this.gameID = gameID;
-	}
 
 	public void setUserID(Long userID) {
 		this.userID = userID;
@@ -57,9 +43,6 @@ public class Users implements Serializable {
 		return userID;
 	}
 
-	public void setId(Long id) {
-		this.userID = id;
-	}
 
 	public String getUsername() {
 		return username;
@@ -108,6 +91,31 @@ public class Users implements Serializable {
 	public void setLocationlatlon(double locationlatlon) {
 		this.locationlatlon = locationlatlon;
 	}
+	
+	public String getStatus() {
+		return status;
+	}
 
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	
+	
+	
+	public int getTeam() {
+		return team;
+	}
+
+	public void setTeam(int team) {
+		this.team = team;
+	}
+
+	public Long getGameID() {
+		return gameID;
+	}
+
+	public void setGameID(Long gameID) {
+		this.gameID = gameID;
+	}
     
 }
