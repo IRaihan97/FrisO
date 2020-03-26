@@ -51,6 +51,7 @@ public class DBHandler extends SQLiteOpenHelper {
                 Util.USERKEY_LOCLON + " DOUBLE ," +
                 Util.USERKEY_LOCLATLON + " DOUBLE ," +
                 Util.USERKEY_STATUS + " TEXT," +
+                Util.USERKEY_TEAM + " INTEGER," +
                 Util.USERKEY_GAMEID + " INTEGER" +
                 ");";
 
@@ -66,6 +67,7 @@ public class DBHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    //------GAMES LOCAL DB QUERIES-------//
     //Adds a single game on the db passed as json format
     public void addGame(JSONObject object){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -212,7 +214,9 @@ public class DBHandler extends SQLiteOpenHelper {
         db.execSQL("DELETE FROM " + Util.TBL_GAMES);
         db.close();
     }
+    //------GAMES LOCAL DB QUERIES-------//
 
+    //------USERS LOCAL DB QUERIES-------//
     public void addUser(JSONObject object){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues value = new ContentValues();
@@ -224,6 +228,7 @@ public class DBHandler extends SQLiteOpenHelper {
             value.put(Util.USERKEY_LOCLON, object.getDouble("locationlon"));
             value.put(Util.USERKEY_LOCLATLON, object.getDouble("locationlatlon"));
             value.put(Util.USERKEY_STATUS, object.getString("status"));
+            value.put(Util.USERKEY_TEAM, object.getInt("team"));
             value.put(Util.USERKEY_GAMEID, object.getLong("gameID"));
         } catch (JSONException e) {
             e.printStackTrace();
@@ -246,6 +251,7 @@ public class DBHandler extends SQLiteOpenHelper {
                 value.put(Util.USERKEY_LOCLON, array.getJSONObject(i).getDouble("locationlon"));
                 value.put(Util.USERKEY_LOCLATLON, array.getJSONObject(i).getDouble("locationlatlon"));
                 value.put(Util.USERKEY_STATUS, array.getJSONObject(i).getString("status"));
+                value.put(Util.USERKEY_TEAM, array.getJSONObject(i).getInt("team"));
                 value.put(Util.USERKEY_GAMEID, array.getJSONObject(i).getLong("gameID"));
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -269,6 +275,7 @@ public class DBHandler extends SQLiteOpenHelper {
                                 Util.USERKEY_LOCLON,
                                 Util.USERKEY_LOCLATLON,
                                 Util.USERKEY_STATUS,
+                                Util.USERKEY_TEAM,
                                 Util.USERKEY_GAMEID
                         }, Util.USERKEY_ID + "=?", new String[]{String.valueOf(id)},
                 null, null, null);
@@ -283,7 +290,8 @@ public class DBHandler extends SQLiteOpenHelper {
         user.setLocationlon(Double.parseDouble(cursor.getString(4)));
         user.setLocationlatlon(Double.parseDouble(cursor.getString(5)));
         user.setStatus(cursor.getString(6));
-        user.setGameID(Long.parseLong(cursor.getString(7)));
+        user.setTeam(cursor.getInt(7));
+        user.setGameID(Long.parseLong(cursor.getString(8)));
 
         return user;
     }
@@ -304,7 +312,8 @@ public class DBHandler extends SQLiteOpenHelper {
                 user.setLocationlon(Double.parseDouble(cursor.getString(4)));
                 user.setLocationlatlon(Double.parseDouble(cursor.getString(5)));
                 user.setStatus(cursor.getString(6));
-                user.setGameID(Long.parseLong(cursor.getString(7)));
+                user.setTeam(cursor.getInt(7));
+                user.setGameID(Long.parseLong(cursor.getString(8)));
                 usersList.add(user);
             }while(cursor.moveToNext());
         }
@@ -317,6 +326,6 @@ public class DBHandler extends SQLiteOpenHelper {
         db.execSQL("DELETE FROM " + Util.TBL_USERS);
         db.close();
     }
-
+    //------USERS LOCAL DB QUERIES-------//
 
 }
