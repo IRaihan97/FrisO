@@ -31,8 +31,8 @@ public class DBHandler extends SQLiteOpenHelper {
                 Util.GAMEKEY_DESTLON + " DOUBLE ," +
                 Util.GAMEKEY_DESTLATLON + " DOUBLE ," +
                 Util.GAMEKEY_LOCLAT + " DOUBLE ," +
-                Util.GAMEKEY_LOCLATLON + " DOUBLE ," +
                 Util.GAMEKEY_LOCLON + " DOUBLE ," +
+                Util.GAMEKEY_LOCLATLON + " DOUBLE ," +
                 Util.GAMEKEY_SCORET1 + " INTEGER," +
                 Util.GAMEKEY_SCORET2 + " INTEGER," +
                 Util.GAMEKEY_SPEED+ " DOUBLE ," +

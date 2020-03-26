@@ -96,6 +96,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     //Gats all games based on the user's lccation and adds them to a local database
                     query.getNearbyGames(latitude, longitude);
 
+                    List <Games> games = db.getAllGames();
+
+                    for(int i = 0; i< games.size(); i++){
+
+                        double x = games.get(i).getLocationlat();
+                        double y = games.get(i).getLocationlon();
+                        Log.d("locati", "onLocationChanged: " + x + "    " + y );
+                        int dif = games.get(i).getDifficulty();
+                        drawGameCircle(x, y, 10);
+                    }
+
                     CameraPosition cameraPosition = new CameraPosition.Builder().
                             target(latLng).
                             tilt(45).
