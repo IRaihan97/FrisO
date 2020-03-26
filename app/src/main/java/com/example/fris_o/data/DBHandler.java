@@ -39,6 +39,7 @@ public class DBHandler extends SQLiteOpenHelper {
                 Util.GAMEKEY_DIFFICULTY + " INTEGER ," +
                 Util.GAMEKEY_TIMER + " INTEGER," +
                 Util.GAMEKEY_ROUND + " INTEGER," +
+                Util.GAMEKEY_COUNTER + " INTEGER," +
                 Util.GAMEKEY_PASSWORD + " TEXT" +
                 ");";
 
@@ -84,6 +85,7 @@ public class DBHandler extends SQLiteOpenHelper {
             value.put(Util.GAMEKEY_DIFFICULTY, object.getInt("difficulty"));
             value.put(Util.GAMEKEY_TIMER, object.getInt("timer"));
             value.put(Util.GAMEKEY_ROUND, object.getInt("round"));
+            value.put(Util.GAMEKEY_COUNTER, object.getInt("playercounter"));
             value.put(Util.GAMEKEY_PASSWORD, object.getString("password"));
         } catch (JSONException e) {
             e.printStackTrace();
@@ -114,6 +116,7 @@ public class DBHandler extends SQLiteOpenHelper {
                 value.put(Util.GAMEKEY_DIFFICULTY, array.getJSONObject(i).getInt("difficulty"));
                 value.put(Util.GAMEKEY_TIMER, array.getJSONObject(i).getInt("timer"));
                 value.put(Util.GAMEKEY_ROUND, array.getJSONObject(i).getInt("round"));
+                value.put(Util.GAMEKEY_COUNTER, array.getJSONObject(i).getInt("playercounter"));
                 value.put(Util.GAMEKEY_PASSWORD, array.getJSONObject(i).getString("password"));
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -144,6 +147,7 @@ public class DBHandler extends SQLiteOpenHelper {
                         Util.GAMEKEY_DIFFICULTY,
                         Util.GAMEKEY_TIMER,
                         Util.GAMEKEY_ROUND,
+                        Util.GAMEKEY_COUNTER,
                         Util.GAMEKEY_PASSWORD
                 }, Util.GAMEKEY_ID + "=?", new String[]{String.valueOf(id)},
                 null, null, null);
@@ -163,7 +167,8 @@ public class DBHandler extends SQLiteOpenHelper {
             game.setDifficulty(Integer.parseInt(cursor.getString(11)));
             game.setTimer(Integer.parseInt(cursor.getString(12)));
             game.setRound(Integer.parseInt(cursor.getString(13)));
-            game.setPassword(cursor.getString(14));
+            game.setPlayercounter(Integer.parseInt(cursor.getString(14)));
+            game.setPassword(cursor.getString(15));
         }
 
         return game;
@@ -192,7 +197,8 @@ public class DBHandler extends SQLiteOpenHelper {
                 game.setDifficulty(Integer.parseInt(cursor.getString(11)));
                 game.setTimer(Integer.parseInt(cursor.getString(12)));
                 game.setRound(Integer.parseInt(cursor.getString(13)));
-                game.setPassword(cursor.getString(14));
+                game.setPlayercounter(Integer.parseInt(cursor.getString(14)));
+                game.setPassword(cursor.getString(15));
 
                 gamesList.add(game);
             }while(cursor.moveToNext());

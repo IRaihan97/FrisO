@@ -21,6 +21,7 @@ public class Util {
     public static final String GAMEKEY_DIFFICULTY = "difficulty";
     public static final String GAMEKEY_TIMER = "timer";
     public static final String GAMEKEY_ROUND = "round";
+    public static final String GAMEKEY_COUNTER = "playercounter";
     public static final String GAMEKEY_PASSWORD = "password";
 
     //User

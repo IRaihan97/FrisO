@@ -14,6 +14,7 @@ import com.example.fris_o.data.DBHandler;
 import com.example.fris_o.models.Games;
 import com.example.fris_o.models.Users;
 import com.example.fris_o.tools.IResult;
+import com.example.fris_o.tools.OnlineQueries;
 import com.example.fris_o.tools.VolleyService;
 
 import org.json.JSONArray;
@@ -30,8 +31,10 @@ public class Tests extends AppCompatActivity {
     private Button post;
     private Button delete;
 
+
     DBHandler db = new DBHandler(this);
 
+    OnlineQueries queries = new OnlineQueries(ctx, db);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,15 +48,17 @@ public class Tests extends AppCompatActivity {
         post = findViewById(R.id.postdata);
         delete = findViewById(R.id.reset);
 
-        saveAllGames();
-        mVolleyService = new VolleyService(result, ctx);
-        mVolleyService.getDataArrayVolley("GET", "http://172.31.82.149:8080/api/games");
+        queries.getUsersByGameID(0);
+
+        List<Users> user = db.getAllUsers();
+        for(int i = 0; i < user.size(); i++){
+            Log.d("USERTEST", "onCreate: " + user.get(i).getUsername());
+        }
+
 
         String gameID = "0";
 
-        saveAllUsers();
-        mVolleyService = new VolleyService(result, ctx);
-        mVolleyService.getDataArrayVolley("GET", "http://172.31.82.149:8080/api/userGame/"+ gameID);
+
 
 
 
