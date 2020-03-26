@@ -2,18 +2,21 @@ package com.example.fris_o;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -59,8 +62,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Context ctx = this;
     DBHandler db = new DBHandler(this);
 
-
-
+    Dialog myDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +97,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     CameraPosition cameraPosition = new CameraPosition.Builder().
                             target(latLng).
                             tilt(45).
-                            zoom(20).
+                            zoom((float) 19.8).
                             bearing(0).
                             build();
                     mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
@@ -105,12 +107,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     drawPlayer(latitude, longitude);
                     //drawGameCircle();
-                    //drawGameCircle(latitude, longitude, 10);
+                    drawGameCircle(latitude, longitude, 10);
 
 
                     if (!first){
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                    first = true;}
+                        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                        first = true;}
 
                     /*
                     //get the location name from latitude and longitude
@@ -142,8 +144,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 }
             };
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 0, locationListener);
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 1, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 1, locationListener);
         }
     }
 
@@ -153,7 +155,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .radius(difficulty)
                 .strokeWidth(10)
                 .fillColor(Color.argb(10, 225, 0, 0))
-                .strokeColor(Color.argb(100, 225, 0, 0));
+                .strokeColor(Color.argb(100, 225, 0, 0))
+                .clickable(true);
+
+
+        mMap.setOnCircleClickListener(new GoogleMap.OnCircleClickListener() {
+
+            @Override
+                public void onCircleClick(Circle circle) {
+                // Flip the r, g and b components of the circle's
+                // stroke color.
+                GoToPopup();
+                }});
+
         Circle circle = mMap.addCircle(circleOptions);
     }
 
@@ -204,8 +218,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.e("MapsActivity", " Style parsing failed");
             }
         } catch (Resources.NotFoundException e) {
-                Log.e("MapsActivity", " Can't find style. Error:", e);
-            }
+            Log.e("MapsActivity", " Can't find style. Error:", e);
+        }
 
 
         UiSettings muiSettings = mMap.getUiSettings();
@@ -219,6 +233,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onStop() {
         super.onStop();
         locationManager.removeUpdates(locationListener);
+    }
+
+    public void GoToPopup(){
+        myDialog = new Dialog(this);
+        TextView txtclose;
+        myDialog.setContentView(R.layout.popup_menu);
+        txtclose =(TextView) myDialog.findViewById(R.id.txtclose);
+        txtclose.setText("X");
+        txtclose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDialog.dismiss();
+            }
+        });
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.show();
     }
 
     public void GoToMenu(View view){
@@ -402,5 +432,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         };
     }
-    
+
 }
