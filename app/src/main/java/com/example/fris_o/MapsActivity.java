@@ -45,6 +45,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 
@@ -239,7 +240,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         myDialog = new Dialog(this);
         TextView txtclose;
         myDialog.setContentView(R.layout.popup_menu);
-        txtclose =(TextView) myDialog.findViewById(R.id.txtclose);
+        txtclose = myDialog.findViewById(R.id.txtclose);
         txtclose.setText("X");
         txtclose.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -247,7 +248,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 myDialog.dismiss();
             }
         });
-        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        Objects.requireNonNull(myDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         myDialog.show();
     }
 
