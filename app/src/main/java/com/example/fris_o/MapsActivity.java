@@ -58,6 +58,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     LocationListener locationListener;
     Random rand = new Random();
     static boolean first = false;
+    SharedPreferences preferences;
+    long userID = preferences.getLong("userID", 0);
+    String userStatus = preferences.getString("status", null);
+
 
     Context ctx = this;
     DBHandler db = new DBHandler(this);
@@ -65,6 +69,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     OnlineQueries query = new OnlineQueries(ctx, db);
 
     Dialog myDialog;
+
+    public MapsActivity() {
+        preferences = ctx.getSharedPreferences("User_status", 0);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,17 +104,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     //Gats all games based on the user's lccation and adds them to a local database
                     query.getNearbyGames(latitude, longitude);
 
-                    List <Games> games = db.getAllGames();
-
-                    for(int i = 0; i< games.size(); i++){
-
-                        double x = games.get(i).getLocationlat();
-                        double y = games.get(i).getLocationlon();
-                        Log.d("locati", "onLocationChanged: " + x + "    " + y );
-                        int dif = games.get(i).getDifficulty();
-                        drawGameCircle(x, y, 10);
-                    }
-
                     CameraPosition cameraPosition = new CameraPosition.Builder().
                             target(latLng).
                             tilt(45).
@@ -118,14 +115,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     query.sendUserLocation(latitude, longitude);
                     mMap.clear();
 
-                    drawPlayer(latitude, longitude);
-                    //drawGameCircle();
-                    drawGameCircle(latitude, longitude, 10);
-
-
                     if (!first){
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                         first = true;}
+
+                    if(userStatus == "ingame") {drawCanvasIngame();drawOtherPlayers();}
+                    else drawCanvasOnline();
+
+
+                    drawPlayer(latitude, longitude);
+
 
                     /*
                     //get the location name from latitude and longitude
@@ -162,14 +161,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private void drawGameCircle(double latitude, double longitude, int difficulty){
+    private void drawGameCircle(double latitude, double longitude, int difficulty, boolean ingame){
         CircleOptions circleOptions = new CircleOptions()
                 .center(new LatLng(latitude, longitude))
                 .radius(difficulty)
                 .strokeWidth(10)
                 .fillColor(Color.argb(10, 225, 0, 0))
-                .strokeColor(Color.argb(100, 225, 0, 0))
-                .clickable(true);
+                .strokeColor(Color.argb(100, 225, 0, 0));
+                if(ingame == true)circleOptions.clickable(true);
 
 
         mMap.setOnCircleClickListener(new GoogleMap.OnCircleClickListener() {
@@ -181,7 +180,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 GoToPopup();
                 }});
 
-        Circle circle = mMap.addCircle(circleOptions);
+        mMap.addCircle(circleOptions);
+    }
+
+    private void drawCanvasOnline(){
+            List <Games> games = db.getAllGames();
+
+            for(int i = 0; i< games.size(); i++){
+
+                double lat = games.get(i).getLocationlat();
+                double lon = games.get(i).getLocationlon();
+                int dif = games.get(i).getDifficulty();
+                drawGameCircle(lat, lon, 10, false);
+            }
+    }
+
+    private void drawCanvasIngame(){
+        double lat = preferences.getFloat("locationlat", 0);
+        double lon = preferences.getFloat("locationlon", 0);
+        int dif = preferences.getInt("difficulty", 0 );
+        drawGameCircle(lat, lon, dif, true);
     }
 
     private void drawPlayer(double latitude, double longitude) {
@@ -191,21 +209,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .strokeWidth(10)
                 .fillColor(Color.argb(255, 205, 90, 0))
                 .strokeColor(Color.argb(255, 225, 128, 0));
-        Circle circle = mMap.addCircle(circleOptions);
+        mMap.addCircle(circleOptions);
     }
 
-    private void drawOtherPlayers(double latitude, double longitude) {
-        int rred = rand.nextInt(150);
-        int rgreen = rand.nextInt(150);
-        int rblue = rand.nextInt(150);
 
+
+    private void drawOtherPlayers(){
+        List <Users> players2 = db.getAllUsers();
+        Games game = db.getGame(preferences.getInt("gameID", 0));
+
+        for (int i = 0; i < game.getPlayercounter(); i++){
+            drawOtherPlayers(players2.get(i).getLocationlat(), players2.get(i).getLocationlon(), db.getColours(i, "red"), db.getColours(i, "green"), db.getColours(i, "blue"));
+        }
+    }
+
+    private void drawOtherPlayers(double latitude, double longitude, int rred, int rgreen, int rblue) {
         CircleOptions circleOptions = new CircleOptions()
                 .center(new LatLng(latitude, longitude))
                 .radius(1)
                 .strokeWidth(10)
                 .fillColor(Color.argb(255, rred, rgreen, rblue))
                 .strokeColor(Color.argb(255, (rred+50), (rgreen+50), (rblue+50)));
-        Circle circle = mMap.addCircle(circleOptions);
+        mMap.addCircle(circleOptions);
     }
 
 
