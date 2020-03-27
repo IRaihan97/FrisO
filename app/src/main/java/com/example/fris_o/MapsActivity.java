@@ -106,13 +106,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     query.getNearbyGames(latitude, longitude);
 
-                    CameraPosition cameraPosition = new CameraPosition.Builder().
-                            target(latLng).
-                            tilt(45).
-                            zoom((float) 19.8).
-                            bearing(0).
-                            build();
-                    mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
                     query.sendUserLocation(latitude, longitude);
                     mMap.clear();
@@ -122,8 +115,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         first = true;}
 
 
-                   if(userStatus == "ingame") {drawCanvasIngame();drawOtherPlayers();}
-                   else drawCanvasOnline();
+                    if(userStatus == "ingame") {drawCanvasIngame();drawOtherPlayers();}
+                    else drawCanvasOnline();
 
 
                     drawPlayer(latitude, longitude);
@@ -171,30 +164,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .strokeWidth(10)
                 .fillColor(Color.argb(10, 225, 0, 0))
                 .strokeColor(Color.argb(100, 225, 0, 0));
-                if(ingame)circleOptions.clickable(true);
+        if(ingame)circleOptions.clickable(true);
 
         mMap.setOnCircleClickListener(new GoogleMap.OnCircleClickListener() {
 
             @Override
-                public void onCircleClick(Circle circle) {
+            public void onCircleClick(Circle circle) {
                 // Flip the r, g and b components of the circle's
                 // stroke color.
                 GoToPopup();
-                }});
+            }});
 
         mMap.addCircle(circleOptions);
     }
 
     private void drawCanvasOnline(){
-            List <Games> games = db.getAllGames();
+        List <Games> games = db.getAllGames();
 
-            for(int i = 0; i< games.size(); i++){
+        for(int i = 0; i< games.size(); i++){
 
-                double lat = games.get(i).getLocationlat();
-                double lon = games.get(i).getLocationlon();
-                int dif = games.get(i).getDifficulty();
-                drawGameCircle(lat, lon, 10, false);
-            }
+            double lat = games.get(i).getLocationlat();
+            double lon = games.get(i).getLocationlon();
+            int dif = games.get(i).getDifficulty();
+            drawGameCircle(lat, lon, 10, false);
+        }
     }
 
     private void drawCanvasIngame(){
@@ -217,7 +210,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     private void drawOtherPlayers(){
-        List <Users> players2 = db.getAllUsers();
+        List <Users> players = db.getAllUsers();
         Games game = db.getGame(preferences.getInt("gameID", 0));
 
         for (int i = 0; i < game.getPlayercounter(); i++){
@@ -236,10 +229,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void centerLocation(View view){
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latlng));
+        CameraPosition cameraPosition = new CameraPosition.Builder().
+                target(latlng).
+                tilt(45).
+                zoom((float) 19.8).
+                bearing(0).
+                build();
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
     public void centerLocation(){
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latlng));
+        CameraPosition cameraPosition = new CameraPosition.Builder().
+                target(latlng).
+                tilt(45).
+                zoom((float) 19.8).
+                bearing(0).
+                build();
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
     /**
      * Manipulates the map once available.
