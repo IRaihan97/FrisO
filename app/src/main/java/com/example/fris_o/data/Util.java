@@ -34,7 +34,11 @@ public class Util {
     public static final String USERKEY_LOCLON = "locationlon";
     public static final String USERKEY_LOCLATLON = "locationlatlon";
     public static final String USERKEY_STATUS= "status";
+    public static final String USERKEY_RED = "red";
+    public static final String USERKEY_BLUE = "blue";
+    public static final String USERKEY_GREEN = "green";
     public static final String USERKEY_TEAM = "team";
+
     public static final String USERKEY_GAMEID = "gameID";
 
 

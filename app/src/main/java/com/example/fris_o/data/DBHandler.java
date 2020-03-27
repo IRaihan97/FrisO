@@ -16,6 +16,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class DBHandler extends SQLiteOpenHelper {
     public DBHandler(Context ctx){
@@ -52,6 +53,9 @@ public class DBHandler extends SQLiteOpenHelper {
                 Util.USERKEY_LOCLATLON + " DOUBLE ," +
                 Util.USERKEY_STATUS + " TEXT," +
                 Util.USERKEY_TEAM + " INTEGER," +
+                Util.USERKEY_RED + " INTEGER," +
+                Util.USERKEY_BLUE + " INTEGER," +
+                Util.USERKEY_GREEN + " INTEGER," +
                 Util.USERKEY_GAMEID + " INTEGER" +
                 ");";
 
@@ -219,6 +223,10 @@ public class DBHandler extends SQLiteOpenHelper {
     //------USERS LOCAL DB QUERIES-------//
     public void addUser(JSONObject object){
         SQLiteDatabase db = this.getWritableDatabase();
+        Random rand = new Random();
+        int rred = rand.nextInt(150);
+        int rgreen = rand.nextInt(150);
+        int rblue = rand.nextInt(150);
         ContentValues value = new ContentValues();
         try {
             value.put(Util.USERKEY_ID, object.getLong("userID"));
@@ -229,6 +237,9 @@ public class DBHandler extends SQLiteOpenHelper {
             value.put(Util.USERKEY_LOCLATLON, object.getDouble("locationlatlon"));
             value.put(Util.USERKEY_STATUS, object.getString("status"));
             value.put(Util.USERKEY_TEAM, object.getInt("team"));
+            value.put(Util.USERKEY_RED, rred);
+            value.put(Util.USERKEY_BLUE, rgreen);
+            value.put(Util.USERKEY_GREEN, rblue);
             value.put(Util.USERKEY_GAMEID, object.getLong("gameID"));
         } catch (JSONException e) {
             e.printStackTrace();
@@ -240,6 +251,16 @@ public class DBHandler extends SQLiteOpenHelper {
 
     public void addAllUsers(JSONArray array){
         SQLiteDatabase db  = this.getWritableDatabase();
+        Random rand = new Random();
+        int rred = rand.nextInt(150);
+        int rgreen = rand.nextInt(150);
+        int rblue = rand.nextInt(150);
+
+        try {
+            Log.d("ARRAY", "addAllUsers: " + array.getJSONObject(0).getString("name"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         for (int i = 0; i < array.length(); i++){
             ContentValues value = new ContentValues();
@@ -252,6 +273,9 @@ public class DBHandler extends SQLiteOpenHelper {
                 value.put(Util.USERKEY_LOCLATLON, array.getJSONObject(i).getDouble("locationlatlon"));
                 value.put(Util.USERKEY_STATUS, array.getJSONObject(i).getString("status"));
                 value.put(Util.USERKEY_TEAM, array.getJSONObject(i).getInt("team"));
+                value.put(Util.USERKEY_RED, rred);
+                value.put(Util.USERKEY_BLUE, rgreen);
+                value.put(Util.USERKEY_GREEN, rblue);
                 value.put(Util.USERKEY_GAMEID, array.getJSONObject(i).getLong("gameID"));
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -276,6 +300,9 @@ public class DBHandler extends SQLiteOpenHelper {
                                 Util.USERKEY_LOCLATLON,
                                 Util.USERKEY_STATUS,
                                 Util.USERKEY_TEAM,
+                                Util.USERKEY_RED,
+                                Util.USERKEY_BLUE,
+                                Util.USERKEY_GREEN,
                                 Util.USERKEY_GAMEID
                         }, Util.USERKEY_ID + "=?", new String[]{String.valueOf(id)},
                 null, null, null);
@@ -290,8 +317,11 @@ public class DBHandler extends SQLiteOpenHelper {
         user.setLocationlon(Double.parseDouble(cursor.getString(4)));
         user.setLocationlatlon(Double.parseDouble(cursor.getString(5)));
         user.setStatus(cursor.getString(6));
-        user.setTeam(cursor.getInt(7));
-        user.setGameID(Long.parseLong(cursor.getString(8)));
+        user.setTeam(Integer.parseInt(cursor.getString(7)));
+        user.setRed(Integer.parseInt(cursor.getString(8)));
+        user.setBlue(Integer.parseInt(cursor.getString(9)));
+        user.setGreen(Integer.parseInt(cursor.getString(10)));
+        user.setGameID(Long.parseLong(cursor.getString(11)));
 
         return user;
     }
@@ -312,8 +342,11 @@ public class DBHandler extends SQLiteOpenHelper {
                 user.setLocationlon(Double.parseDouble(cursor.getString(4)));
                 user.setLocationlatlon(Double.parseDouble(cursor.getString(5)));
                 user.setStatus(cursor.getString(6));
-                user.setTeam(cursor.getInt(7));
-                user.setGameID(Long.parseLong(cursor.getString(8)));
+                user.setTeam(Integer.parseInt(cursor.getString(7)));
+                user.setRed(Integer.parseInt(cursor.getString(8)));
+                user.setBlue(Integer.parseInt(cursor.getString(9)));
+                user.setGreen(Integer.parseInt(cursor.getString(10)));
+                user.setGameID(Long.parseLong(cursor.getString(11)));
                 usersList.add(user);
             }while(cursor.moveToNext());
         }
