@@ -122,7 +122,7 @@ public class GamesController {
 	            .orElseThrow(() -> new ResourceNotFound("Games", "id", gamesId));
 	    int currentPlayers = game.getPlayercounter();
 	    currentPlayers += 1;
-	    game.setScoret1(currentPlayers);
+	    game.setPlayercounter(currentPlayers);
 	    Games updatedGame = gamesRepo.save(game);
 	    return updatedGame;
 	}
@@ -133,8 +133,10 @@ public class GamesController {
 	    Games game = gamesRepo.findById(gamesId)
 	            .orElseThrow(() -> new ResourceNotFound("Games", "id", gamesId));
 	    int currentPlayers = game.getPlayercounter();
-	    currentPlayers -= 1;
-	    game.setScoret1(currentPlayers);
+	    if(currentPlayers != 0) {
+	    	currentPlayers -= 1;
+	    }
+	    game.setPlayercounter(currentPlayers);
 	    Games updatedGame = gamesRepo.save(game);
 	    return updatedGame;
 	}
