@@ -60,7 +60,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     static boolean first = false;
     SharedPreferences preferences;
     String userStatus;
-
+    static LatLng latlng;
 
     Context ctx = this;
     DBHandler db = new DBHandler(this);
@@ -100,7 +100,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     double latitude = location.getLatitude();
                     double longitude = location.getLongitude();
                     LatLng latLng = new LatLng(latitude, longitude);
+                    latlng = latLng;
+
                     //Gats all games based on the user's lccation and adds them to a local database
+
                     query.getNearbyGames(latitude, longitude);
 
                     CameraPosition cameraPosition = new CameraPosition.Builder().
@@ -115,8 +118,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mMap.clear();
 
                     if (!first){
-                        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                        centerLocation();
                         first = true;}
+
 
                    if(userStatus == "ingame") {drawCanvasIngame();drawOtherPlayers();}
                    else drawCanvasOnline();
@@ -167,8 +171,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .strokeWidth(10)
                 .fillColor(Color.argb(10, 225, 0, 0))
                 .strokeColor(Color.argb(100, 225, 0, 0));
-                if(ingame == true)circleOptions.clickable(true);
-
+                if(ingame)circleOptions.clickable(true);
 
         mMap.setOnCircleClickListener(new GoogleMap.OnCircleClickListener() {
 
@@ -232,8 +235,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.addCircle(circleOptions);
     }
 
-
-
+    public void centerLocation(View view){
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latlng));
+    }
+    public void centerLocation(){
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latlng));
+    }
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -264,6 +271,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         muiSettings.setZoomGesturesEnabled(true);
         muiSettings.setScrollGesturesEnabled(true);
         muiSettings.setMyLocationButtonEnabled (true);
+        muiSettings.setCompassEnabled(false);
     }
 
     @Override
