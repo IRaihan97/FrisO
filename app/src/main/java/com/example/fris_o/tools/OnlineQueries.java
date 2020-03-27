@@ -99,6 +99,9 @@ public class OnlineQueries {
         SharedPreferences preferences = ctx.getSharedPreferences("User_status", 0);
         long userID = preferences.getLong("userID", 0);
         JSONObject obj = new JSONObject();
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putLong("gameID" , gameID);
+        editor.apply();
         try{
             obj.put("gameID", gameID);
         }   catch (JSONException e) {
@@ -309,6 +312,7 @@ public class OnlineQueries {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
                 saveGame(game);
                 changeUserGameID(game.getGameID());
                 increasePlayerCount();

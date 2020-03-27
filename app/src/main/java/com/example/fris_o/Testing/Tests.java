@@ -50,7 +50,7 @@ public class Tests extends AppCompatActivity {
         post = findViewById(R.id.postdata);
         delete = findViewById(R.id.reset);
 
-        queries.getUsersByGameID(0);
+        queries.createGame("testingAnotherGame", null, 0, 0);
 
 
         List<Users> users = db.getAllUsers();
