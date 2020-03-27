@@ -59,8 +59,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Random rand = new Random();
     static boolean first = false;
     SharedPreferences preferences;
-    long userID = preferences.getLong("userID", 0);
-    String userStatus = preferences.getString("status", null);
+    String userStatus;
 
 
     Context ctx = this;
@@ -70,14 +69,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     Dialog myDialog;
 
-    public MapsActivity() {
-        preferences = ctx.getSharedPreferences("User_status", 0);
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        preferences = ctx.getSharedPreferences("User_status", 0);
+        long userID = preferences.getLong("userID", 0);
+        userStatus = preferences.getString("status", null);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -119,8 +118,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                         first = true;}
 
-                    if(userStatus == "ingame") {drawCanvasIngame();drawOtherPlayers();}
-                    else drawCanvasOnline();
+                   if(userStatus == "ingame") {drawCanvasIngame();drawOtherPlayers();}
+                   else drawCanvasOnline();
 
 
                     drawPlayer(latitude, longitude);
@@ -219,7 +218,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Games game = db.getGame(preferences.getInt("gameID", 0));
 
         for (int i = 0; i < game.getPlayercounter(); i++){
-            drawOtherPlayers(players2.get(i).getLocationlat(), players2.get(i).getLocationlon(), db.getColours(i, "red"), db.getColours(i, "green"), db.getColours(i, "blue"));
+            //drawOtherPlayers(players2.get(i).getLocationlat(), players2.get(i).getLocationlon(), db.getColours(i, "red"), db.getColours(i, "green"), db.getColours(i, "blue"));
         }
     }
 
