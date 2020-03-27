@@ -3,12 +3,14 @@ package com.example.fris_o.Testing;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 import com.android.volley.VolleyError;
+import com.example.fris_o.MapsActivity;
 import com.example.fris_o.R;
 import com.example.fris_o.data.DBHandler;
 import com.example.fris_o.models.Games;
@@ -50,11 +52,14 @@ public class Tests extends AppCompatActivity {
 
         queries.getUsersByGameID(0);
 
-        List<Users> user = db.getAllUsers();
-        for(int i = 0; i < user.size(); i++){
-            Log.d("USERTEST", "onCreate: " + user.get(i).getUsername());
-        }
 
+        List<Users> users = db.getAllUsers();
+
+        Log.d("color", "onCreate: " + users.get(0).getBlue());
+
+
+        SharedPreferences preferences = getSharedPreferences("Game_status",0);
+        Log.d("GAMENAME", "onCreate: " + preferences.getString("gameName", "none"));
 
         String gameID = "0";
 
@@ -96,6 +101,13 @@ public class Tests extends AppCompatActivity {
                     Log.d("LIST", "onCreate: " + userList.get(i).getUsername());
                 }
 
+
+            }
+        });
+
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
             }
         });

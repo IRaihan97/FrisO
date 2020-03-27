@@ -8,10 +8,13 @@ import android.util.Log;
 import com.android.volley.VolleyError;
 import com.example.fris_o.data.DBHandler;
 import com.example.fris_o.models.Games;
+import com.example.fris_o.models.Users;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Random;
 
 public class OnlineQueries {
     private VolleyService mVolleyService;
@@ -48,10 +51,38 @@ public class OnlineQueries {
         mVolleyService.putDataVolley("input", "http://172.31.82.149:8080/api/users/location/" + String.valueOf(userID), obj);
     }
 
+    //Creates a game
+    public void createGame(String gamename, String password, int difficulty, double speed){
+        JSONObject obj = new JSONObject();
+        Random rand = new Random();
+        double[] array = {0.0001, 0.0002, 0.0003, 0.0004, 0.0005};
+        int i = rand.nextInt(5);
+        SharedPreferences preferences = ctx.getSharedPreferences("User_status", 0);
+        double locationlat = preferences.getFloat("locationlat",0) + array[i];
+        double locationlon = preferences.getFloat("locationlon",0) + array[i];
+        try {
+            obj.put("name", gamename);
+            obj.put("locationlat", locationlat);
+            obj.put("locationlon", locationlon);
+            obj.put("password", password);
+            obj.put("difficulty", difficulty);
+            obj.put("speed", speed);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        changeUserStatus("ingame");
+        createGameResp();
+        mVolleyService = new VolleyService(result, ctx);
+        mVolleyService.postDataVolley("Post", "http:172.31.82.149:8080/api/games", obj);
+    }
+
     //Updates user's status to the passed string
-    public void sendUserStatus(String status){
+    public void changeUserStatus(String status){
         SharedPreferences preferences = ctx.getSharedPreferences("User_status", 0);
         long userID = preferences.getLong("userID", 0);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("status", status);
+        editor.apply();
         JSONObject obj = new JSONObject();
         try{
             obj.put("status", status);
@@ -64,7 +95,7 @@ public class OnlineQueries {
     }
 
     //Updates user's gameid to the session it wants to enter
-    public void sendUserGameID(long gameID){
+    public void changeUserGameID(long gameID){
         SharedPreferences preferences = ctx.getSharedPreferences("User_status", 0);
         long userID = preferences.getLong("userID", 0);
         JSONObject obj = new JSONObject();
@@ -122,7 +153,6 @@ public class OnlineQueries {
         nullResponse();
         mVolleyService = new VolleyService(result, ctx);
         mVolleyService.putDataVolley("input", "http://172.31.82.149:8080/api/games/addCounter/" + String.valueOf(gameID), null);
-
     }
     //------------------methods to query the online db---------------------//
     //Saves a game in the SharedPrefence
@@ -137,11 +167,15 @@ public class OnlineQueries {
         editor.putFloat("locationlat", (float) game.getLocationlat());
         editor.putFloat("locationlon", (float) game.getLocationlon());
         editor.putFloat("locationlatlon", (float) game.getLocationlatlon());
+        editor.putFloat("speed", (float) game.getSpeed());
+        editor.putInt("difficulty", game.getDifficulty());
         editor.putInt("scoret1", game.getScoret1());
         editor.putInt("scoret2", game.getScoret2());
         editor.putInt("timer", game.getTimer());
         editor.putInt("round", game.getRound());
+        editor.putInt("playercounter", game.getPlayercounter());
         editor.putString("password", game.getPassword());
+        editor.apply();
     }
 
     //Gets a game from sharedPrefenece
@@ -162,6 +196,20 @@ public class OnlineQueries {
         game.setRound(preferences.getInt("round", 0));
         game.setPassword(preferences.getString("password", null));
         return game;
+    }
+
+    //Gets current logged in user
+    public Users getCurrentUser(){
+        SharedPreferences preferences = ctx.getSharedPreferences("User_status", 0);
+        Users user = new Users();
+        user.setUserID(preferences.getLong("userID", 0));
+        user.setUsername(preferences.getString("username", null));
+        user.setEmail(preferences.getString("email", null));
+        user.setLocationlat(preferences.getFloat("locationlat",0));
+        user.setLocationlon(preferences.getFloat("locationlon", 0));
+        user.setStatus(preferences.getString("status", null));
+        user.setGameID(preferences.getLong("gameID", 0));
+        return user;
     }
 
 
@@ -196,8 +244,6 @@ public class OnlineQueries {
 
             @Override
             public void ArrSuccess(String requestType, JSONArray response) {
-                db.resetUsers();//resets users table
-                db.addAllUsers(response);//adds all users from server response
                 try {
                     for(int i = 0; i < response.length(); i++){
                         Log.d("User", "ArrSuccess: " + response.getJSONObject(i).getString("username"));
@@ -206,6 +252,9 @@ public class OnlineQueries {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                db.resetUsers();//resets users table
+                db.addAllUsers(response);//adds all users from server response
+
             }
 
             @Override
@@ -226,6 +275,49 @@ public class OnlineQueries {
             public void ArrSuccess(String requestType, JSONArray response) {
                 db.resetGames();//resets games table
                 db.addAllGames(response);//adds all users from server response
+            }
+
+            @Override
+            public void notifyError(String requestType, VolleyError error) {
+
+            }
+        };
+    }
+
+    private void createGameResp(){
+        result = new IResult() {
+            @Override
+            public void ObjSuccess(String requestType, JSONObject response) {
+                Games game = new Games();
+                try {
+                    game.setGameID(response.getLong("gameID"));
+                    game.setName(response.getString("name"));
+                    game.setDestlat(response.getDouble("destlat"));
+                    game.setDestlon(response.getDouble("destlon"));
+                    game.setDestlatlon(response.getDouble("destlatlon"));
+                    game.setLocationlat(response.getDouble("locationlat"));
+                    game.setLocationlon(response.getDouble("locationlat"));
+                    game.setLocationlatlon(response.getDouble("locationlatlon"));
+                    game.setScoret1(response.getInt("scoret1"));
+                    game.setScoret2(response.getInt("scoret2"));
+                    game.setSpeed(response.getDouble("speed"));
+                    game.setDifficulty(response.getInt("difficulty"));
+                    game.setTimer(response.getInt("timer"));
+                    game.setRound(response.getInt("round"));
+                    game.setPlayercounter(response.getInt("playercounter"));
+                    game.setPassword(response.getString("password"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                saveGame(game);
+                changeUserGameID(game.getGameID());
+                increasePlayerCount();
+
+            }
+
+            @Override
+            public void ArrSuccess(String requestType, JSONArray response) {
+
             }
 
             @Override

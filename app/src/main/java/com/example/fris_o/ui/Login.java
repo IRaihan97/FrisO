@@ -96,7 +96,6 @@ public class Login extends AppCompatActivity {
                         editor.putLong("userID", response.getLong("userID"));
                         editor.putString("username", response.getString("username"));
                         editor.putString("email", response.getString("email"));
-                        editor.putString("email", response.getString("email"));
                         editor.putFloat("locationlat", (float) response.getDouble("locationlat"));
                         editor.putFloat("locationlon", (float) response.getDouble("locationlon"));
                         editor.putFloat("locationlatlon", (float) response.getDouble("locationlatlon"));
