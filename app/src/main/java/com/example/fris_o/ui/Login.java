@@ -22,6 +22,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Login extends AppCompatActivity {
+
     VolleyService mVolleyService;
     IResult result;
     Context ctx = this;
@@ -130,6 +131,7 @@ public class Login extends AppCompatActivity {
     private void showToast(String message){
         Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
     }
+
 }
 
 
