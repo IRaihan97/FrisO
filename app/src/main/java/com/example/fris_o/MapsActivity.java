@@ -110,13 +110,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     query.sendUserLocation(latitude, longitude);
                     mMap.clear();
 
-                    if (!first){
+                    if (!first) {
                         centerLocation();
-                        first = true;}
+                        first = true;
+                    }
 
 
-                    if(userStatus == "ingame") {drawCanvasIngame();drawOtherPlayers();}
-                    else drawCanvasOnline();
+                    if (userStatus == "ingame") {
+                        drawCanvasIngame();
+                        drawOtherPlayers();
+                    } else drawCanvasOnline();
 
 
                     drawPlayer(latitude, longitude);
@@ -157,44 +160,44 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private void drawGameCircle(double latitude, double longitude, int difficulty, boolean ingame){
-        CircleOptions circleOptions = new CircleOptions()
+    private void drawGameCircle(double latitude, double longitude, int difficulty, boolean ingame, long gameID) {
+        Circle circle = mMap.addCircle(new CircleOptions()
                 .center(new LatLng(latitude, longitude))
                 .radius(difficulty)
                 .strokeWidth(10)
                 .fillColor(Color.argb(10, 225, 0, 0))
-                .strokeColor(Color.argb(100, 225, 0, 0));
-        if(ingame)circleOptions.clickable(true);
-
+                .strokeColor(Color.argb(100, 225, 0, 0))
+                .clickable(true));
+        circle.setTag(gameID);
         mMap.setOnCircleClickListener(new GoogleMap.OnCircleClickListener() {
 
             @Override
             public void onCircleClick(Circle circle) {
-                // Flip the r, g and b components of the circle's
-                // stroke color.
-                GoToPopup();
-            }});
+                checkLocation();
+                long ID = (long) circle.getTag();
+                GoToPopup(ID);
+            }
+        });
 
-        mMap.addCircle(circleOptions);
     }
 
-    private void drawCanvasOnline(){
-        List <Games> games = db.getAllGames();
+    private void drawCanvasOnline() {
+        List<Games> games = db.getAllGames();
 
-        for(int i = 0; i< games.size(); i++){
+        for (int i = 0; i < games.size(); i++) {
 
             double lat = games.get(i).getLocationlat();
             double lon = games.get(i).getLocationlon();
             int dif = games.get(i).getDifficulty();
-            drawGameCircle(lat, lon, 10, false);
+            drawGameCircle(lat, lon, 10, false, games.get(i).getGameID());
         }
     }
 
-    private void drawCanvasIngame(){
+    private void drawCanvasIngame() {
         double lat = preferences.getFloat("locationlat", 0);
         double lon = preferences.getFloat("locationlon", 0);
-        int dif = preferences.getInt("difficulty", 0 );
-        drawGameCircle(lat, lon, dif, true);
+        int dif = preferences.getInt("difficulty", 0);
+        drawGameCircle(lat, lon, dif, true, 0);
     }
 
     private void drawPlayer(double latitude, double longitude) {
@@ -208,12 +211,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-
-    private void drawOtherPlayers(){
-        List <Users> players = db.getAllUsers();
+    private void drawOtherPlayers() {
+        List<Users> players = db.getAllUsers();
         Games game = db.getGame(preferences.getInt("gameID", 0));
 
-        for (int i = 0; i < game.getPlayercounter(); i++){
+        for (int i = 0; i < game.getPlayercounter(); i++) {
             //drawOtherPlayers(players2.get(i).getLocationlat(), players2.get(i).getLocationlon(), db.getColours(i, "red"), db.getColours(i, "green"), db.getColours(i, "blue"));
         }
     }
@@ -224,11 +226,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .radius(1)
                 .strokeWidth(10)
                 .fillColor(Color.argb(255, rred, rgreen, rblue))
-                .strokeColor(Color.argb(255, (rred+50), (rgreen+50), (rblue+50)));
+                .strokeColor(Color.argb(255, (rred + 50), (rgreen + 50), (rblue + 50)));
         mMap.addCircle(circleOptions);
     }
 
-    public void centerLocation(View view){
+    public void checkLocation(){
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+    }
+
+    public void centerLocation(View view) {
+        checkLocation();
         CameraPosition cameraPosition = new CameraPosition.Builder().
                 target(latlng).
                 tilt(45).
@@ -238,6 +249,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
     public void centerLocation(){
+        checkLocation();
         CameraPosition cameraPosition = new CameraPosition.Builder().
                 target(latlng).
                 tilt(45).
@@ -285,7 +297,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         locationManager.removeUpdates(locationListener);
     }
 
-    public void GoToPopup(){
+    public void GoToPopup(long ID){
         myDialog = new Dialog(this);
         TextView txtclose;
         myDialog.setContentView(R.layout.popup_menu);
