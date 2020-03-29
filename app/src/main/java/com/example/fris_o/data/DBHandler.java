@@ -241,9 +241,9 @@ public class DBHandler extends SQLiteOpenHelper {
             value.put(Util.USERKEY_LOCLATLON, object.getDouble("locationlatlon"));
             value.put(Util.USERKEY_STATUS, object.getString("status"));
             value.put(Util.USERKEY_TEAM, object.getInt("team"));
-            value.put(Util.USERKEY_RED, rred);
-            value.put(Util.USERKEY_BLUE, rgreen);
-            value.put(Util.USERKEY_GREEN, rblue);
+            value.put(Util.USERKEY_RED, object.getInt("red"));
+            value.put(Util.USERKEY_BLUE, object.getInt("blue"));
+            value.put(Util.USERKEY_GREEN, object.getInt("green"));
             value.put(Util.USERKEY_GAMEID, object.getLong("gameID"));
         } catch (JSONException e) {
             e.printStackTrace();
@@ -280,9 +280,9 @@ public class DBHandler extends SQLiteOpenHelper {
                 value.put(Util.USERKEY_LOCLATLON, array.getJSONObject(i).getDouble("locationlatlon"));
                 value.put(Util.USERKEY_STATUS, array.getJSONObject(i).getString("status"));
                 value.put(Util.USERKEY_TEAM, array.getJSONObject(i).getInt("team"));
-                value.put(Util.USERKEY_RED, rred);
-                value.put(Util.USERKEY_BLUE, rgreen);
-                value.put(Util.USERKEY_GREEN, rblue);
+                value.put(Util.USERKEY_RED, array.getJSONObject(i).getInt("red"));
+                value.put(Util.USERKEY_BLUE, array.getJSONObject(i).getInt("blue"));
+                value.put(Util.USERKEY_GREEN, array.getJSONObject(i).getInt("green"));
                 value.put(Util.USERKEY_GAMEID, array.getJSONObject(i).getLong("gameID"));
             } catch (JSONException e) {
                 e.printStackTrace();
