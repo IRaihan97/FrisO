@@ -15,6 +15,7 @@ import com.group20.webservice.repositories.UserRepo;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 @RestController
 @RequestMapping("/api")
@@ -36,12 +37,20 @@ public class UserController {
 
 	@PostMapping("/users")
 	public Response createUser(@Valid @RequestBody Users user) {
+		
 	    List<Users> users = userRepo.findAll();
 	    String username = user.getUsername();
 	    String email = user.getEmail();
 	    String response = "";
 	    boolean exists = checkUserExistence(username, email, users);	    
 	    if(!exists) {
+	    	Random rand = new Random();
+			int red = rand.nextInt(200);
+			int blue = rand.nextInt(200);
+			int green = rand.nextInt(200);
+			user.setRed(red);
+			user.setBlue(blue);
+			user.setGreen(green);			
 	    	response = "Registered";
 	    	userRepo.save(user);
 	    }
@@ -163,6 +172,21 @@ public class UserController {
 		
 		user.setTeam(userDetails.getTeam());
 		
+		
+		Users updatedUser = userRepo.save(user);
+		return updatedUser;
+	}
+	
+	@PutMapping("/users/upColor/{id}")
+	public Users updateColor(@PathVariable(value = "id") Long userId,
+            @Valid @RequestBody Users userDetails) {
+		
+		Users user = userRepo.findById(userId)
+		.orElseThrow(() -> new ResourceNotFound("User", "id", userId));
+		
+		user.setRed(userDetails.getRed());
+		user.setBlue(userDetails.getBlue());
+		user.setGreen(userDetails.getGreen());
 		
 		Users updatedUser = userRepo.save(user);
 		return updatedUser;
