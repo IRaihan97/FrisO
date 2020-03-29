@@ -1,7 +1,6 @@
 package com.example.fris_o;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -10,24 +9,24 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
-import com.android.volley.VolleyError;
 import com.example.fris_o.data.DBHandler;
 import com.example.fris_o.models.Games;
 import com.example.fris_o.models.Users;
-import com.example.fris_o.tools.IResult;
 import com.example.fris_o.tools.OnlineQueries;
-import com.example.fris_o.tools.VolleyService;
 import com.example.fris_o.ui.Menu_and_settings;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -40,11 +39,9 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 
+import org.w3c.dom.Text;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -61,6 +58,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     SharedPreferences preferences;
     String userStatus;
     static LatLng latlng;
+    SharedPreferences.Editor editor;
 
     Context ctx = this;
     DBHandler db = new DBHandler(this);
@@ -76,7 +74,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         preferences = ctx.getSharedPreferences("User_status", 0);
         long userID = preferences.getLong("userID", 0);
-        userStatus = preferences.getString("status", null);
+        editor = preferences.edit();
+        editor.putString("status", "online");
+        editor.putString("gameID", null);
+        editor.apply();
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -103,16 +104,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     latlng = latLng;
 
                     //Gats all games based on the user's lccation and adds them to a local database
-
-                    query.getNearbyGames(latitude, longitude);
                     query.getUsersByGameID(22);
-
-                    List<Users> users = db.getAllUsers();
-                    for(int i = 0; i< users.size(); i++){
-                        Log.d("Name", "onCreate: " + users.get(i).getUsername());
-                    }
-
+                    query.getNearbyGames(latitude,longitude);
                     query.sendUserLocation(latitude, longitude);
+                    userStatus =  preferences.getString("status",null);
                     mMap.clear();
 
                     if (!first) {
@@ -120,27 +115,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         first = true;
                     }
 
-
+                    Log.d("yas", "onLocationChanged: "+ preferences.getLong("gameID", 0));
                     if (userStatus == "ingame") {
-                        drawCanvasIngame();
+                      drawCanvasIngame();
                         drawOtherPlayers();
                     } else drawCanvasOnline();
 
 
                     drawPlayer(latitude, longitude);
 
-
-                    /*
-                    //get the location name from latitude and longitude
-                    Geocoder geocoder = new Geocoder(getApplicationContext());
-                    try {
-                        not in use yet, can be used to show address name
-                         List<Address> addresses =
-                        geocoder.getFromLocation(latitude, longitude, 1);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    */
 
                 }
 
@@ -165,7 +148,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private void drawGameCircle(double latitude, double longitude, int difficulty, boolean ingame, long gameID) {
+    private void drawGameCircle(double latitude, double longitude, int difficulty, long gameID) {
         Circle circle = mMap.addCircle(new CircleOptions()
                 .center(new LatLng(latitude, longitude))
                 .radius(difficulty)
@@ -194,15 +177,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             double lat = games.get(i).getLocationlat();
             double lon = games.get(i).getLocationlon();
             int dif = games.get(i).getDifficulty();
-            drawGameCircle(lat, lon, 10, false, games.get(i).getGameID());
+            drawGameCircle(lat, lon, 10, games.get(i).getGameID());
         }
     }
 
     private void drawCanvasIngame() {
-        double lat = preferences.getFloat("locationlat", 0);
-        double lon = preferences.getFloat("locationlon", 0);
-        int dif = preferences.getInt("difficulty", 0);
-        drawGameCircle(lat, lon, dif, true, 0);
+        Games games = db.getGame(preferences.getLong("gameID", 0));
+        double lat = games.getLocationlat();
+        double lon = games.getLocationlon();
+        int dif = games.getDifficulty();
+            Circle circle = mMap.addCircle(new CircleOptions()
+                    .center(new LatLng(lat, lon))
+                    .radius(10)
+                    .strokeWidth(10)
+                    .fillColor(Color.argb(10, 225, 0, 0))
+                    .strokeColor(Color.argb(100, 225, 0, 0)));
     }
 
     private void drawPlayer(double latitude, double longitude) {
@@ -217,15 +206,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     private void drawOtherPlayers() {
-        List<Users> players = db.getAllUsers();
-        Games game = db.getGame(preferences.getInt("gameID", 0));
+        List<Users> players2 = db.getAllUsers();
+        Games game = db.getGame(22);
 
-        for (int i = 0; i < game.getPlayercounter(); i++) {
-            drawOtherPlayers(players.get(i).getLocationlat(), players.get(i).getLocationlon(), players.get(i).getRed(), players.get(i).getBlue(), players.get(i).getGreen());
+        for (int i = 0; i < players2.size(); i++) {
+            Log.d("players", "drawOtherPlayers: "+  players2.get(i).getUsername() + game.getPlayercounter());
+            drawOtherPlayers(players2.get(i).getLocationlat(), players2.get(i).getLocationlon(), players2.get(i).getRed(), players2.get(i).getGreen(), players2.get(i).getBlue());
         }
     }
 
     private void drawOtherPlayers(double latitude, double longitude, int rred, int rgreen, int rblue) {
+        Log.d("players", "drawOtherPlayers: "+  latitude + longitude);
         CircleOptions circleOptions = new CircleOptions()
                 .center(new LatLng(latitude, longitude))
                 .radius(1)
@@ -263,6 +254,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 build();
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
+
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -302,12 +294,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         locationManager.removeUpdates(locationListener);
     }
 
-    public void GoToPopup(long ID){
+    public void GoToPopup(final long ID){
         myDialog = new Dialog(this);
         TextView txtclose;
+        TextView txthost;
+        TextView txtplayers;
+        TextView txtround;
+        Button bjoin;
         myDialog.setContentView(R.layout.popup_menu);
+
         txtclose = myDialog.findViewById(R.id.txtclose);
         txtclose.setText("X");
+
+        txthost = myDialog.findViewById(R.id.Host_name);
+        txthost.setText("a");
+
+        txtplayers = myDialog.findViewById(R.id.player_number);
+        txtplayers.setText("b");
+
+        txtround = myDialog.findViewById(R.id.round_number);
+        txtround.setText("c");
+
         txtclose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -315,6 +322,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
         Objects.requireNonNull(myDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+
+        bjoin = myDialog.findViewById(R.id.bjoin);
+        bjoin.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                query.changeUserGameID(ID);
+                query.changeUserStatus("ingame");
+                editor.putString("status", "ingame");
+                editor.putLong("gameID", ID);
+                editor.apply();
+                myDialog.dismiss();
+            }
+        });
+
         myDialog.show();
     }
 
