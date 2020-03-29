@@ -55,7 +55,10 @@ public class Tests extends AppCompatActivity {
 
         List<Users> users = db.getAllUsers();
 
-        Log.d("color", "onCreate: " + users.get(0).getBlue());
+        for(int i = 0; i< users.size(); i++){
+            Log.d("Name", "onCreate: " + users.get(i).getUsername());
+        }
+
 
 
         SharedPreferences preferences = getSharedPreferences("Game_status",0);

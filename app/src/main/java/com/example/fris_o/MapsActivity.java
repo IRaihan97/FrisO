@@ -105,7 +105,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     //Gats all games based on the user's lccation and adds them to a local database
 
                     query.getNearbyGames(latitude, longitude);
+                    query.getUsersByGameID(22);
 
+                    List<Users> users = db.getAllUsers();
+                    for(int i = 0; i< users.size(); i++){
+                        Log.d("Name", "onCreate: " + users.get(i).getUsername());
+                    }
 
                     query.sendUserLocation(latitude, longitude);
                     mMap.clear();
@@ -216,7 +221,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Games game = db.getGame(preferences.getInt("gameID", 0));
 
         for (int i = 0; i < game.getPlayercounter(); i++) {
-            //drawOtherPlayers(players2.get(i).getLocationlat(), players2.get(i).getLocationlon(), db.getColours(i, "red"), db.getColours(i, "green"), db.getColours(i, "blue"));
+            drawOtherPlayers(players.get(i).getLocationlat(), players.get(i).getLocationlon(), players.get(i).getRed(), players.get(i).getBlue(), players.get(i).getGreen());
         }
     }
 
