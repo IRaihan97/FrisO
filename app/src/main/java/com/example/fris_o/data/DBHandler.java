@@ -226,13 +226,6 @@ public class DBHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues value = new ContentValues();
         try {
-            String name = object.getString("username");
-            char char1 = name.charAt(0);
-            char char2 = name.charAt(1);
-            char char3 = name.charAt(3);
-            int rred = (int) char1 + 25;
-            int rgreen = (int) char2 + 25;
-            int rblue = (int) char3 + 25;
             value.put(Util.USERKEY_ID, object.getLong("userID"));
             value.put(Util.USERKEY_NAME, object.getString("username"));
             value.put(Util.USERKEY_EMAIL, object.getString("email"));
@@ -265,13 +258,6 @@ public class DBHandler extends SQLiteOpenHelper {
 
             ContentValues value = new ContentValues();
             try {
-                String name = array.getJSONObject(i).getString("username");
-                char char1 = name.charAt(0);
-                char char2 = name.charAt(1);
-                char char3 = name.charAt(3);
-                int rred = (int) char1 + 25;
-                int rgreen = (int) char2 + 25;
-                int rblue = (int) char3 + 25;
                 value.put(Util.USERKEY_ID, array.getJSONObject(i).getLong("userID"));
                 value.put(Util.USERKEY_NAME, array.getJSONObject(i).getString("username"));
                 value.put(Util.USERKEY_EMAIL, array.getJSONObject(i).getString("email"));

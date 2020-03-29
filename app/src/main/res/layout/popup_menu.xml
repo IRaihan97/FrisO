@@ -27,6 +27,7 @@
         android:paddingTop="25dp">
 
         <TextView
+            android:id="@+id/Host_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -36,13 +37,6 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="5dp"
-            android:text="Adress Name"
-            android:textColor="@color/white" />
     </LinearLayout>
 
     <LinearLayout
@@ -61,6 +55,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/player_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="19"
@@ -86,6 +81,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/round_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="50"
@@ -102,7 +98,7 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/btnfollow"
+        android:id="@+id/bjoin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
