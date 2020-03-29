@@ -295,6 +295,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void GoToPopup(final long ID){
+        Games games = db.getGame(ID);
         myDialog = new Dialog(this);
         TextView txtclose;
         TextView txthost;
@@ -307,13 +308,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         txtclose.setText("X");
 
         txthost = myDialog.findViewById(R.id.Host_name);
-        txthost.setText("a");
+        txthost.setText(games.getName());
 
         txtplayers = myDialog.findViewById(R.id.player_number);
-        txtplayers.setText("b");
+        txtplayers.setText(String.valueOf(games.getPlayercounter()));
 
         txtround = myDialog.findViewById(R.id.round_number);
-        txtround.setText("c");
+        txtround.setText(String.valueOf(games.getRound()));
 
         txtclose.setOnClickListener(new View.OnClickListener() {
             @Override
