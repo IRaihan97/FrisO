@@ -129,9 +129,40 @@ public class OnlineQueries {
 
     }
 
+    public void sendTimer(int timer){
+        SharedPreferences preferences = ctx.getSharedPreferences("User_status", 0);
+        long gameID = preferences.getLong("gameID", 1);
+        nullResponse();
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("timer", timer);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        mVolleyService = new VolleyService(result, ctx);
+        mVolleyService.putDataVolley("input", "http://172.31.82.149:8080/api/games/upTimer/" + String.valueOf(gameID), null);
+
+    }
+
+    public void sendDestination(double latitude, double longitude){
+        SharedPreferences preferences = ctx.getSharedPreferences("User_status", 0);
+        long gameID = preferences.getLong("gameID", 1);
+        nullResponse();
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("destlat", latitude);
+            obj.put("destlon", longitude);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        mVolleyService = new VolleyService(result, ctx);
+        mVolleyService.putDataVolley("input", "http://172.31.82.149:8080/api/games/upDestination/" + String.valueOf(gameID), null);
+
+    }
+
     //Increases the score of the first team by 1
     public void addScoreToTeam1(){
-        SharedPreferences preferences = ctx.getSharedPreferences("Game_status", 0);
+        SharedPreferences preferences = ctx.getSharedPreferences("User_status", 0);
         long gameID = preferences.getLong("gameID", 1);
         nullResponse();
         mVolleyService = new VolleyService(result, ctx);
@@ -141,7 +172,7 @@ public class OnlineQueries {
 
     //Increases the score of the second team by 1
     public void addScoreToTeam2(){
-        SharedPreferences preferences = ctx.getSharedPreferences("Game_status", 0);
+        SharedPreferences preferences = ctx.getSharedPreferences("User_status", 0);
         long gameID = preferences.getLong("gameID", 1);
         nullResponse();
         mVolleyService = new VolleyService(result, ctx);
@@ -151,7 +182,7 @@ public class OnlineQueries {
 
     //Adds one to the player counter - to be used when the user joins
     public void increasePlayerCount(){
-        SharedPreferences preferences = ctx.getSharedPreferences("Game_status", 0);
+        SharedPreferences preferences = ctx.getSharedPreferences("User_status", 0);
         long gameID = preferences.getLong("gameID", 1);
         nullResponse();
         mVolleyService = new VolleyService(result, ctx);
@@ -291,30 +322,34 @@ public class OnlineQueries {
         result = new IResult() {
             @Override
             public void ObjSuccess(String requestType, JSONObject response) {
-                Games game = new Games();
+//                Games game = new Games();
+//                try {
+//                    game.setGameID(response.getLong("gameID"));
+//                    game.setName(response.getString("name"));
+//                    game.setDestlat(response.getDouble("destlat"));
+//                    game.setDestlon(response.getDouble("destlon"));
+//                    game.setDestlatlon(response.getDouble("destlatlon"));
+//                    game.setLocationlat(response.getDouble("locationlat"));
+//                    game.setLocationlon(response.getDouble("locationlat"));
+//                    game.setLocationlatlon(response.getDouble("locationlatlon"));
+//                    game.setScoret1(response.getInt("scoret1"));
+//                    game.setScoret2(response.getInt("scoret2"));
+//                    game.setSpeed(response.getDouble("speed"));
+//                    game.setDifficulty(response.getInt("difficulty"));
+//                    game.setTimer(response.getInt("timer"));
+//                    game.setRound(response.getInt("round"));
+//                    game.setPlayercounter(response.getInt("playercounter"));
+//                    game.setPassword(response.getString("password"));
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//
+//                saveGame(game);
                 try {
-                    game.setGameID(response.getLong("gameID"));
-                    game.setName(response.getString("name"));
-                    game.setDestlat(response.getDouble("destlat"));
-                    game.setDestlon(response.getDouble("destlon"));
-                    game.setDestlatlon(response.getDouble("destlatlon"));
-                    game.setLocationlat(response.getDouble("locationlat"));
-                    game.setLocationlon(response.getDouble("locationlat"));
-                    game.setLocationlatlon(response.getDouble("locationlatlon"));
-                    game.setScoret1(response.getInt("scoret1"));
-                    game.setScoret2(response.getInt("scoret2"));
-                    game.setSpeed(response.getDouble("speed"));
-                    game.setDifficulty(response.getInt("difficulty"));
-                    game.setTimer(response.getInt("timer"));
-                    game.setRound(response.getInt("round"));
-                    game.setPlayercounter(response.getInt("playercounter"));
-                    game.setPassword(response.getString("password"));
+                    changeUserGameID(response.getLong("gameID"));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-                saveGame(game);
-                changeUserGameID(game.getGameID());
                 increasePlayerCount();
 
             }
