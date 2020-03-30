@@ -48,7 +48,7 @@ public class OnlineQueries {
         }
         nullResponse();
         mVolleyService = new VolleyService(result, ctx);
-        mVolleyService.putDataVolley("input", "http://172.31.82.149:8080/api/users/location/" + String.valueOf(userID), obj);
+        mVolleyService.putDataVolley("input", "http://172.31.82.149:8080/api/users/upLocation/" + String.valueOf(userID), obj);
     }
 
     //Creates a game

@@ -52,11 +52,11 @@ public class Tests extends AppCompatActivity {
 
         queries.createGame("testingAnotherGame", null, 0, 0);
 
-
+        queries.getUsersByGameID(0);
         List<Users> users = db.getAllUsers();
 
         for(int i = 0; i< users.size(); i++){
-            Log.d("Name", "onCreate: " + users.get(i).getUsername());
+            Log.d("Name", "onCreate: " + users.get(i).getGreen());
         }
 
 
