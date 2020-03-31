@@ -161,6 +161,15 @@ public class OnlineQueries {
 
     }
 
+    //get a game by id
+    public void updateCurrentGame(){
+        SharedPreferences preferences = ctx.getSharedPreferences("User_status", 0);
+        long gameID = preferences.getLong("gameID", 1);
+        updateGameResp();
+        mVolleyService = new VolleyService(result, ctx);
+        mVolleyService.getDataVolley("GET", "http://172.31.82.149:8080/api/games/"+ String.valueOf(gameID));
+    }
+
     //Increases the score of the first team by 1
     public void addScoreToTeam1(){
         SharedPreferences preferences = ctx.getSharedPreferences("User_status", 0);
@@ -289,6 +298,34 @@ public class OnlineQueries {
                 }
                 db.resetUsers();//resets users table
                 db.addAllUsers(response);//adds all users from server response
+
+            }
+
+            @Override
+            public void notifyError(String requestType, VolleyError error) {
+
+            }
+        };
+    }
+
+    private void updateGameResp(){
+        result = new IResult() {
+            @Override
+            public void ObjSuccess(String requestType, JSONObject response) {
+                db.resetGames();
+                try {
+                    Log.d("Response", "ObjSuccess: " + response.getDouble("destlat"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                db.addGame(response);
+                Games game = db.getGame(22);
+                Log.d("Response", "ObjSuccess: " + game.getDestlat());
+
+            }
+
+            @Override
+            public void ArrSuccess(String requestType, JSONArray response) {
 
             }
 
