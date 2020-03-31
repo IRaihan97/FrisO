@@ -59,6 +59,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     String userStatus;
     static LatLng latlng;
     SharedPreferences.Editor editor;
+    boolean newcircle = false;
 
     Context ctx = this;
     DBHandler db = new DBHandler(this);
@@ -75,9 +76,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         preferences = ctx.getSharedPreferences("User_status", 0);
         long userID = preferences.getLong("userID", 0);
         editor = preferences.edit();
-        editor.putString("status", "online");
-        editor.putString("gameID", null);
-        editor.apply();
+        change_game(0, "online");
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -114,15 +113,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         centerLocation();
                         first = true;
                     }
+                    Games game = db.getGame(preferences.getLong("gameID", 0));
 
-                    Log.d("yas", "onLocationChanged: "+ preferences.getLong("gameID", 0));
-                    if (userStatus == "ingame") {
-                      drawCanvasIngame();
+
+
+                    if (userStatus.equals("online")) {
+                        drawCanvasOnline();
+                        }
+                    else{
                         drawOtherPlayers();
-                    } else drawCanvasOnline();
+                        Game();
+                        query.changeUserGameID(preferences.getLong("gameID", 0));
+                        drawCanvasIngame(game.getLocationlat(),game.getLocationlon(),10);
+                    }
 
-
+                    Log.d("gameeee", "status:  " + preferences.getString("status", null));
                     drawPlayer(latitude, longitude);
+
 
 
                 }
@@ -147,6 +154,127 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 1, locationListener);
         }
     }
+    private void join(){
+        change_status("catching");
+    }
+
+
+    private void nextRound(float [] distance, int difficulty){
+        if (preferences.getString("status", null) == "throwing") change_status("catching");
+        if (preferences.getString("status", null) == "catching"){//&& query.isFirstCatcher == true)
+            change_status("throwing");
+            newcircle = false;}
+        centerLocation();
+        int time = timer (distance, difficulty);
+        //query.setTimer(timer(distance,game.getDifficulty()));
+        Game();
+    }
+
+    private void lost(){
+        change_game(0, "online");
+        //myDialog = new Dialog(this);
+    }
+
+    private void change_game(long ID, String status){
+        query.changeUserGameID(ID);
+        query.changeUserStatus(status);
+        Games game = db.getGame(ID);
+        editor.putString("status", status);
+        editor.putLong(String.valueOf(ID), 0);
+        editor.apply();
+    }
+
+
+    private void change_status(String status){
+        query.changeUserStatus(status);
+        editor.putString("status", status);
+        editor.apply();
+    }
+
+    private int timer(float[] distance, int difficulty){
+        return (int) ((distance[0]/1.4)*(1-difficulty));
+    }
+
+    private void Game(){
+        long ID = preferences.getLong("gameID", 0);
+        Games game = db.getGame(ID);
+
+        double latitude = game.getDestlat();
+        double longitude = game.getDestlon();
+        int difficulty = 10;//game.getDifficulty();
+
+        Circle circle = drawDestiantion(latitude,longitude);
+
+
+        double playerlat = preferences.getFloat("latitude", 0);
+        double playerlon = preferences.getFloat("longitude", 0);
+
+
+        //add destination to the map
+
+        //
+        float[] distance = new float [2];
+        Location.distanceBetween(playerlat, playerlon, latitude, longitude, distance);
+
+
+        if (preferences.getString("status", null) == "catching")
+        {
+            Log.d("gameeee", "Game: yes");
+            int timer = game.getTimer();
+            if (timer <= 0 && distance[0]<circle.getRadius())
+                nextRound(distance, difficulty);
+            else if (timer <= 0){
+                lost();
+            }}
+        else if (newcircle == false){
+
+            drawDestinationCircle(circle, latitude, longitude);
+        }
+    }
+
+    private Circle drawDestiantion(double latitude, double longitude){
+        Circle circle = mMap.addCircle(new CircleOptions()
+                .center(new LatLng(latitude, longitude))
+                .radius(4)
+                .strokeWidth(10)
+                .fillColor(Color.argb(40, 58, 200, 4))
+                .strokeColor(Color.argb(100, 108, 250, 54))
+                .zIndex(0));
+        return circle;
+    }
+
+    private void drawDestinationCircle( Circle circle, double latitude, double longitude){
+
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                @Override
+                public void onMapClick(LatLng arg0) {
+                    if (preferences.getString("status", null).equals("throwing") && newcircle == false) {
+                        newcircle = true;
+                    setDestination(arg0);}
+                }
+            });
+    }
+
+    private void setDestination(LatLng destination){
+        Games game = db.getGame(preferences.getLong("gameID", 0));
+        Circle circle = mMap.addCircle(new CircleOptions()
+                .center(new LatLng(game.getLocationlat(),game.getLocationlon()))
+                .radius(10)
+                .zIndex(1));
+       float [] distance = new float [2];
+        double dlatitude = destination.latitude;
+        double dlongitude = destination.longitude;
+
+        Location.distanceBetween(dlatitude, dlongitude, game.getLocationlat(), game.getLocationlon(), distance);
+        if(distance[0]<circle.getRadius()){
+        query.sendDestination(dlatitude, dlongitude);
+        game = db.getGame(preferences.getLong("gameID", 0));
+        query.updateCurrentGame();
+            Log.d("gameeee", "setDestination: yes"+ game.getDestlat() + " " + game.getDestlon());
+            Log.d("gameeee", "setDestination: yes"+ dlatitude + " " + dlongitude);}
+        }
+        //query.SetNewDestination(dlatitude, dlongitude); preferences.setDestination(dlatitude, dlongitude);*/
+
 
     private void drawGameCircle(double latitude, double longitude, int difficulty, long gameID) {
         Circle circle = mMap.addCircle(new CircleOptions()
@@ -157,21 +285,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .strokeColor(Color.argb(100, 225, 0, 0))
                 .clickable(true));
         circle.setTag(gameID);
+
         mMap.setOnCircleClickListener(new GoogleMap.OnCircleClickListener() {
 
             @Override
             public void onCircleClick(Circle circle) {
+                if (preferences.getString("status", null).equals("online")){
                 checkLocation();
                 long ID = (long) circle.getTag();
-                GoToPopup(ID);
+                GoToPopup(ID);}
+                else {
+
+                }
             }
         });
-
     }
+
 
     private void drawCanvasOnline() {
         List<Games> games = db.getAllGames();
-
         for (int i = 0; i < games.size(); i++) {
 
             double lat = games.get(i).getLocationlat();
@@ -181,16 +313,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private void drawCanvasIngame() {
-        Games games = db.getGame(preferences.getLong("gameID", 0));
-        double lat = games.getLocationlat();
-        double lon = games.getLocationlon();
-        int dif = games.getDifficulty();
+    private void drawCanvasIngame(double latitude, double longitude, int difficulty) {
             Circle circle = mMap.addCircle(new CircleOptions()
-                    .center(new LatLng(lat, lon))
+                    .center(new LatLng(latitude, longitude))
                     .radius(10)
                     .strokeWidth(10)
-                    .fillColor(Color.argb(10, 225, 0, 0))
                     .strokeColor(Color.argb(100, 225, 0, 0)));
     }
 
@@ -200,14 +327,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .radius(1)
                 .strokeWidth(10)
                 .fillColor(Color.argb(255, 205, 90, 0))
-                .strokeColor(Color.argb(255, 225, 128, 0));
+                .strokeColor(Color.argb(255, 225, 128, 0))
+                .zIndex(2);
         mMap.addCircle(circleOptions);
     }
 
 
     private void drawOtherPlayers() {
         List<Users> players2 = db.getAllUsers();
-        Games game = db.getGame(22);
+        Games game = db.getGame(preferences.getLong("gameID", 0));
 
         for (int i = 0; i < players2.size(); i++) {
             Log.d("players", "drawOtherPlayers: "+  players2.get(i).getUsername() + game.getPlayercounter());
@@ -244,6 +372,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 build();
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
+
     public void centerLocation(){
         checkLocation();
         CameraPosition cameraPosition = new CameraPosition.Builder().
@@ -288,6 +417,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         muiSettings.setCompassEnabled(false);
     }
 
+
     @Override
     protected void onStop() {
         super.onStop();
@@ -329,11 +459,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         bjoin.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                query.changeUserGameID(ID);
-                query.changeUserStatus("ingame");
-                editor.putString("status", "ingame");
-                editor.putLong("gameID", ID);
-                editor.apply();
+                change_game(ID, "ingame");
+                join();
                 myDialog.dismiss();
             }
         });
