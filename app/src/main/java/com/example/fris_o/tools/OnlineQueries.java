@@ -140,13 +140,14 @@ public class OnlineQueries {
             e.printStackTrace();
         }
         mVolleyService = new VolleyService(result, ctx);
-        mVolleyService.putDataVolley("input", "http://172.31.82.149:8080/api/games/upTimer/" + String.valueOf(gameID), null);
+        mVolleyService.putDataVolley("input", "http://172.31.82.149:8080/api/games/upTimer/" + String.valueOf(gameID), obj);
 
     }
 
     public void sendDestination(double latitude, double longitude){
         SharedPreferences preferences = ctx.getSharedPreferences("User_status", 0);
         long gameID = preferences.getLong("gameID", 1);
+        Log.d("Game", "sendDestination: " + gameID);
         nullResponse();
         JSONObject obj = new JSONObject();
         try {
@@ -156,7 +157,7 @@ public class OnlineQueries {
             e.printStackTrace();
         }
         mVolleyService = new VolleyService(result, ctx);
-        mVolleyService.putDataVolley("input", "http://172.31.82.149:8080/api/games/upDestination/" + String.valueOf(gameID), null);
+        mVolleyService.putDataVolley("input", "http://172.31.82.149:8080/api/games/upDestination/" + String.valueOf(gameID), obj);
 
     }
 
