@@ -76,7 +76,10 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.719" />
+////
+    The constraints
 
+    ////
     <TextView
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
@@ -89,5 +92,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.177" />
+///
+    Text size and matching to parents
 
+    //
 </androidx.constraintlayout.widget.ConstraintLayout>
