@@ -50,21 +50,21 @@ public class Menu_and_settings extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
         //Username code
+//        TextView username = findViewById(R.id.username);
+//        SharedPreferences sharedPreferences = getSharedPreferences("User_status",0);
+//        String user = sharedPreferences.getString("username",null);
+//        username.setText(user);
+    }
+
+
+//Guys if the app crash uncomment this method and delete the same lines from onCreate()
+    public void onResume(){
+        super.onResume();
         TextView username = findViewById(R.id.username);
         SharedPreferences sharedPreferences = getSharedPreferences("User_status",0);
         String user = sharedPreferences.getString("username",null);
         username.setText(user);
     }
-
-
-//Guys if the app crash uncomment this method and delete the same lines from onCreate()
-//    public void onResume(){
-//        super.onResume();
-//        TextView username = findViewById(R.id.username);
-//        SharedPreferences sharedPreferences = getSharedPreferences("User_status",0);
-//        String user = sharedPreferences.getString("username",null);
-//        username.setText(user);
-//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
