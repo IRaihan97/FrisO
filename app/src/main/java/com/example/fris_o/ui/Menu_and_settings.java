@@ -1,5 +1,6 @@
 package com.example.fris_o.ui;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.example.fris_o.R;
@@ -21,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.view.Menu;
+import android.widget.TextView;
 
 public class Menu_and_settings extends AppCompatActivity {
 
@@ -45,7 +47,21 @@ public class Menu_and_settings extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+        TextView username = findViewById(R.id.username);
+        SharedPreferences sharedPreferences = getSharedPreferences("User_status",0);
+        String user = sharedPreferences.getString("username",null);
+        username.setText(user);
     }
+
+
+//Guys if the app crash uncomment this method and delete the same lines from onCreate()
+//    public void onResume(){
+//        super.onResume();
+//        TextView username = findViewById(R.id.username);
+//        SharedPreferences sharedPreferences = getSharedPreferences("User_status",0);
+//        String user = sharedPreferences.getString("username",null);
+//        username.setText(user);
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -64,4 +80,5 @@ public class Menu_and_settings extends AppCompatActivity {
     private void getGames(){
 
     }
+
 }
