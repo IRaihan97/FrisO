@@ -60,10 +60,12 @@ public class Menu_and_settings extends AppCompatActivity {
 //Guys if the app crash uncomment this method and delete the same lines from onCreate()
     public void onResume(){
         super.onResume();
-        TextView username = findViewById(R.id.username);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        View hView =  navigationView.getHeaderView(0);
+        TextView nav_user = hView.findViewById(R.id.username);
         SharedPreferences sharedPreferences = getSharedPreferences("User_status",0);
         String user = sharedPreferences.getString("username",null);
-        username.setText(user);
+        nav_user.setText(user);
     }
 
     @Override
