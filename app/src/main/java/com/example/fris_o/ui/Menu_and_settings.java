@@ -1,5 +1,6 @@
 package com.example.fris_o.ui;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -41,12 +42,14 @@ public class Menu_and_settings extends AppCompatActivity {
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home,
                 R.id.nav_tools,
-                R.id.nav_lobby)
+                R.id.nav_lobby,
+                R.id.nav_logout)
                 .setDrawerLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+        //Username code
         TextView username = findViewById(R.id.username);
         SharedPreferences sharedPreferences = getSharedPreferences("User_status",0);
         String user = sharedPreferences.getString("username",null);
@@ -79,6 +82,18 @@ public class Menu_and_settings extends AppCompatActivity {
 
     private void getGames(){
 
+    }
+
+    public void logout(View view){
+        SharedPreferences sharedPreferences = getSharedPreferences("User_status",0);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("username", null);
+        editor.apply();
+
+        Intent intent = new Intent(this,Login.class);
+        startActivity(intent);
+
+        finish();
     }
 
 }

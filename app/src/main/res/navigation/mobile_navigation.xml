@@ -21,5 +21,10 @@
         android:name="com.example.fris_o.ui.lobby.LobbyFragment"
         android:label="Lobby"
         tools:layout="@layout/fragment_lobby" />
+    <fragment
+        android:id="@+id/nav_logout"
+        android:name="com.example.fris_o.ui.lobby.LobbyFragment"
+        android:label="Log Out"
+        tools:layout="@layout/fragment_logout" />
 
 </navigation>
