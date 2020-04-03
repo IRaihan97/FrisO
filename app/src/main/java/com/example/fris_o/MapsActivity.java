@@ -15,6 +15,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -76,7 +77,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         preferences = ctx.getSharedPreferences("User_status", 0);
         long userID = preferences.getLong("userID", 0);
         editor = preferences.edit();
-        change_game(0, "online");
+            change_game(0, "online");
+
+        
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -103,6 +106,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     latlng = latLng;
 
                     //Gats all games based on the user's lccation and adds them to a local database
+                    query.updateCurrentGame();
                     query.getUsersByGameID(22);
                     query.getNearbyGames(latitude,longitude);
                     query.sendUserLocation(latitude, longitude);
@@ -115,25 +119,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                     Games game = db.getGame(preferences.getLong("gameID", 0));
 
-
-
                     if (userStatus.equals("online")) {
                         drawCanvasOnline();
                         }
+
                     else{
                         drawOtherPlayers();
                         Game();
-                        query.changeUserGameID(preferences.getLong("gameID", 0));
                         drawCanvasIngame(game.getLocationlat(),game.getLocationlon(),10);
                     }
-
-                    Log.d("gameeee", "status:  " + preferences.getString("status", null));
                     drawPlayer(latitude, longitude);
-
-
-
+                    Log.d("gmae3", "onLocationChanged: " + preferences.getString("status", null)+ "  " + preferences.getLong("gameID", 0));
+                    Log.d("gmae3", "onLocationChanged: " + db.getGame(22).getTimer());
                 }
-
 
                 @Override
                 public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -156,18 +154,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
     private void join(){
         change_status("catching");
-    }
-
-
-    private void nextRound(float [] distance, int difficulty){
-        if (preferences.getString("status", null) == "throwing") change_status("catching");
-        if (preferences.getString("status", null) == "catching"){//&& query.isFirstCatcher == true)
-            change_status("throwing");
-            newcircle = false;}
-        centerLocation();
-        int time = timer (distance, difficulty);
-        //query.setTimer(timer(distance,game.getDifficulty()));
-        Game();
     }
 
     private void lost(){
@@ -195,6 +181,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return (int) ((distance[0]/1.4)*(1-difficulty));
     }
 
+
+    private void nextRound(float [] distance, int difficulty){
+
+        long ID = preferences.getLong("gameID", 0);
+        Games game = db.getGame(ID);
+        if (preferences.getString("status", null) == "throwing") change_status("catching");
+        if (preferences.getString("status", null) == "catching"){//&& query.isFirstCatcher == true)
+            change_status("throwing");
+            newcircle = false;}
+        centerLocation();
+        int time = timer (distance, difficulty);
+        query.sendTimer(10);
+        Log.d("gmae3", "nextRound: " +ID+"  " + game.getTimer());
+        new CountDownTimer((long)(10 * 1000), 1000) {
+
+            public void onTick(long millisUntilFinished) {
+            }
+
+            public void onFinish() {
+                Log.d("gmae3", "nextRound: fin");
+                Game();
+            }
+        }.start();
+
+        Game();
+    }
+
+
+
     private void Game(){
         long ID = preferences.getLong("gameID", 0);
         Games game = db.getGame(ID);
@@ -213,19 +228,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //add destination to the map
 
         //
+        int timer =  game.getTimer();
+        Log.d("gmae3", "Game: timer" + timer);
         float[] distance = new float [2];
         Location.distanceBetween(playerlat, playerlon, latitude, longitude, distance);
-
-
-        if (preferences.getString("status", null) == "catching")
-        {
-            Log.d("gameeee", "Game: yes");
-            int timer = game.getTimer();
+        if (distance[0]< circle.getRadius() && preferences.getString("status", null).equals("catching")) {
+            Log.d("gmae3", "Game: yas");
             if (timer <= 0 && distance[0]<circle.getRadius())
-                nextRound(distance, difficulty);
+            {nextRound(distance, difficulty);}
             else if (timer <= 0){
-                lost();
-            }}
+                //  lost();
+            }
+        }
+        if (timer <=0 && preferences.getString("status", null).equals("throwing")){
+          //  nextRound(distance, difficulty);
+        }
+
         else if (newcircle == false){
 
             drawDestinationCircle(circle, latitude, longitude);
@@ -268,10 +286,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Location.distanceBetween(dlatitude, dlongitude, game.getLocationlat(), game.getLocationlon(), distance);
         if(distance[0]<circle.getRadius()){
         query.sendDestination(dlatitude, dlongitude);
-        game = db.getGame(preferences.getLong("gameID", 0));
+        //game = db.getGame(preferences.getLong("gameID", 0));
         query.updateCurrentGame();
-            Log.d("gameeee", "setDestination: yes"+ game.getDestlat() + " " + game.getDestlon());
-            Log.d("gameeee", "setDestination: yes"+ dlatitude + " " + dlongitude);}
+            }
         }
         //query.SetNewDestination(dlatitude, dlongitude); preferences.setDestination(dlatitude, dlongitude);*/
 
@@ -338,13 +355,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Games game = db.getGame(preferences.getLong("gameID", 0));
 
         for (int i = 0; i < players2.size(); i++) {
-            Log.d("players", "drawOtherPlayers: "+  players2.get(i).getUsername() + game.getPlayercounter());
             drawOtherPlayers(players2.get(i).getLocationlat(), players2.get(i).getLocationlon(), players2.get(i).getRed(), players2.get(i).getGreen(), players2.get(i).getBlue());
         }
     }
 
     private void drawOtherPlayers(double latitude, double longitude, int rred, int rgreen, int rblue) {
-        Log.d("players", "drawOtherPlayers: "+  latitude + longitude);
         CircleOptions circleOptions = new CircleOptions()
                 .center(new LatLng(latitude, longitude))
                 .radius(1)
