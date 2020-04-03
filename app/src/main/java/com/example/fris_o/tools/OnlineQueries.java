@@ -46,7 +46,7 @@ public class OnlineQueries {
         }   catch (JSONException e) {
             e.printStackTrace();
         }
-        sendResponse();
+        nullResponse();
         mVolleyService = new VolleyService(result, ctx);
         mVolleyService.putDataVolley("input", "http://172.31.82.149:8080/api/users/upLocation/" + String.valueOf(userID), obj);
     }
@@ -89,7 +89,7 @@ public class OnlineQueries {
         }   catch (JSONException e) {
             e.printStackTrace();
         }
-        sendResponse();
+        nullResponse();
         mVolleyService = new VolleyService(result, ctx);
         mVolleyService.putDataVolley("input", "http://172.31.82.149:8080/api/users/upStatus/" + String.valueOf(userID), obj);
     }
@@ -107,7 +107,7 @@ public class OnlineQueries {
         }   catch (JSONException e) {
             e.printStackTrace();
         }
-        sendResponse();
+        nullResponse();
         mVolleyService = new VolleyService(result, ctx);
         mVolleyService.putDataVolley("input", "http://172.31.82.149:8080/api/users/upGame/" + String.valueOf(userID), obj);
     }
@@ -132,7 +132,7 @@ public class OnlineQueries {
     public void sendTimer(int timer){
         SharedPreferences preferences = ctx.getSharedPreferences("User_status", 0);
         long gameID = preferences.getLong("gameID", 1);
-        sendResponse();
+        nullResponse();
         JSONObject obj = new JSONObject();
         try {
             obj.put("timer", timer);
@@ -141,6 +141,7 @@ public class OnlineQueries {
         }
         mVolleyService = new VolleyService(result, ctx);
         mVolleyService.putDataVolley("input", "http://172.31.82.149:8080/api/games/upTimer/" + String.valueOf(gameID), obj);
+        updateCurrentGame();
 
     }
 
@@ -148,7 +149,7 @@ public class OnlineQueries {
         SharedPreferences preferences = ctx.getSharedPreferences("User_status", 0);
         long gameID = preferences.getLong("gameID", 1);
         Log.d("Game", "sendDestination: " + gameID);
-        sendResponse();
+        nullResponse();
         JSONObject obj = new JSONObject();
         try {
             obj.put("destlat", latitude);
@@ -158,6 +159,7 @@ public class OnlineQueries {
         }
         mVolleyService = new VolleyService(result, ctx);
         mVolleyService.putDataVolley("input", "http://172.31.82.149:8080/api/games/upDestination/" + String.valueOf(gameID), obj);
+        updateCurrentGame();
 
     }
 
@@ -165,7 +167,7 @@ public class OnlineQueries {
     public void updateCurrentGame(){
         SharedPreferences preferences = ctx.getSharedPreferences("User_status", 0);
         long gameID = preferences.getLong("gameID", 1);
-        sendResponse();
+        updateGameResp();
         mVolleyService = new VolleyService(result, ctx);
         mVolleyService.getDataVolley("GET", "http://172.31.82.149:8080/api/games/"+ String.valueOf(gameID));
     }
@@ -174,7 +176,7 @@ public class OnlineQueries {
     public void addScoreToTeam1(){
         SharedPreferences preferences = ctx.getSharedPreferences("User_status", 0);
         long gameID = preferences.getLong("gameID", 1);
-        sendResponse();
+        nullResponse();
         mVolleyService = new VolleyService(result, ctx);
         mVolleyService.putDataVolley("input", "http://172.31.82.149:8080/api/games/upScoret1/" + String.valueOf(gameID), null);
 
@@ -184,7 +186,7 @@ public class OnlineQueries {
     public void addScoreToTeam2(){
         SharedPreferences preferences = ctx.getSharedPreferences("User_status", 0);
         long gameID = preferences.getLong("gameID", 1);
-        sendResponse();
+        nullResponse();
         mVolleyService = new VolleyService(result, ctx);
         mVolleyService.putDataVolley("input", "http://172.31.82.149:8080/api/games/upScoret2/" + String.valueOf(gameID), null);
 
@@ -194,7 +196,7 @@ public class OnlineQueries {
     public void increasePlayerCount(){
         SharedPreferences preferences = ctx.getSharedPreferences("User_status", 0);
         long gameID = preferences.getLong("gameID", 1);
-        sendResponse();
+        nullResponse();
         mVolleyService = new VolleyService(result, ctx);
         mVolleyService.putDataVolley("input", "http://172.31.82.149:8080/api/games/addCounter/" + String.valueOf(gameID), null);
     }
@@ -257,12 +259,11 @@ public class OnlineQueries {
     }
 
 
-    private void sendResponse(){
+    private void nullResponse(){
         result = new IResult() {
             @Override
             public void ObjSuccess(String requestType, JSONObject response) {
-                db.resetGames();
-                db.addGame(response);
+
             }
 
             @Override
@@ -276,6 +277,8 @@ public class OnlineQueries {
             }
         };
     }
+
+
 
     //Response for "getUsersByGame" - executed when server sends a response saves users from response
     private void saveAllUsers(){
@@ -307,6 +310,33 @@ public class OnlineQueries {
         };
     }
 
+    private void updateGameResp(){
+        result = new IResult() {
+            @Override
+            public void ObjSuccess(String requestType, JSONObject response) {
+                db.resetGames();
+                try {
+                    Log.d("Response", "ObjSuccess: " + response.getDouble("destlat"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                db.addGame(response);
+                Games game = db.getGame(22);
+                Log.d("Response", "ObjSuccess: " + game.getDestlat());
+
+            }
+
+            @Override
+            public void ArrSuccess(String requestType, JSONArray response) {
+
+            }
+
+            @Override
+            public void notifyError(String requestType, VolleyError error) {
+
+            }
+        };
+    }
 
     private void getGamesResp(){
         result = new IResult() {
