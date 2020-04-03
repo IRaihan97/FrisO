@@ -9,8 +9,6 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -18,7 +16,9 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
@@ -40,9 +40,6 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 
-import org.w3c.dom.Text;
-
-import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -152,6 +149,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 1, locationListener);
         }
     }
+
+
+
     private void join(){
         change_status("catching");
     }
@@ -461,7 +461,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         txtround = myDialog.findViewById(R.id.round_number);
         txtround.setText(String.valueOf(games.getRound()));
 
-        txtclose.setOnClickListener(new View.OnClickListener() {
+        txtclose.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 myDialog.dismiss();
@@ -471,7 +471,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         bjoin = myDialog.findViewById(R.id.bjoin);
-        bjoin.setOnClickListener(new View.OnClickListener(){
+        bjoin.setOnClickListener(new OnClickListener(){
             @Override
             public void onClick(View v){
                 change_game(ID, "ingame");
@@ -487,5 +487,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Intent i = new Intent(this, Menu_and_settings.class);
         startActivity(i);
     }
+    public void createGame(View view){
+        myDialog = new Dialog(this);
+        Button createb;
+        myDialog.setContentView(R.layout.activity_create_game);
+        SeekBar seekBar;
+        seekBar = myDialog.findViewById(R.id.seekBar2);
 
+
+        createb = myDialog.findViewById(R.id.create);
+        createb.setOnClickListener(new OnClickListener(){
+            @Override
+            public void onClick(View v){
+
+                myDialog.dismiss();
+            }
+        });
+        Objects.requireNonNull(myDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.show();
+    }
 }
