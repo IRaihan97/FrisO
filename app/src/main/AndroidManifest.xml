@@ -47,13 +47,7 @@
             android:value="AIzaSyDVKO2X8gHKA21YKKhEtUS6sW3gC1bPsVI" />
 
         <activity
-            android:name=".MapsActivity"
-            android:label="AIzaSyDVKO2X8gHKA21YKKhEtUS6sW3gC1bPsVI">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:name=".MapsActivity">
         </activity>
     </application>
 
