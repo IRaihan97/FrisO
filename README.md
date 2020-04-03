@@ -3,7 +3,7 @@ This section of the repository will describe the basics of the code developed fo
 It will include descriptions of the commands used in the virtual machine, the spring-boot application developed and the code integrated in the front end of the application
 ## Initial setup of the virtual machine on cloud
 The virtual machine was primarily used through the command prompt in Windows by performing a connection through a Secured Shell protocol.  
-The following command was used to connect which is formed by the protocol, username and ip address of the virtual machine.
+The following command was used to connect which is formed by the protocol, username and ip address of the virtual machine:
 ```
 ssh root@172.31.82.149
 ```
