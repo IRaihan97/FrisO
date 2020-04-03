@@ -130,7 +130,7 @@ spring.jpa.hibernate.ddl-auto = update
 The application.properties file defines a datasource for the whole webservice application which means that the point of connection is defined only once. In the example above, the url defined for the datasource is composed by the IP address of the docker container running the MySQL as well as the port that it is running through. It also requires the name of the database by also defining some parameters for accessing the database such as allowing public key retrievals. 
 
 ### Project Structure
-The project was primarily divided into three main packages where each package contains a specific set of classes. The most relevant packages are the models, repositories and controller packages. The classes defined inside those packages dictate the overall functionality of the webservice and they have been implemented by using JPA:
+The project was primarily divided into three main packages where each package contains a specific set of classes. The most relevant packages are the models, repositories and controller packages. The classes defined inside those packages dictate the overall functionality of the webservice and they have been implemented by using JPA:  
 ![image](https://drive.google.com/uc?export=view&id=1avvwf8t_TxKhbJK5Q5Sd5ejN0YfTu1in)
 
 #### Models Examples
