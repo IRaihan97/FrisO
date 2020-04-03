@@ -108,12 +108,33 @@ The following was also added to the pom.xml file to make use of the dockerfile a
 ## Insights on JPA and the code developed
 JPA (Java persistance API) is a set of interfaces that is usually used with frameworks like spring-boot. It is an industry standard for Object-Relational-mapping which refers to the ability of using the object oriented programming paradigm to perfrom queries rather instead of using raw SQL queries.
 
+### Connecting to the MySQL databse
+Spring and JPA allows to define a point of connection to the database into a single file called "application.properties" created inside the project.
+
+
+Below is the code I have used to define the connection:
+```
+## Spring DATASOURCE (DataSourceAutoConfiguration & DataSourceProperties)
+spring.datasource.url = jdbc:mysql://192.168.0.2:3306/friso?allowPublicKeyRetrieval=true&useSSL=false 
+spring.datasource.username = root
+spring.datasource.password = aPassword123
+
+
+## Hibernate Properties
+# The SQL dialect makes Hibernate generate better SQL for the chosen database
+spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQL5InnoDBDialect
+
+# Hibernate ddl auto (create, create-drop, validate, update)
+spring.jpa.hibernate.ddl-auto = update
+```
+The application.properties file defines a datasource for the whole webservice application which means that the point of connection is defined only once. In the example above, the url defined for the datasource is composed by the IP address of the docker container running the MySQL as well as the port that it is running through. It also requires the name of the database by also defining some parameters for accessing the database such as allowing public key retrievals. 
+
 ### Project Structure
 The project was primarily divided into three main packages where each package contains a specific set of classes. The most relevant packages are the models, repositories and controller packages. The classes defined inside those packages dictate the overall functionality of the webservice and they have been implemented by using JPA:
 ![image](https://drive.google.com/uc?export=view&id=1avvwf8t_TxKhbJK5Q5Sd5ejN0YfTu1in)
 
 #### Models Examples
-Thanks to the JPA and the Spring framework, models are classes used to define map java objects into SQL tables.  
+Thanks to the JPA and the Spring framework, the models classes are going to be mapped into SQL tables.   
 Here is a simple Entity Class that will be used to create and query a table in the MySQL database that it is connected to:
 ```Java
 @Entity//the @Entity annotation specifies that this class is an entity
@@ -145,7 +166,22 @@ public class Games {
 	}    
 }
 ```
-All the tables in the webservice are defined in a similar fashion. The example class provided above will generate a table with two fields named "gameID" and "name". The "gameID" field will be a BIGINT Primary key field in the table and the "name" field will be a simple Varchar(255) Field. 
+All the tables in the webservice application are defined in a similar fashion. The example class provided above will generate a table with two fields named "gameID" and "name". The "gameID" field will be a BIGINT Primary key field in the table and the "name" field will be a simple Varchar(255) Field. Have a look at the repository to have a better look at the models I have created for the database. 
+
 #### Repositories Examples
+The repostory pakcage containes interfaces for each model that were defined in the applicatio. Each of these interfaces are extending from the JpaRepository<> interface which contains all the methods that are going to perform queries.  When extending from the JpaRepository, it is required to pass the model representing the entity that will be queried in the database.  
+Here is an example of a repository to query the games model we previously created:
+```java
+public interface GamesRepo extends JpaRepository<Games, Long> {// you can see that "Games" is defined when extending from the repository
+	
+}
+```
+To perform basic queries such as deleting or adding a record, extending from the JpaRepository is enough. However, JPA still allows to perform custom SQL queries with the @Query notation:
+```java
+public interface GamesRepo extends JpaRepository<Games, Long> {
+	@Query("SELECT g FROM Games g WHERE g.gameID = ?1")
+	public Games findByGameID(Long gameID); //This method will return a single game where the ID is equal to the argument passed
+}
+```
 
 #### Controller Examples
