@@ -1,6 +1,6 @@
 # Webservice Documenation
 This section of the repository will describe the basics of the code developed for the webservice.
-It will include descriptions of the commands used in the virtual machine, the spring-boot application developed and the code integrated in the front end of the application
+It will include descriptions of the commands used in the virtual machine, the spring-boot application developed and the code integrated in the front end of the application  
 ## Initial setup of the virtual machine on cloud
 The virtual machine was primarily used through the command prompt in Windows by performing a connection through a Secure Shell protocol.  
 The following command was used to connect which is formed by the protocol, username and ip address of the virtual machine:
@@ -137,6 +137,15 @@ The project was primarily divided into three main packages where each package co
 Thanks to the JPA and the Spring framework, the models classes are going to be mapped into SQL tables.   
 Here is a simple Entity Class that will be used to create and query a table in the MySQL database that it is connected to:
 ```Java
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import javax.persistence.*;
+
 @Entity//the @Entity annotation specifies that this class is an entity
 @Table(name = "games")//@Table annotation ties a table name to the entity, this name will be used to create the table in the database
 @EntityListeners(AuditingEntityListener.class)
@@ -172,19 +181,68 @@ All the tables in the webservice application are defined in a similar fashion. T
 The repository package contains interfaces for each model that were defined in the application. Each of these interfaces are extending from the JpaRepository<> interface which contains all the methods that are going to perform queries.  When extending from the JpaRepository, it is required to pass the model representing the entity that will be queried in the database.  
 Here is an example of a repository to query the games model we previously created:
 ```java
+import org.springframework.data.jpa.repository.JpaRepository;
+import com.group20.webservice.models.Games;
+
 public interface GamesRepo extends JpaRepository<Games, Long> {// you can see that "Games" is defined when extending from the repository
     
 }
 ```
 To perform basic queries such as deleting or adding a record, extending from the JpaRepository is enough. However, JPA still allows to perform custom SQL queries with the @Query notation:
 ```java
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import com.group20.webservice.models.Games;
+
 public interface GamesRepo extends JpaRepository<Games, Long> {
     @Query("SELECT g FROM Games g WHERE g.gameID = ?1")
-    public Games findByGameID(Long gameID); //This method will return a single game where the ID is equal to the argument passed
+    public Games findByGameID(Long gameID); //This method will return a single game where the gameID is equal to the passed argument
 }
 ```
 
 #### Controller Examples
+The controller classes are the core classes that define the overall functionalities of the webservice. It makes use of the other classes defined in the other packages. The classes defined here ditctate how the server should respond to possible requests by clients. The following code represents a simple controller for the Games class (which is the entity in the SQL table) defined previously:
+```java
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 
+@RestController
+@RequestMapping("/api")
+public class GamesController {
+    @Autowired
+	GamesRepo gamesRepo;
 
+    @GetMapping("/games")
+	public List<Games> getAllGames() {
+	    return gamesRepo.findAll();
+	    
+	}
+    
+    @PostMapping("/games")
+	public Games createGame(@Valid @RequestBody Games game) {
+	    return gamesRepo.save(game);
+	}
+    
+    @GetMapping("/games/{id}")
+	public Games getGameById(@PathVariable(value = "id") Long gamesId) {
+	    return gamesRepo.findById(gamesId)
+	            .orElseThrow(() -> new ResourceNotFound("Game", "id", gamesId));
+	}
+    
+    @DeleteMapping("/games/{id}")
+	public ResponseEntity<?> deleteGame(@PathVariable(value = "id") Long gamesId) {
+	    Games game = gamesRepo.findById(gamesId)
+	            .orElseThrow(() -> new ResourceNotFound("User", "id", gamesId));
 
+	    gamesRepo.delete(game);
+
+	    return ResponseEntity.ok().build();
+	}  
+}
+```
+The code above
