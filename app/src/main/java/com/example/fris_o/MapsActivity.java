@@ -195,6 +195,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     //Timer function that calculates how much time the user should have based on the distance (between it's location and the destination in meters) divided by average human speed (1.4 meters per second) times (1 - )difficulty
+    //TODO: implement timer function insted of preset 10 seconds
     //Not implemented
     private int timer(float[] distance, int difficulty){
         return (int) ((distance[0]/1.4)*(1-difficulty));
@@ -228,6 +229,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     //sub-main function ran each location update if the user is in a game
+    //TODO: implement difficulty insted of preset radius 10
     private void Game(){
         long ID = preferences.getLong("gameID", 0);
         Games game = db.getGame(ID);
