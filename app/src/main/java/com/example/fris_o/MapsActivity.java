@@ -71,8 +71,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+        //create the preferences object that is used to access local db
+        //set users status and gameID to 0 on start
+
         preferences = ctx.getSharedPreferences("User_status", 0);
-        long userID = preferences.getLong("userID", 0);
         editor = preferences.edit();
             change_game(0, "online");
 
@@ -97,37 +99,47 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 @Override
                 public void onLocationChanged(Location location) {
 
+                    //main class that runs at each location update (currently every time the user moves 1 meter
+
                     double latitude = location.getLatitude();
                     double longitude = location.getLongitude();
                     LatLng latLng = new LatLng(latitude, longitude);
                     latlng = latLng;
 
-                    //Gats all games based on the user's lccation and adds them to a local database
+                    //Gets all games based on the user's location and adds them to a local database (only displays games that are in a preset area which is currently the size of Brunel's campus)
                     query.updateCurrentGame();
                     query.getUsersByGameID(22);
                     query.getNearbyGames(latitude,longitude);
                     query.sendUserLocation(latitude, longitude);
                     userStatus =  preferences.getString("status",null);
-                    mMap.clear();
 
+                    //Map refresh rate is bound to location update. Each shape is cleared and redrawn onLocationChange
+                    mMap.clear();
+                    TextView status = findViewById(R.id.status);
+                    Button create = findViewById(R.id.create);
+
+                    //First time the user opens the app the camera will be redirected on his location
                     if (!first) {
                         centerLocation();
                         first = true;
                     }
                     Games game = db.getGame(preferences.getLong("gameID", 0));
 
+                    //If status is online all local games will be shown and clickable
                     if (userStatus.equals("online")) {
                         drawCanvasOnline();
                         }
 
+                    //Else, the user is in a game so the current game is the only one shown with the players inside of it, destination circle and a text view that shows whether the user is catching or throwing
                     else{
+                        status.setVisibility(View.VISIBLE);
+                        create.setVisibility(View.INVISIBLE);
+                        status.setText(userStatus);
                         drawOtherPlayers();
                         Game();
                         drawCanvasIngame(game.getLocationlat(),game.getLocationlon(),10);
                     }
                     drawPlayer(latitude, longitude);
-                    Log.d("gmae3", "onLocationChanged: " + preferences.getString("status", null)+ "  " + preferences.getLong("gameID", 0));
-                    Log.d("gmae3", "onLocationChanged: " + db.getGame(22).getTimer());
                 }
 
                 @Override
@@ -145,22 +157,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 }
             };
+
+            //update location every (int) milliseconds and/or every (int) meters
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 1, locationListener);
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 1, locationListener);
         }
     }
 
 
-
+    //when joining a game the user starts as a catcher
     private void join(){
         change_status("catching");
     }
 
+    //when losing the user is kicked out of the game and it's status is changed to online
+    //TODO: add losing screen
     private void lost(){
         change_game(0, "online");
         //myDialog = new Dialog(this);
     }
 
+    //change user's status and gameID in local and online db
     private void change_game(long ID, String status){
         query.changeUserGameID(ID);
         query.changeUserStatus(status);
@@ -170,18 +187,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         editor.apply();
     }
 
-
+    //change only user's status in local and online db
     private void change_status(String status){
         query.changeUserStatus(status);
         editor.putString("status", status);
         editor.apply();
     }
 
+    //Timer function that calculates how much time the user should have based on the distance (between it's location and the destination in meters) divided by average human speed (1.4 meters per second) times (1 - )difficulty
+    //Not implemented
     private int timer(float[] distance, int difficulty){
         return (int) ((distance[0]/1.4)*(1-difficulty));
     }
 
-
+    //Change the user status from throwing to catching and vice versa and gives the user a 10 second timer
     private void nextRound(float [] distance, int difficulty){
 
         long ID = preferences.getLong("gameID", 0);
@@ -191,16 +210,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             change_status("throwing");
             newcircle = false;}
         centerLocation();
-        int time = timer (distance, difficulty);
+        //int time = timer (distance, difficulty); //timer not in use currently
         query.sendTimer(10);
-        Log.d("gmae3", "nextRound: " +ID+"  " + game.getTimer());
+
         new CountDownTimer((long)(10 * 1000), 1000) {
 
             public void onTick(long millisUntilFinished) {
             }
 
             public void onFinish() {
-                Log.d("gmae3", "nextRound: fin");
                 Game();
             }
         }.start();
@@ -209,7 +227,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-
+    //sub-main function ran each location update if the user is in a game
     private void Game(){
         long ID = preferences.getLong("gameID", 0);
         Games game = db.getGame(ID);
@@ -218,6 +236,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         double longitude = game.getDestlon();
         int difficulty = 10;//game.getDifficulty();
 
+        //draw destination circle on map (restricted to game circle area)
         Circle circle = drawDestiantion(latitude,longitude);
 
 
@@ -225,31 +244,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         double playerlon = preferences.getFloat("longitude", 0);
 
 
-        //add destination to the map
-
-        //
+        //get current game timer
         int timer =  game.getTimer();
-        Log.d("gmae3", "Game: timer" + timer);
+
+        //calculates distance between user and destination circle
         float[] distance = new float [2];
         Location.distanceBetween(playerlat, playerlon, latitude, longitude, distance);
+
+        //checks if the user is in the destination circle when the timer has ran out (if yes go to next round, if no get kicked out of the game)
         if (distance[0]< circle.getRadius() && preferences.getString("status", null).equals("catching")) {
-            Log.d("gmae3", "Game: yas");
             if (timer <= 0 && distance[0]<circle.getRadius())
-            {nextRound(distance, difficulty);}
+            {
+                nextRound(distance, difficulty);}
+
             else if (timer <= 0){
-                //  lost();
+                lost();
             }
         }
+        //if the user is throwing go to next round when timer is 0
         if (timer <=0 && preferences.getString("status", null).equals("throwing")){
           //  nextRound(distance, difficulty);
         }
 
+        //check if a destination circle has been drawn this round, if not thrower can tap to draw one
         else if (newcircle == false){
-
             drawDestinationCircle(circle, latitude, longitude);
         }
     }
 
+    //creates an area on top of current game where the user can create destination circle
     private Circle drawDestiantion(double latitude, double longitude){
         Circle circle = mMap.addCircle(new CircleOptions()
                 .center(new LatLng(latitude, longitude))
@@ -261,6 +284,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return circle;
     }
 
+    //add onclick functionality to the game circle so the user can tap to create a destination circle
     private void drawDestinationCircle( Circle circle, double latitude, double longitude){
 
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
@@ -272,7 +296,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             });
     }
-
+    //add destination circle to the map
     private void setDestination(LatLng destination){
         Games game = db.getGame(preferences.getLong("gameID", 0));
         Circle circle = mMap.addCircle(new CircleOptions()
@@ -286,13 +310,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Location.distanceBetween(dlatitude, dlongitude, game.getLocationlat(), game.getLocationlon(), distance);
         if(distance[0]<circle.getRadius()){
         query.sendDestination(dlatitude, dlongitude);
-        //game = db.getGame(preferences.getLong("gameID", 0));
         query.updateCurrentGame();
             }
         }
-        //query.SetNewDestination(dlatitude, dlongitude); preferences.setDestination(dlatitude, dlongitude);*/
 
-
+    //draw game circle of current / available games
     private void drawGameCircle(double latitude, double longitude, int difficulty, long gameID) {
         Circle circle = mMap.addCircle(new CircleOptions()
                 .center(new LatLng(latitude, longitude))
@@ -303,6 +325,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .clickable(true));
         circle.setTag(gameID);
 
+        //add on click functionality if the user status is online
         mMap.setOnCircleClickListener(new GoogleMap.OnCircleClickListener() {
 
             @Override
@@ -318,7 +341,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-
+    //draw all available games
     private void drawCanvasOnline() {
         List<Games> games = db.getAllGames();
         for (int i = 0; i < games.size(); i++) {
@@ -330,6 +353,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    //draw current game
     private void drawCanvasIngame(double latitude, double longitude, int difficulty) {
             Circle circle = mMap.addCircle(new CircleOptions()
                     .center(new LatLng(latitude, longitude))
@@ -338,6 +362,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .strokeColor(Color.argb(100, 225, 0, 0)));
     }
 
+    //draw current player on the map
     private void drawPlayer(double latitude, double longitude) {
         CircleOptions circleOptions = new CircleOptions()
                 .center(new LatLng(latitude, longitude))
@@ -349,7 +374,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.addCircle(circleOptions);
     }
 
-
+    //create a list of players in the current game
     private void drawOtherPlayers() {
         List<Users> players2 = db.getAllUsers();
         Games game = db.getGame(preferences.getLong("gameID", 0));
@@ -359,6 +384,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    //draw players from the current game on the map
     private void drawOtherPlayers(double latitude, double longitude, int rred, int rgreen, int rblue) {
         CircleOptions circleOptions = new CircleOptions()
                 .center(new LatLng(latitude, longitude))
@@ -369,6 +395,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.addCircle(circleOptions);
     }
 
+    //check user location (prevents null inputs in case the user tries to access content that has location constrains)
     public void checkLocation(){
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
@@ -377,6 +404,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
     }
 
+    //center the view on the user
     public void centerLocation(View view) {
         checkLocation();
         CameraPosition cameraPosition = new CameraPosition.Builder().
@@ -388,6 +416,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
+    //center the view on the user
     public void centerLocation(){
         checkLocation();
         CameraPosition cameraPosition = new CameraPosition.Builder().
@@ -423,7 +452,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.e("MapsActivity", " Can't find style. Error:", e);
         }
 
-
+        //add ui settings to the map screen
         UiSettings muiSettings = mMap.getUiSettings();
         muiSettings.setZoomControlsEnabled(true);
         muiSettings.setZoomGesturesEnabled(true);
@@ -434,11 +463,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     @Override
+    //stops the locationManager to send updates while the map is not in use
     protected void onStop() {
         super.onStop();
         locationManager.removeUpdates(locationListener);
     }
 
+    //runs when a game circle is clicked (if status is online), passes the ID of the game clicked displays details of that game)
     public void GoToPopup(final long ID){
         Games games = db.getGame(ID);
         myDialog = new Dialog(this);
@@ -469,7 +500,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
         Objects.requireNonNull(myDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-
+        //user enters the game when clicking the join button
         bjoin = myDialog.findViewById(R.id.bjoin);
         bjoin.setOnClickListener(new OnClickListener(){
             @Override
@@ -487,6 +518,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Intent i = new Intent(this, Menu_and_settings.class);
         startActivity(i);
     }
+
+    //create a game at the user current location when pressing the Create button
     public void createGame(View view){
         myDialog = new Dialog(this);
         Button createb;
