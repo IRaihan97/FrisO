@@ -226,6 +226,7 @@ public class GamesController {
     	@PostMapping("/games")//Following method responds to POST requests on when "/games" is added to the RequestMapping url
 	public Games createGame(@Valid @RequestBody Games game) {
 	    return gamesRepo.save(game);//Takes the @RequestBody Games Object and adds it to the games entity table
+	    //returns the added game as a JSON object to respond back
 	}
 	
 	@PutMapping("/games/upName/{id}")//Following method responds to PUT requests when "/games/upName/{id}" is added to the RequestMapping url
@@ -241,7 +242,7 @@ public class GamesController {
 	   
 
 	    Games updatedGame = gamesRepo.save(game);//saves the updated game
-	    return updatedGame;
+	    return updatedGame;//returns the updated game as a JSON object to respond back
 	}
     
     	@DeleteMapping("/games/{id}")//This mapping will delete a record with ID equal to the value passed in the url {id}
@@ -282,13 +283,258 @@ The following is an example of performing a simple GET request on the webservice
 ## Running the webservice application as a docker container
 Once all the webservice was completed, I needed to keep the service running as a docker container. Otherwise, running the service as a regular java application would not keep the service running constantly and it would automatically shutdown whenever I logged out from the Virtual Machine. As I have set up the Maven dependecies and the dockerfile as describe in the previous sections, all I needed to do was to compile a docker image which I did with the following command on the virtual machine:
 ```
-mvn package docker:buil
+mvn package docker:build
 ```
 This then built a docker image of my webservice which I called frisbee/webservicedb. I then created a docker container with the image doing using the following command:
 ```
 docker create --name webservice -p 8080:8080 frisbee/webservicedb
 ```
 All I had to do at this point, was to start the MySQL container and the webservice container.
+
+# Setting up the Front End to Consume JSON objects from the webservice
+This section will describe parts of the code used to make use of the webservice and get the data from the server.
+
+## Classes overview
+I have defined two classes and one interface in the android studio project. The classes are called VolleyRequest and OnlineQueries while the interface is called IResult.    
+
+The IResult is a simple interface that will be used to get the responses of the HTTP requests from the server:  
+```java
+package com.example.fris_o.tools;
+
+import com.android.volley.VolleyError;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+public interface IResult {
+    public void ObjSuccess(String requestType, JSONObject response);
+    public void ArrSuccess(String requestType, JSONArray response);
+    public void notifyError(String requestType, VolleyError error);
+}
+```
+
+The VolleyRequest class deals with perfoming the actual Http requests to the server by using the Volley API, which was added in gradle.  
+
+Here is a sample code of the VolleyRequest class:
+```java
+import android.content.Context;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+public class VolleyService {
+
+    IResult mResultCallback = null; //Interface for callbacks, allows to recieve response and perform specific action based on the response
+    Context mContext;
+
+    public VolleyService(IResult resultCallback, Context context){
+        mResultCallback = resultCallback;
+        mContext = context;
+    }
+    
+    public void getDataArrayVolley(final String requestType, String url){
+
+        try {
+            RequestQueue queue = Volley.newRequestQueue(mContext);
+
+            JsonArrayRequest jsonObj = new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
+                @Override
+                public void onResponse(JSONArray response) {
+                    if(mResultCallback != null)
+                        mResultCallback.ArrSuccess(requestType, response);
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    if(mResultCallback != null)
+                        mResultCallback.notifyError(requestType, error);
+                }
+            });
+
+            queue.add(jsonObj);
+
+        }catch(Exception e){
+
+        }
+    }
+	
+
+    public void postDataVolley(final String requestType, String url, JSONObject sendObj){
+
+        try {
+            RequestQueue queue = Volley.newRequestQueue(mContext);//Creates a new queue for requests
+
+            JsonObjectRequest jsonObj = new JsonObjectRequest(Request.Method.POST, url,sendObj, new 				Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    if(mResultCallback != null)
+                        mResultCallback.ObjSuccess(requestType,response);//Uses the result callback to get the responses and perfrom specific action.
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    if(mResultCallback != null)
+                        mResultCallback.notifyError(requestType,error);
+                }
+            });
+
+
+            queue.add(jsonObj);//Adds the jsonObj Requests to the request queue and executes it
+
+        }catch(Exception e){
+
+        }
+    }
+```
+This sample specifically, allows to perform a POST request by initializing a JSONObjectRequest object and passing the Request Method, the URL, the JSON object we wanto to post and a Response Listener to get the response from the server. It also allows to perform a GET request where no json objects are passed.
+
+The OnlineQueries class is the main class where all the methods are defined to allow the app to perfrom queries to the online database. The following is a sample of code to create a game and post in the server:
+```java
+package com.example.fris_o.tools;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.util.Log;
+
+import com.android.volley.VolleyError;
+import com.example.fris_o.data.DBHandler;
+import com.example.fris_o.models.Games;
+import com.example.fris_o.models.Users;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Random;
+
+public class OnlineQueries {
+    private VolleyService mVolleyService;
+    private IResult result;
+    private Context ctx;
+    private DBHandler db;
+
+    public OnlineQueries(Context ctx, DBHandler db) {
+        this.ctx = ctx;
+        this.db = db;
+    }
+    
+    public void getGames(){
+       	//Assing a new result callback by calling the getGameResp() method defined below
+        getGamesResp();
+        mVolleyService = new VolleyService(result, ctx);//Initializing a new VolleyService by passing the new result callback and the context of the application
+        mVolleyService.getDataVolleyArray("GET", "http://172.31.82.149:8080/api/games");//Executing the http request at specified url
+
+    }
+    
+    public void createGame(String gamename, String password, int difficulty, double speed){
+        JSONObject obj = new JSONObject();
+        Random rand = new Random();
+        double[] array = {0.0001, 0.0002, 0.0003, 0.0004, 0.0005};
+        int i = rand.nextInt(5);
+        SharedPreferences preferences = ctx.getSharedPreferences("User_status", 0);
+        double locationlat = preferences.getFloat("locationlat",0) + array[i];
+        double locationlon = preferences.getFloat("locationlon",0) + array[i];
+	//Creating the json object to post
+        try {
+            obj.put("name", gamename);
+            obj.put("locationlat", locationlat);
+            obj.put("locationlon", locationlon);
+            obj.put("password", password);
+            obj.put("difficulty", difficulty);
+            obj.put("speed", speed);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        changeUserStatus("ingame");
+        createGameResp();
+        mVolleyService = new VolleyService(result, ctx);
+        mVolleyService.postDataVolley("Post", "http:172.31.82.149:8080/api/games", obj);//Posting the Json object at Defined url
+    }
+        
+    private void getGamesResp(){
+    //Assigning a new IResult to the result field
+    //This result will take the JSONArray response and save to a local SQL Database I created
+        result = new IResult() {
+            @Override
+            public void ObjSuccess(String requestType, JSONObject response) {
+
+            }
+
+            @Override
+            public void ArrSuccess(String requestType, JSONArray response) {
+                db.resetGames();//resets games table
+                db.addAllGames(response);//adds all games from server response
+            }
+
+            @Override
+            public void notifyError(String requestType, VolleyError error) {
+
+            }
+        };
+    }
+    
+    private void createGameResp(){
+    //Assigning a new IResult, in this case is null as we don't want to do anything with the reponse from the server
+        result = new IResult() {
+            @Override
+            public void ObjSuccess(String requestType, JSONObject response) {
+		
+
+            }
+
+            @Override
+            public void ArrSuccess(String requestType, JSONArray response) {
+
+            }
+
+            @Override
+            public void notifyError(String requestType, VolleyError error) {
+
+            }
+        };
+    }
+```
+
+Most of the responses recieved by the webservice are stored in a local SQL Database that I have added. Look at the DBHandler class in the project repositories for a more detailed look.    
+
+Once I had all the classes ready, all that was required was to initialize a DBHandler object and an OnlineQueries Object in the activity classes in android.    
+
+The following is an example of performing an OnlineQuery in the MapsActivity class in the OnCreate() Method:
+```java
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+	Context ctx = this;
+    	DBHandler db = new DBHandler(this);//Initialize a new DB handler to store reponses in the database
+    	OnlineQueries query = new OnlineQueries(ctx, db);//Initialize new OnlineQueries to perform queries to the online database
+	
+	protected void onCreate(Bundle savedInstanceState) {
+        	super.onCreate(savedInstanceState);
+        	setContentView(R.layout.activity_maps);
+		
+		query.getGames();//This will execute the HTTP request to get all the games from the webservice.
+		//The list of games is stored in the local SQLLite Database
+		
+		query.createGame("gamename", "apassword", 1, 12//This will add a game to the online database
+			
+	}
+}
+```
+I have made the online queries class to make the life of my other team members easier. All they need to do is to run the method from the an OnlineQueries object where all the method to perform requests are defined. Android Studio makes life even easier as it shows all the methods that a can accessed from a given object as follows:
+
+![image](https://drive.google.com/uc?export=view&id=1JIIYHPrk4DDYdtM5Ym_URyqsf2ManC_o)
+
+# Conclusion
+You have seen how the development of the webservice has been dealt with. Most of the code example provided here are representative of how the webservice has been developed overall, but there is much more involved in the code committed in this repository. Please have a look, with the explanation given here, it should be slighty easier to understand how it works. 
+
 
 
 
