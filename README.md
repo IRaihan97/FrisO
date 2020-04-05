@@ -211,30 +211,40 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
-@RestController
-@RequestMapping("/api")
+@RestController //This annotation makes this class as a Controller
+@RequestMapping("/api") //This class will be considered whenever there's a request at URL "http://IPADDRESSOFTHEMACHNE:8080/api". The rest of the mappings will be executed based on what parameter is added to the URL
 public class GamesController {
-    @Autowired
-	GamesRepo gamesRepo;
+    	@Autowired
+	GamesRepo gamesRepo;//gamesRepo obj to use methods from the jpa interface
 
-    @GetMapping("/games")
+    	@GetMapping("/games")//Following method responds to GET requests when "/games" is added to the Request mapping url
 	public List<Games> getAllGames() {
-	    return gamesRepo.findAll();
+	    return gamesRepo.findAll();//Finds all games in the entity table Games and returns a List which is automatically converted to a JsonArray
 	    
 	}
     
-    @PostMapping("/games")
+    	@PostMapping("/games")//Following method responds to POST requests on when "/games" is added to the RequestMapping url
 	public Games createGame(@Valid @RequestBody Games game) {
-	    return gamesRepo.save(game);
+	    return gamesRepo.save(game);//Takes the @RequestBody Games Object and adds it to the games entity table
+	}
+	
+	@PutMapping("/games/upName/{id}")//Following method responds to PUT requests when "/games/upName/{id}" is added to the RequestMapping url
+	//The {id} represents the id of the record you want to modify with this mapping. 
+	//If the url had "/api/games/4" it would update record with ID 4
+	public Games updateGameName(@PathVariable(value = "id") Long gamesId,
+	                                        @Valid @RequestBody Games gameDetails) {
+
+	    Games game = gamesRepo.findById(gamesId)//Finds record by ID passed in the url
+	            .orElseThrow(() -> new ResourceNotFound("Games", "id", gamesId));
+
+	    game.setName(gameDetails.getName());//Gets the queries records and updates it with the value passed when performing the request
+	   
+
+	    Games updatedGame = gamesRepo.save(game);//saves the updated game
+	    return updatedGame;
 	}
     
-    @GetMapping("/games/{id}")
-	public Games getGameById(@PathVariable(value = "id") Long gamesId) {
-	    return gamesRepo.findById(gamesId)
-	            .orElseThrow(() -> new ResourceNotFound("Game", "id", gamesId));
-	}
-    
-    @DeleteMapping("/games/{id}")
+    	@DeleteMapping("/games/{id}")//This mapping will delete a record with ID equal to the value passed in the url {id}
 	public ResponseEntity<?> deleteGame(@PathVariable(value = "id") Long gamesId) {
 	    Games game = gamesRepo.findById(gamesId)
 	            .orElseThrow(() -> new ResourceNotFound("User", "id", gamesId));
@@ -245,4 +255,40 @@ public class GamesController {
 	}  
 }
 ```
-The code above
+The code above contains mappings for GET, PUT, POST and DELETE http requests. Each mapping will run the method tied to it based on the http request types made by clients. For example, if the client makes a POST http request at URL "http://172.31.82.149:8080/api/games" (the IP address defined in this URL is the IP of the VM we used), the webservice will execute the "createGame()" method which will take the object passed during the request and assign it to a new Games object. That game object is than used to add a new game to the table with gamesRepo.save(). Please have a look at the github repository for more details on the mappings made for the application.    
+
+The whole webservice is then run with this specific class:
+```java
+package com.group20.webservice;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@SpringBootApplication
+@EnableJpaAuditing
+public class WebserviceApplication {
+	
+	public static void main(String[] args) {
+		SpringApplication.run(WebserviceApplication.class, args);
+	}
+
+}
+```
+
+The following is an example of performing a simple GET request on the webservice using POSTMAN to get all the games currently saved on the database:
+
+## Running the webservice application as a docker container
+Once all the webservice was completed, I needed to keep the service running as a docker container. Otherwise, running the service as a regular java application would not keep the service running constantly and it would automatically shutdown whenever I logged out from the Virtual Machine. As I have set up the Maven dependecies and the dockerfile as describe in the previous sections, all I needed to do was to compile a docker image which I did with the following command on the virtual machine:
+```
+mvn package docker:buil
+```
+This then built a docker image of my webservice which I called frisbee/webservicedb. I then created a docker container with the image doing using the following command:
+```
+docker create --name webservice -p 8080:8080 frisbee/webservicedb
+```
+All I had to do at this point, was to start the MySQL container and the webservice container.
+
+
+
