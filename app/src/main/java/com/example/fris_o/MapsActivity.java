@@ -227,15 +227,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Game();
     }
 
-
     //sub-main function ran each location update if the user is in a game
     //TODO: implement difficulty insted of preset radius 10
     private void Game(){
         long ID = preferences.getLong("gameID", 0);
         Games game = db.getGame(ID);
+        // TEST
+        // if ID is null
+        if (ID == 0){
+            Log.e("Error", "The ID is null");
+        }
+        // TEST
+        // if game is null
+        if (game == null){
+            Log.e("Error", "The game is null");
+        }
 
         double latitude = game.getDestlat();
         double longitude = game.getDestlon();
+        // TEST
+        // if the latitude or longitude is 0 or less
+        if (latitude <= 0 || longitude <= 0){
+            Log.e("Error", "Latitude or Longitude value is invalid");
+        }
         int difficulty = 10;//game.getDifficulty();
 
         //draw destination circle on map (restricted to game circle area)
@@ -248,6 +262,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //get current game timer
         int timer =  game.getTimer();
+        // TEST
+        // if the timer is 0 or less
+        if (timer <= 0){
+            Log.e("Error", "The timer value is invalid");
+        }
 
         //calculates distance between user and destination circle
         float[] distance = new float [2];
@@ -346,6 +365,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //draw all available games
     private void drawCanvasOnline() {
         List<Games> games = db.getAllGames();
+        // TEST
+        // if games is null
+        if (games == null){
+            Log.e("Error", "The games is null");
+        }
+        // if games list is less than 0, or more than 1000
+        if (games.size() < 0 || games.size() > 1000){
+            Log.e("Error", "The games amount is invalid");
+        }
         for (int i = 0; i < games.size(); i++) {
 
             double lat = games.get(i).getLocationlat();
@@ -379,6 +407,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //create a list of players in the current game
     private void drawOtherPlayers() {
         List<Users> players2 = db.getAllUsers();
+        // TEST
+        // if games is null
+        if (players2 == null){
+            Log.e("Error", "The players2 is null");
+        }
+        // if games list is less than 0, or more than 1000
+        if (players2.size() < 0 || players2.size() > 1000){
+            Log.e("Error", "The players2 amount is invalid");
+        }
         Games game = db.getGame(preferences.getLong("gameID", 0));
 
         for (int i = 0; i < players2.size(); i++) {
