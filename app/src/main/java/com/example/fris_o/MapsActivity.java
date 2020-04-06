@@ -107,9 +107,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     latlng = latLng;
 
                     //Gets all games based on the user's location and adds them to a local database (only displays games that are in a preset area which is currently the size of Brunel's campus)
-                    query.updateCurrentGame();
-                    query.getUsersByGameID(22);
-                    query.getNearbyGames(latitude,longitude);
+
                     query.sendUserLocation(latitude, longitude);
                     userStatus =  preferences.getString("status",null);
 
@@ -122,6 +120,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     if (!first) {
                         centerLocation();
                         first = true;
+                        query.getNearbyGames(latitude,longitude);
                     }
                     Games game = db.getGame(preferences.getLong("gameID", 0));
 
@@ -213,7 +212,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         centerLocation();
         //int time = timer (distance, difficulty); //timer not in use currently
         query.sendTimer(10);
-
+        query.updateCurrentGame();
         new CountDownTimer((long)(10 * 1000), 1000) {
 
             public void onTick(long millisUntilFinished) {
@@ -546,6 +545,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View v){
                 change_game(ID, "ingame");
                 join();
+                query.getUsersByGameID(ID);
                 myDialog.dismiss();
             }
         });
