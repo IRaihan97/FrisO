@@ -531,9 +531,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 I have made the online queries class to make the life of my other team members easier. All they need to do is to run the method from the an OnlineQueries object where all the method to perform requests are defined. Android Studio makes life even easier as it shows all the methods that a can accessed from a given object as follows:
 
 ![image](https://drive.google.com/uc?export=view&id=1JIIYHPrk4DDYdtM5Ym_URyqsf2ManC_o)
+## Testing the webservice
+To test the webservice, I installed a local MySQL Service along with MySQL Workbench:   
+
+I have connected the webservice with the local database by changing the application.properties file. Here I passed the right url to connect to the webservice:
+```
+## Spring DATASOURCE (DataSourceAutoConfiguration & DataSourceProperties)
+spring.datasource.url = jdbc:mysql://localhost:3306/friso?allowPublicKeyRetrieval=true&useSSL=false
+spring.datasource.username = root
+spring.datasource.password = racoon97
+
+
+## Hibernate Properties
+# The SQL dialect makes Hibernate generate better SQL for the chosen database
+spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQL5InnoDBDialect
+
+# Hibernate ddl auto (create, create-drop, validate, update)
+spring.jpa.hibernate.ddl-auto = update
+```
+The webservice was then tested by performing requests with POSTMAN at "http://localhost:8080":
+## Testing the front-end
+To test the front end, I have made a separate activity called test. This activity contained different buttons with onClick listeners:
+
+Here, I will show you how I tested the updateCurrentGame method defined in the OnlineQueries class. I have made an OnlineQuery object inside the tests class and I execute the updateCurrentGame in the onClickListener of the "Update" button:
+```java
+```
+
+Here is an overview of the updateCurrentGame method in the OnlineQueries class along with the callback method to get the responses:
+
+As you saw above, there are LOGs in the callback methods. These were used to see if the app was getting any responses from the server. Now if we click on the "Update" Button, this is the result shown in the log:
 
 # Conclusion
-You have seen how the development of the webservice has been dealt with. Most of the code example provided here are representative of how the webservice has been developed overall, but there is much more involved in the code committed in this repository. Please have a look, with the explanation given here, it should be slighty easier to understand how it works. 
+You have seen how the development of the webservice has been dealt with. Most of the code example provided here are representative of small part of how the webservice has been developed overall and there is much more involved in the code committed in this repository. Please have a look at the repository, with the explanation given here, it should be slighty easier to understand how it works. 
 
 
 
