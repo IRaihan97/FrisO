@@ -18,17 +18,18 @@ public class VolleyService {
 
     IResult mResultCallback = null;
     Context mContext;
+    RequestQueue queue;
 
     public VolleyService(IResult resultCallback, Context context){
         mResultCallback = resultCallback;
         mContext = context;
+        RequestQueue queue = Volley.newRequestQueue(mContext);
     }
 
 
     public void postDataVolley(final String requestType, String url, JSONObject sendObj){
 
         try {
-            RequestQueue queue = Volley.newRequestQueue(mContext);
 
             JsonObjectRequest jsonObj = new JsonObjectRequest(Request.Method.POST, url,sendObj, new Response.Listener<JSONObject>() {
                 @Override
@@ -55,7 +56,6 @@ public class VolleyService {
     public void postDataVolleyArrayResp(final String requestType, String url, JSONArray sendObj){
 
         try {
-            RequestQueue queue = Volley.newRequestQueue(mContext);
 
             JsonArrayRequest jsonObj = new JsonArrayRequest(Request.Method.POST, url,sendObj, new Response.Listener<JSONArray>() {
                 @Override
@@ -82,7 +82,7 @@ public class VolleyService {
     public void getDataVolley(final String requestType, String url){
 
         try {
-            RequestQueue queue = Volley.newRequestQueue(mContext);
+
 
             JsonObjectRequest jsonObj = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
                 @Override
@@ -108,7 +108,6 @@ public class VolleyService {
     public void getDataArrayVolley(final String requestType, String url){
 
         try {
-            RequestQueue queue = Volley.newRequestQueue(mContext);
 
             JsonArrayRequest jsonObj = new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
                 @Override
@@ -134,7 +133,6 @@ public class VolleyService {
     public void putDataVolley(final String requestType, String url, JSONObject sendObj){
 
         try {
-            RequestQueue queue = Volley.newRequestQueue(mContext);
 
             JsonObjectRequest jsonObj = new JsonObjectRequest(Request.Method.PUT, url,sendObj, new Response.Listener<JSONObject>() {
                 @Override
