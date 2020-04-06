@@ -531,7 +531,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 ```
 I have made the online queries class to make the life of my other team members easier. All they need to do is to run the method from the an OnlineQueries object where all the method to perform requests are defined. Android Studio makes life even easier as it shows all the methods that a can accessed from a given object as follows:
 
-!Please refresh until you see the picture](https://drive.google.com/uc?export=view&id=1JIIYHPrk4DDYdtM5Ym_URyqsf2ManC_o)
+![Please refresh until you see the picture](https://drive.google.com/uc?export=view&id=1JIIYHPrk4DDYdtM5Ym_URyqsf2ManC_o)
 ## Testing the webservice
 To test the webservice, I installed a local MySQL Service along with MySQL Workbench:
 ![Please refresh Until you see the picture](https://drive.google.com/uc?export=view&id=1PhS2kDVFasziOGxwL9qP_aNk2RFWYCC8)
