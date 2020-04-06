@@ -1,4 +1,4 @@
-# Webservice Documenation
+# Webservice Documentation
 This section of the repository will describe the basics of the code developed for the webservice.
 It will include descriptions of the commands used in the virtual machine, the spring-boot application developed and the code integrated in the front end of the application  
 ## Initial setup of the virtual machine on cloud
@@ -41,7 +41,7 @@ FLUSH PRIVILEGES;
 The spring-boot webservice will automatically create tables, so I did not create them manually through SQL
 
 ## Setting Up the Webservice for Docker
-I first needed to initialize a spring boot project by including the needed depndencies    
+I first needed to initialize a spring boot project by including the needed dependencies.    
 The dependencies I used were JPA (which will be described more in detail below), Web, Devtools, MySQL and Docker  
 I used the following spring-boot application initializer to initialize the project:
 ```
@@ -201,7 +201,7 @@ public interface GamesRepo extends JpaRepository<Games, Long> {
 ```
 
 #### Controller Examples
-The controller classes are the core classes that define the overall functionalities of the webservice. It makes use of the other classes defined in the other packages. The classes defined here ditctate how the server should respond to possible requests by clients. The following code represents a simple controller for the Games class (which is the entity in the SQL table) defined previously:
+The controller classes are the core classes that define the overall functionalities of the webservice. It makes use of the other classes defined in the other packages. The classes defined here dictate how the server should respond to possible requests by clients. The following code represents a simple controller for the Games class (which is the entity in the SQL table) defined previously:
 ```java
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -333,7 +333,7 @@ import org.json.JSONObject;
 
 public class VolleyService {
 
-    IResult mResultCallback = null; //Interface for callbacks, allows to recieve response and perform specific action based on the response
+    IResult mResultCallback = null; //Interface for callbacks, allows to receive response and perform specific action based on the response
     Context mContext;
 
     public VolleyService(IResult resultCallback, Context context){
@@ -377,7 +377,7 @@ public class VolleyService {
                 @Override
                 public void onResponse(JSONObject response) {
                     if(mResultCallback != null)
-                        mResultCallback.ObjSuccess(requestType,response);//Uses the result callback to get the responses and perfrom specific action.
+                        mResultCallback.ObjSuccess(requestType,response);//Uses the result callback to get the responses and perform specific action.
                 }
             }, new Response.ErrorListener() {
                 @Override
@@ -395,9 +395,9 @@ public class VolleyService {
         }
     }
 ```
-This sample specifically, allows to perform a POST request by initializing a JSONObjectRequest object and passing the Request Method, the URL, the JSON object we wanto to post and a Response Listener to get the response from the server. It also allows to perform a GET request where no json objects are passed.
+This sample specifically, allows to perform a POST request by initializing a JSONObjectRequest object and passing the Request Method, the URL, the JSON object we want to post and a Response Listener to get the response from the server. It also allows to perform a GET request where no json objects are passed.
 
-The OnlineQueries class is the main class where all the methods are defined to allow the app to perfrom queries to the online database. The following is a sample of code to create a game and post in the server:
+The OnlineQueries class is the main class where all the methods are defined to allow the app to perform queries to the online database. The following is a sample of code to create a game and post in the server:
 ```java
 package com.example.fris_o.tools;
 
@@ -429,7 +429,7 @@ public class OnlineQueries {
     }
     
     public void getGames(){
-       	//Assing a new result callback by calling the getGameResp() method defined below
+       	//Assign a new result callback by calling the getGameResp() method defined below
         getGamesResp();
         mVolleyService = new VolleyService(result, ctx);//Initializing a new VolleyService by passing the new result callback and the context of the application
         mVolleyService.getDataVolleyArray("GET", "http://172.31.82.149:8080/api/games");//Executing the http request at specified url
@@ -505,7 +505,7 @@ public class OnlineQueries {
     }
 ```
 
-Most of the responses recieved by the webservice are stored in a local SQL Database that I have added. Look at the DBHandler class in the project repositories for a more detailed look.    
+Most of the responses received by the webservice are stored in a local SQL Database that I have added. Look at the DBHandler class in the project repositories for a more detailed look.    
 
 Once I had all the classes ready, all that was required was to initialize a DBHandler object and an OnlineQueries Object in the activity classes in android.    
 
@@ -562,7 +562,7 @@ Here is an overview of the updateCurrentGame method in the OnlineQueries class a
 As you saw above, there are LOGs in the callback methods. These were used to see if the app was getting any responses from the server. Now if we click on the "Update" Button, this is the result shown in the log:
 
 # Conclusion
-You have seen how the development of the webservice has been dealt with. Most of the code example provided here are representative of small part of how the webservice has been developed overall and there is much more involved in the code committed in this repository. Please have a look at the repository, with the explanation given here, it should be slighty easier to understand how it works. 
+You have seen how the development of the webservice has been dealt with. Most of the code example provided here are representative of small part of how the webservice has been developed overall and there is much more involved in the code committed in this repository. Please have a look at the repository, with the explanation given here, it should be slightly easier to understand how it works. 
 
 
 
