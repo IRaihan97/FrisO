@@ -48,7 +48,7 @@ I used the following spring-boot application initializer to initialize the proje
 http://start.spring.io
 ```
 Here is an overview of the initialized spring-boot project:  
-![image](https://drive.google.com/uc?export=view&id=19-m19C5hUnq7Gn7apuw8f-3rkFMdV1J-)
+![Please refresh Until you see the picture](https://drive.google.com/uc?export=view&id=19-m19C5hUnq7Gn7apuw8f-3rkFMdV1J-)
 
 Once the project was created, I have added a "dockerfile" containing the following strings of code. This will be used to compile a jar file from the project and use it to build a docker image:
 ```
@@ -131,7 +131,7 @@ The application.properties file defines a datasource for the whole webservice ap
 
 ### Project Structure
 The project was primarily divided into three main packages where each package contains a specific set of classes. The most relevant packages are the models, repositories and controller packages. The classes defined inside those packages dictate the overall functionality of the webservice and they have been implemented by using JPA:  
-![image](https://drive.google.com/uc?export=view&id=1avvwf8t_TxKhbJK5Q5Sd5ejN0YfTu1in)
+![Please refresh Until you see the picture](https://drive.google.com/uc?export=view&id=1avvwf8t_TxKhbJK5Q5Sd5ejN0YfTu1in)
 
 #### Models Examples
 Thanks to the JPA and the Spring framework, the models classes are going to be mapped into SQL tables.   
@@ -279,6 +279,7 @@ public class WebserviceApplication {
 ```
 
 The following is an example of performing a simple GET request on the webservice using POSTMAN to get all the games currently saved on the database:
+![Please refresh Until you see the picture](https://drive.google.com/uc?export=view&id=1fhyafc6YePvcna9QYVIr_XVAy06lxRph)
 
 ## Running the webservice application as a docker container
 Once all the webservice was completed, I needed to keep the service running as a docker container. Otherwise, running the service as a regular java application would not keep the service running constantly and it would automatically shutdown whenever I logged out from the Virtual Machine. As I have set up the Maven dependecies and the dockerfile as describe in the previous sections, all I needed to do was to compile a docker image which I did with the following command on the virtual machine:
@@ -530,9 +531,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 ```
 I have made the online queries class to make the life of my other team members easier. All they need to do is to run the method from the an OnlineQueries object where all the method to perform requests are defined. Android Studio makes life even easier as it shows all the methods that a can accessed from a given object as follows:
 
-![image](https://drive.google.com/uc?export=view&id=1JIIYHPrk4DDYdtM5Ym_URyqsf2ManC_o)
+!Please refresh until you see the picture](https://drive.google.com/uc?export=view&id=1JIIYHPrk4DDYdtM5Ym_URyqsf2ManC_o)
 ## Testing the webservice
-To test the webservice, I installed a local MySQL Service along with MySQL Workbench:   
+To test the webservice, I installed a local MySQL Service along with MySQL Workbench:
+![Please refresh Until you see the picture](https://drive.google.com/uc?export=view&id=1PhS2kDVFasziOGxwL9qP_aNk2RFWYCC8)
 
 I have connected the webservice with the local database by changing the application.properties file. Here I passed the right url to connect to the webservice:
 ```
@@ -552,15 +554,85 @@ spring.jpa.hibernate.ddl-auto = update
 The webservice was then tested by performing requests with POSTMAN at "http://localhost:8080":
 ## Testing the front-end
 To test the front end, I have made a separate activity called test. This activity contained different buttons with onClick listeners:
+![Please refresh Until you see the picture](https://drive.google.com/uc?export=view&id=1Ebe17aIbI1dpa-IAVNoGNjVKQVxJThsm)
 
 Here, I will show you how I tested the updateCurrentGame method defined in the OnlineQueries class. I have made an OnlineQuery object inside the tests class and I execute the updateCurrentGame in the onClickListener of the "Update" button:
 ```java
+public class Tests extends AppCompatActivity {
+	VolleyService mVolleyService;
+    	IResult result;
+    	Context ctx = this;
+	private Button upBtn;
+    	DBHandler db = new DBHandler(this);
+    	OnlineQueries queries = new OnlineQueries(ctx, db);
+    	@Override
+    	protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_tests);
+        upBtn = findViewById(R.id.update);
+	upBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                queries.updateCurrentGame();
+            }
+        });
+	}
+}
+    
 ```
 
 Here is an overview of the updateCurrentGame method in the OnlineQueries class along with the callback method to get the responses:
+```java
+public class OnlineQueries {
+    private VolleyService mVolleyService;
+    private IResult result;
+    private Context ctx;
+    private DBHandler db;
+
+    public OnlineQueries(Context ctx, DBHandler db) {
+        this.ctx = ctx;
+        this.db = db;
+    }
+    
+    public void updateCurrentGame(){
+        SharedPreferences preferences = ctx.getSharedPreferences("User_status", 0);
+        long gameID = preferences.getLong("gameID", 1);
+        updateGameResp();//calling method for callback
+        mVolleyService = new VolleyService(result, ctx);
+        mVolleyService.getDataVolley("GET", "http://172.31.82.149:8080/api/games/"+ String.valueOf(gameID));
+    }
+    
+    private void updateGameResp(){
+        result = new IResult() {
+            @Override
+            public void ObjSuccess(String requestType, JSONObject response) {
+                db.resetGames();
+                try {
+                    Log.d("Response", "Testing updateCurrentGame: " + response.getString("name"));//logs to check response
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                db.addGame(response);
+                Games game = db.getGame(22);
+                Log.d("Response", "Testing if game is added to the local db: " + game.getDestlat());
+
+            }
+
+            @Override
+            public void ArrSuccess(String requestType, JSONArray response) {
+
+            }
+
+            @Override
+            public void notifyError(String requestType, VolleyError error) {
+
+            }
+        };
+    }
+ ```
 
 As you saw above, there are LOGs in the callback methods. These were used to see if the app was getting any responses from the server. Now if we click on the "Update" Button, this is the result shown in the log:
-
+![Please refresh Until you see the picture](https://drive.google.com/uc?export=view&id=1UXq1rsSYHNIXwhpL3RxhORbZTQyVZBWn)
 # Conclusion
 You have seen how the development of the webservice has been dealt with. Most of the code example provided here are representative of small part of how the webservice has been developed overall and there is much more involved in the code committed in this repository. Please have a look at the repository, with the explanation given here, it should be slightly easier to understand how it works. 
 
