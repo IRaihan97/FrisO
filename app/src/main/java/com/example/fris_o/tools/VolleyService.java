@@ -23,14 +23,14 @@ public class VolleyService {
     public VolleyService(IResult resultCallback, Context context){
         mResultCallback = resultCallback;
         mContext = context;
-        RequestQueue queue = Volley.newRequestQueue(mContext);
+        this.queue = Volley.newRequestQueue(mContext);
     }
 
 
     public void postDataVolley(final String requestType, String url, JSONObject sendObj){
 
         try {
-
+            queue.getCache().clear();
             JsonObjectRequest jsonObj = new JsonObjectRequest(Request.Method.POST, url,sendObj, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
@@ -44,7 +44,7 @@ public class VolleyService {
                         mResultCallback.notifyError(requestType,error);
                 }
             });
-
+            jsonObj.setShouldCache(false);
 
             queue.add(jsonObj);
 
@@ -56,7 +56,7 @@ public class VolleyService {
     public void postDataVolleyArrayResp(final String requestType, String url, JSONArray sendObj){
 
         try {
-
+            queue.getCache().clear();
             JsonArrayRequest jsonObj = new JsonArrayRequest(Request.Method.POST, url,sendObj, new Response.Listener<JSONArray>() {
                 @Override
                 public void onResponse(JSONArray response) {
@@ -71,7 +71,7 @@ public class VolleyService {
                 }
             });
 
-
+            jsonObj.setShouldCache(false);
             queue.add(jsonObj);
 
         }catch(Exception e){
@@ -83,7 +83,7 @@ public class VolleyService {
 
         try {
 
-
+            queue.getCache().clear();
             JsonObjectRequest jsonObj = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
@@ -97,7 +97,7 @@ public class VolleyService {
                         mResultCallback.notifyError(requestType, error);
                 }
             });
-
+            jsonObj.setShouldCache(false);
             queue.add(jsonObj);
 
         }catch(Exception e){
@@ -108,7 +108,7 @@ public class VolleyService {
     public void getDataArrayVolley(final String requestType, String url){
 
         try {
-
+            queue.getCache().clear();
             JsonArrayRequest jsonObj = new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
                 @Override
                 public void onResponse(JSONArray response) {
@@ -122,7 +122,7 @@ public class VolleyService {
                         mResultCallback.notifyError(requestType, error);
                 }
             });
-
+            jsonObj.setShouldCache(false);
             queue.add(jsonObj);
 
         }catch(Exception e){
@@ -133,7 +133,7 @@ public class VolleyService {
     public void putDataVolley(final String requestType, String url, JSONObject sendObj){
 
         try {
-
+            queue.getCache().clear();
             JsonObjectRequest jsonObj = new JsonObjectRequest(Request.Method.PUT, url,sendObj, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
@@ -147,7 +147,7 @@ public class VolleyService {
                         mResultCallback.notifyError(requestType,error);
                 }
             });
-
+            jsonObj.setShouldCache(false);
             queue.add(jsonObj);
 
         }catch(Exception e){

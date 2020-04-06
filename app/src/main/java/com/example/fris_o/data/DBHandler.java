@@ -177,7 +177,7 @@ public class DBHandler extends SQLiteOpenHelper {
             game.setPlayercounter(Integer.parseInt(cursor.getString(14)));
             game.setPassword(cursor.getString(15));
         }
-
+        cursor.close();
         return game;
     }
 
@@ -210,6 +210,7 @@ public class DBHandler extends SQLiteOpenHelper {
                 gamesList.add(game);
             }while(cursor.moveToNext());
         }
+        cursor.close();
         return gamesList;
     }
 
@@ -315,7 +316,7 @@ public class DBHandler extends SQLiteOpenHelper {
         user.setBlue(Integer.parseInt(cursor.getString(9)));
         user.setGreen(Integer.parseInt(cursor.getString(10)));
         user.setGameID(Long.parseLong(cursor.getString(11)));
-
+        cursor.close();
         return user;
     }
 
@@ -343,6 +344,7 @@ public class DBHandler extends SQLiteOpenHelper {
                 usersList.add(user);
             }while(cursor.moveToNext());
         }
+        cursor.close();
         return usersList;
     }
 
