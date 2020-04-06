@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import com.example.fris_o.MapsActivity;
 import com.example.fris_o.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -49,15 +50,9 @@ public class Menu_and_settings extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
-        //Username code
-//        TextView username = findViewById(R.id.username);
-//        SharedPreferences sharedPreferences = getSharedPreferences("User_status",0);
-//        String user = sharedPreferences.getString("username",null);
-//        username.setText(user);
     }
 
-
-//Guys if the app crash uncomment this method and delete the same lines from onCreate()
+    //Method to display the user's name in the Nav_Header (Obaid)
     public void onResume(){
         super.onResume();
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -98,4 +93,8 @@ public class Menu_and_settings extends AppCompatActivity {
         finish();
     }
 
+    public void stayIn(View view){
+        Intent intent = new Intent(this, MapsActivity.class);
+        startActivity(intent);
+    }
 }
